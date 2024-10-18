@@ -20,15 +20,15 @@ const ProductCategories: React.FC<ProductCategoriesProps> = ({
 
   return (
     <>
-      <Row gutter={[16, 16]} style={{ padding: "10px 10px", margin: "0" }}>
+      <Row gutter={[16, 16]} style={{ padding: "10px", margin: "0" }}>
         {categories.map((category, index) => (
-          <Col xs={24} sm={12} md={8} key={index}>
+          <Col xs={8} sm={8} md={8} key={index}>
             <div
+              className="container-categories"
               style={{
                 backgroundImage: `url(${category.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                height: "400px",
                 position: "relative",
                 overflow: "hidden",
               }}
@@ -40,6 +40,44 @@ const ProductCategories: React.FC<ProductCategoriesProps> = ({
           </Col>
         ))}
       </Row>
+
+      <style>{`
+        .container-categories {
+          position: relative;
+          width: 100%;
+          padding-bottom: 133.33%; /* 4:3 Aspect Ratio (height / width * 100) */
+          background-color: #f0f0f0; /* Fallback color while loading image */
+        }
+
+        .container-categories .overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .container-categories .category-title {
+          color: #fff;
+          font-size: 24px;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        @media only screen and (max-width: 768px) {
+          .container-categories {
+            padding-bottom: 100%;
+          }
+
+          .container-categories .category-title {
+            font-size: 18px;
+          }
+        }
+      `}</style>
     </>
   );
 };

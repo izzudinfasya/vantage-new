@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Layout } from "antd";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
@@ -17,6 +17,8 @@ const settings = {
   slidesToShow: 4.5,
   slidesToScroll: 1,
   arrows: false,
+  swipeToSlide: true,
+  touchThreshold: 10,
   responsive: [
     {
       breakpoint: 1024,
@@ -29,7 +31,7 @@ const settings = {
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 2.5,
+        slidesToShow: 1.5,
         slidesToScroll: 1,
       },
     },
@@ -77,18 +79,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }}
     onMouseEnter={() => setHoveredProductId(product.id)}
     onMouseLeave={() => setHoveredProductId(null)}
-  >
-    {/* Optional: Add overlay or content if needed */}
-  </div>
+  ></div>
 );
 
-// Main ProductInterest component
 const { Content } = Layout;
 
 const ProductInterest: React.FC = () => {
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
-  const sliderRef = useRef<Slider | null>(null); // Define the ref for the slider
-  const [currentSlide, setCurrentSlide] = useState(0); // Track the current slide
+  const sliderRef = useRef<Slider | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   const products = [
     {
@@ -182,6 +182,19 @@ const ProductInterest: React.FC = () => {
     setCurrentSlide(current);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768); // Set to true if screen width is <= 768px (mobile)
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Initial check
+    handleResize();
+
+    // Cleanup listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <Layout>
       {/* New Section: Anda Mungkin Suka */}
@@ -196,10 +209,10 @@ const ProductInterest: React.FC = () => {
           }}
         >
           <p
+            className="interest-title"
             style={{
               textAlign: "left",
               marginBottom: "20px",
-              fontSize: "36px",
               display: "flex",
               alignItems: "center",
             }}
@@ -211,7 +224,7 @@ const ProductInterest: React.FC = () => {
 
           <div style={{ position: "relative" }}>
             {/* Left Arrow */}
-            {currentSlide > 0 && (
+            {!isMobileView && currentSlide > 0 && (
               <>
                 <ArrowLeftOutlined
                   style={{
@@ -228,7 +241,7 @@ const ProductInterest: React.FC = () => {
                   onClick={handlePrev}
                 />
                 {/* Left Overlay */}
-                {currentSlide >= products.length - 4.5 && (
+                {!isMobileView && currentSlide >= products.length - 4.5 && (
                   <div
                     style={{
                       position: "absolute",
@@ -271,7 +284,7 @@ const ProductInterest: React.FC = () => {
             </Slider>
 
             {/* Right Overlay */}
-            {currentSlide < products.length - 4.5 && (
+            {!isMobileView && currentSlide < products.length - 4.5 && (
               <div
                 style={{
                   position: "absolute",
@@ -286,7 +299,7 @@ const ProductInterest: React.FC = () => {
             )}
 
             {/* Right Arrow */}
-            {currentSlide < products.length - 4.5 && (
+            {!isMobileView && currentSlide < products.length - 4.5 && (
               <ArrowRightOutlined
                 style={{
                   position: "absolute",
@@ -307,12 +320,31 @@ const ProductInterest: React.FC = () => {
       </Content>
       {/* Media query for mobile view */}
       <style>{`
-        @media (max-width: 768px) {
-          .slick-slide {
-            height: 300px !important; /* Reduce card height */
+          .interest-title {
+            font-size: 36px; /* Smaller font size for mobile */
           }
-          p {
-            font-size: 14px; /* Reduce text size */
+
+        @media (max-width: 768px) {
+        .slick-slide {
+            height: auto !important; /* Set height to auto for responsiveness */
+          }
+
+          .slick-slide > div {
+            display: flex; /* Ensure flexbox layout */
+            justify-content: center; /* Center the content */
+            align-items: center; /* Center the content */
+          }
+
+          .interest-title {
+            font-size: 28px; /* Smaller font size for mobile */
+          }
+
+          .anticon {
+            font-size: 28px; /* Smaller font size for icons */
+          }
+
+        .slick-slide div {
+            height: 80%; /* Set height to allow for aspect ratio */
           }
         }
       `}</style>

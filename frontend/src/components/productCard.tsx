@@ -19,11 +19,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => (
   <div
     style={{
-      height: "400px",
-      width: "auto",
+      width: "100%",
       position: "relative",
       marginRight: "10px",
       overflow: "hidden",
+      aspectRatio: "3 / 4",
       transition: "background-image 0.2s ease-in-out",
     }}
     onMouseEnter={() => setHoveredProductId(product.id)}

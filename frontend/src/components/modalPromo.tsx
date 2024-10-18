@@ -17,8 +17,8 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        console.log("Form submitted with values:", values); // You can handle the form submission here
-        onClose();
+        console.log("Form submitted with values:", values); // Handle form submission
+        onClose(); // Close modal after submission
       }, 2000);
     } catch (error) {
       console.error("Validation Failed:", error);
@@ -28,9 +28,14 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
 
   return (
     <Modal
-      title="GET 40% VOUCHER OFF"
+      title={
+        <div style={{ textAlign: "center", fontSize: "24px" }}>
+          Get 10% Off on Your First Purchase
+        </div>
+      }
       visible={true}
       width={600}
+      closable={false} // Disable the close (X) button
       footer={[
         <Button
           key="back"
@@ -41,7 +46,7 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
             borderColor: "#444",
           }}
         >
-          Back
+          Close
         </Button>,
         <Button
           key="submit"
@@ -63,6 +68,11 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
       className="modal-container"
       style={{ backgroundColor: "transparent" }}
     >
+      <p
+        style={{ textAlign: "center", fontSize: "14px", marginBottom: "20px" }}
+      >
+        Sign up to get a 10% discount on your first purchase!.
+      </p>
       <Form
         form={form} // Link the form instance to the Form component
         layout="vertical"
@@ -108,6 +118,21 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
           />
         </Form.Item>
       </Form>
+
+      <style>{`
+        .ant-modal .ant-modal-footer {
+            margin-top: 5px;
+        }
+            
+        @media (max-width: 768px) {
+          .ant-modal .ant-modal-content {
+            width: 80% !important;
+            max-width: 500px;
+            padding: 24px;
+            margin: 0 auto;
+          }
+        }
+      `}</style>
     </Modal>
   );
 };
