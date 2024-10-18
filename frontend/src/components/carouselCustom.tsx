@@ -147,6 +147,10 @@ const CarouselCustom: React.FC = () => {
             margin-bottom: 20px;
         }
 
+        .slick-dots li button:before, .slick-dots li.slick-active button:before{
+        color: transparent;
+        }
+
         @media only screen and (max-width: 768px) {
           .fixed-carousel div {
             height: 100vh;

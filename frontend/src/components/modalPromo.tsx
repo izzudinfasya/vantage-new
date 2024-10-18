@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button } from "antd";
+import { Modal, Form, Input, Button, message } from "antd";
 
 interface ModalPromoProps {
   onClose: () => void;
@@ -8,21 +8,45 @@ interface ModalPromoProps {
 const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [form] = Form.useForm(); // Create a form instance
+  const [form] = Form.useForm();
 
   const handleOk = async () => {
     try {
-      // Validate fields
       const values = await form.validateFields();
+      console.log(values);
+
       setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        console.log("Form submitted with values:", values); // Handle form submission
-        onClose(); // Close modal after submission
-      }, 2000);
+
+      // Send data to the backend
+      const response = await fetch(
+        "http://localhost:5000/api/vouchers/get-voucher",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: values.email, name: values.name }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`${errorText}`);
+      }
+
+      const data = await response.json();
+
+      message.success(data.message);
+      onClose();
+      form.resetFields();
     } catch (error) {
-      console.error("Validation Failed:", error);
-      // Handle the validation error if needed
+      if (error instanceof Error) {
+        console.error("Error during submission:", error);
+        message.error(error.message || "An error occurred. Please try again.");
+      } else {
+        console.error("Unexpected error:", error);
+        message.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,10 +95,10 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
       <p
         style={{ textAlign: "center", fontSize: "14px", marginBottom: "20px" }}
       >
-        Sign up to get a 10% discount on your first purchase!.
+        Sign up to get a 10% discount on your first purchase!
       </p>
       <Form
-        form={form} // Link the form instance to the Form component
+        form={form}
         layout="vertical"
         style={{ color: "#444", fontSize: "16px", padding: "10px 0" }}
       >
@@ -82,10 +106,6 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
           label="Email"
           name="email"
           rules={[{ required: true, message: "Please input your email!" }]}
-          style={{
-            fontSize: "14px !important",
-            marginBottom: "16px !important",
-          }}
         >
           <Input
             type="email"
@@ -95,12 +115,10 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
               borderRadius: 8,
               padding: "12px 16px",
               fontSize: "16px",
-              transition: "border-color 0.3s",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#666")}
-            onBlur={(e) => (e.target.style.borderColor = "#aaa")}
           />
         </Form.Item>
+
         <Form.Item
           label="Name"
           name="name"
@@ -123,7 +141,7 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
         .ant-modal .ant-modal-footer {
             margin-top: 5px;
         }
-            
+
         @media (max-width: 768px) {
           .ant-modal .ant-modal-content {
             width: 80% !important;

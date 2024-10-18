@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button } from "antd";
+import { Modal, Form, Input, Button, Checkbox, message } from "antd"; // Import message here
 
 interface EmailSubscriptionModalProps {
   onClose: () => void;
@@ -10,21 +10,41 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [form] = Form.useForm(); // Create a form instance
+  const [form] = Form.useForm();
 
   const handleOk = async () => {
     try {
-      // Validate fields
       const values = await form.validateFields();
       setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        console.log("Form submitted with values:", values); // You can handle the form submission here
-        onClose();
-      }, 2000);
+
+      const response = await fetch("http://localhost:5000/api/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`${errorText}`);
+      }
+
+      const data = await response.json();
+
+      message.success(data.message); // Use message here for success
+      onClose();
+      form.resetFields();
     } catch (error) {
-      console.error("Validation Failed:", error);
-      // Handle the validation error if needed
+      if (error instanceof Error) {
+        console.error("Error during submission:", error);
+        message.error(error.message || "An error occurred. Please try again."); // Use message for errors
+      } else {
+        console.error("Unexpected error:", error);
+        message.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,7 +129,37 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
             }}
           />
         </Form.Item>
+        <Form.Item name="consent" valuePropName="checked" noStyle>
+          <Checkbox>Saya setuju untuk menerima email dari VANTAGE.</Checkbox>
+        </Form.Item>
       </Form>
+
+      <style>
+        {`
+        .ant-checkbox-checked .ant-checkbox-inner {
+            background-color: black !important;;
+            border-color: transparent !important;;
+        }
+
+        .ant-checkbox-checked:hover .ant-checkbox-inner {
+            background-color: rgba(0, 0, 0, 0.7) !important;;
+            border-color: rgba(0, 0, 0, 0.5) !important;;
+        }
+
+        .ant-checkbox:hover .ant-checkbox-inner {
+            border-color: rgba(0, 0, 0, 0.5) !important; /* Add a hover border color */
+        }
+
+        @media (max-width: 768px) {
+          .ant-modal .ant-modal-content {
+            width: 80% !important;
+            max-width: 500px;
+            padding: 24px;
+            margin: 0 auto;
+          }
+        }
+        `}
+      </style>
     </Modal>
   );
 };

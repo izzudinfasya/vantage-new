@@ -1,27 +1,43 @@
+// import React, { useRef, useState } from "react";
 import { Layout, Avatar, Row } from "antd";
-import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa"; // Import icons from react-icons
+import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import shopeeImage from "../assets/shopee.png";
 import webLogo from "../assets/weblogo.png";
 import gifAvatar from "../assets/avatar.gif";
+import backgroundMusic from "../assets/music.mp3";
 
 const { Content, Footer } = Layout;
 
 const LinktreePage: React.FC = () => {
+  //   const audioRef = useRef<HTMLAudioElement | null>(null);
+  //   const [isPlaying, setIsPlaying] = useState(true);
+
+  //   const toggleMusic = () => {
+  //     if (audioRef.current) {
+  //       if (isPlaying) {
+  //         audioRef.current.pause();
+  //       } else {
+  //         audioRef.current.play();
+  //       }
+  //       setIsPlaying(!isPlaying);
+  //     }
+  //   };
+
   return (
     <Layout
       style={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "Helvetica, Arial, sans-serif", // Set font family globally
+        fontFamily: "Helvetica, Arial, sans-serif",
       }}
     >
       <Content
         style={{
-          paddingTop: "50px", // Margin atas
-          paddingBottom: "30px", // Margin bawah
-          paddingLeft: "30px", // Margin kiri
-          paddingRight: "30px", // Margin kanan
+          paddingTop: "50px",
+          paddingBottom: "30px",
+          paddingLeft: "30px",
+          paddingRight: "30px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -34,6 +50,33 @@ const LinktreePage: React.FC = () => {
           src={gifAvatar}
           style={{ marginBottom: "20px", width: "370px", height: "120px" }}
         />
+
+        {/* <audio ref={audioRef} autoPlay loop style={{ display: "none" }}>
+          <source src={backgroundMusic} type="audio/mp3" />
+          Your browser does not support the audio element.
+        </audio> */}
+
+        {/* Background Music */}
+        <audio controls autoPlay loop style={{ marginBottom: "20px" }}>
+          <source src={backgroundMusic} type="audio/mp3" />
+          Your browser does not support the audio element.
+        </audio>
+
+        {/* Music Control Button */}
+        {/* <button
+          onClick={toggleMusic}
+          style={{
+            marginBottom: "20px",
+            padding: "10px 20px",
+            backgroundColor: isPlaying ? "red" : "green",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          {isPlaying ? "Stop Music" : "Play Music"}
+        </button> */}
 
         {/* Social media buttons in vertical layout */}
         <div
