@@ -39,18 +39,16 @@ const CarouselCustom: React.FC = () => {
       className="fixed-carousel"
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
         width: "100%",
-        height: "auto",
-        minHeight: "100vh",
-        zIndex: 1,
-        overflowX: "hidden",
-        overflowY: "hidden",
+        height: "100vh",
+        overflow: "hidden",
       }}
     >
-      <div onMouseDown={handleMouseDown} style={{ cursor: "grab" }}>
-        <Carousel dots={true} autoplay ref={carouselRef}>
+      <div
+        onMouseDown={handleMouseDown}
+        style={{ cursor: "grab", height: "100%" }}
+      >
+        <Carousel autoplay ref={carouselRef} style={{ height: "100%" }}>
           {/* First Banner */}
           <div>
             <div
@@ -59,14 +57,12 @@ const CarouselCustom: React.FC = () => {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 height: "100vh",
-                width: "100vw",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#fff",
                 textAlign: "center",
                 position: "relative",
-                overflow: "hidden",
               }}
             >
               {/* Overlay */}
@@ -84,22 +80,15 @@ const CarouselCustom: React.FC = () => {
 
               {/* Text Content */}
               <div
+                className="content-text"
                 style={{
                   position: "absolute",
                   zIndex: 2,
-                  bottom: "10%",
-                  margin: "0 auto",
+                  textAlign: "center",
+                  bottom: "35%",
                 }}
               >
-                <h1
-                  style={{
-                    fontSize: "48px",
-                    fontWeight: "bold",
-                    marginBottom: "20px",
-                  }}
-                >
-                  New Arrival
-                </h1>
+                <h1 className="text-carousel">New Arrival</h1>
               </div>
             </div>
           </div>
@@ -112,14 +101,12 @@ const CarouselCustom: React.FC = () => {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 height: "100vh",
-                width: "100vw",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#fff",
                 textAlign: "center",
                 position: "relative",
-                overflow: "hidden",
               }}
             >
               {/* Overlay */}
@@ -137,22 +124,15 @@ const CarouselCustom: React.FC = () => {
 
               {/* Text Content */}
               <div
+                className="content-text"
                 style={{
                   position: "absolute",
                   zIndex: 2,
-                  bottom: "10%",
-                  margin: "0 auto",
+                  textAlign: "center",
+                  bottom: "35%",
                 }}
               >
-                <h1
-                  style={{
-                    fontSize: "48px",
-                    fontWeight: "bold",
-                    marginBottom: "20px",
-                  }}
-                >
-                  Discount Up To 40%
-                </h1>
+                <h1 className="text-carousel">Discount Up To 40%</h1>
               </div>
             </div>
           </div>
@@ -161,20 +141,28 @@ const CarouselCustom: React.FC = () => {
 
       {/* Responsive styles */}
       <style>{`
+        .text-carousel {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
         @media only screen and (max-width: 768px) {
           .fixed-carousel div {
             height: 100vh;
-            width: 100vw;
           }
-          h1 {
-            font-size: 24px;
-            padding: 0 10px;
-          }
-        }
 
-        @media only screen and (max-width: 480px) {
-          h1 {
-            font-size: 18px;
+        .content-text {
+            position: absolute;
+            bottom: unset;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+          }
+
+        .text-carousel {
+            font-size: 36px;
           }
         }
       `}</style>

@@ -46,7 +46,7 @@ const CustomHeader: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        zIndex: 10,
+        zIndex: 999,
         position: "sticky",
         top: 0,
       }}

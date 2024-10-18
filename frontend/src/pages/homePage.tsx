@@ -29,8 +29,10 @@ const HomePage: React.FC = () => {
 
       {/* Tampilkan modal */}
       {isModalOpen && <ModalPromo onClose={handleModalClose} />}
+
       {/* Section Carousel */}
       <CarouselCustom />
+
       {/* Section Product Categories */}
       <Content>
         <div

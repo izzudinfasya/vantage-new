@@ -20,8 +20,7 @@ const ProductCategories: React.FC<ProductCategoriesProps> = ({
 
   return (
     <>
-      (
-      <Row gutter={[16, 16]} style={{ padding: "10px 20px" }}>
+      <Row gutter={[16, 16]} style={{ padding: "10px 10px", margin: "0" }}>
         {categories.map((category, index) => (
           <Col xs={24} sm={12} md={8} key={index}>
             <div
@@ -41,7 +40,6 @@ const ProductCategories: React.FC<ProductCategoriesProps> = ({
           </Col>
         ))}
       </Row>
-      )
     </>
   );
 };

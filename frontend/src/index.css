@@ -9,6 +9,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box; /* Mengatur box model agar lebih mudah dalam pengaturan ukuran */
+  /* outline: 1px solid red; */
 }
 
 html,
@@ -18,10 +19,6 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-family: "Helvetica", sans-serif;
-}
-
-body {
-  overflow-x: hidden;
 }
 
 .custom-carousel {
@@ -60,7 +57,7 @@ body {
 }
 
 .ant-carousel .slick-dots-bottom {
-  bottom: 150px;
+  bottom: 35%;
 }
 
 /* Custom Scrollbar for Webkit Browsers */
