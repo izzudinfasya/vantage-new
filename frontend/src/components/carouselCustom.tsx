@@ -87,7 +87,7 @@ const CarouselCustom: React.FC = () => {
                 style={{
                   position: "absolute",
                   zIndex: 2,
-                  bottom: 150,
+                  bottom: "10%",
                   margin: "0 auto",
                 }}
               >
@@ -140,7 +140,7 @@ const CarouselCustom: React.FC = () => {
                 style={{
                   position: "absolute",
                   zIndex: 2,
-                  bottom: 150,
+                  bottom: "10%",
                   margin: "0 auto",
                 }}
               >
@@ -158,6 +158,26 @@ const CarouselCustom: React.FC = () => {
           </div>
         </Carousel>
       </div>
+
+      {/* Responsive styles */}
+      <style>{`
+        @media only screen and (max-width: 768px) {
+          .fixed-carousel div {
+            height: 100vh;
+            width: 100vw;
+          }
+          h1 {
+            font-size: 24px;
+            padding: 0 10px;
+          }
+        }
+
+        @media only screen and (max-width: 480px) {
+          h1 {
+            font-size: 18px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
