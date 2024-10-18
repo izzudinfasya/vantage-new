@@ -11,13 +11,21 @@
   box-sizing: border-box; /* Mengatur box model agar lebih mudah dalam pengaturan ukuran */
 }
 
+html,
 body {
   background-color: whitesmoke;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Helvetica", sans-serif;
+}
+
+body {
   overflow-x: hidden;
+}
+
+.custom-carousel {
+  overflow-x: auto;
 }
 
 .overlay {
@@ -30,12 +38,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.overlay:hover {
   opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 .category-title {
@@ -57,4 +61,29 @@ body {
 
 .ant-carousel .slick-dots-bottom {
   bottom: 150px;
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+/* Custom Scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #f0f0f0;
 }

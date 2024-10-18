@@ -239,7 +239,7 @@ const LinktreePage: React.FC = () => {
           </Row>
         </div>
       </Content>
-      <Footer style={{ textAlign: "center" }}>©2024 VANTAGE</Footer>
+      <Footer style={{ textAlign: "center" }}>© 2024 VANTAGE</Footer>
     </Layout>
   );
 };

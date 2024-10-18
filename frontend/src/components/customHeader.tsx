@@ -65,7 +65,7 @@ const CustomHeader: React.FC = () => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <Button
             type="text"
-            icon={<MenuOutlined style={{ fontSize: "24px" }} />}
+            icon={<MenuOutlined style={{ fontSize: "16px" }} />}
             onClick={showDrawer}
             style={{
               color: "black",
@@ -86,7 +86,7 @@ const CustomHeader: React.FC = () => {
               src={logo}
               alt="Logo"
               style={{
-                height: "140px",
+                height: "120px",
                 objectFit: "contain",
                 maxWidth: "150px",
               }}
@@ -97,10 +97,10 @@ const CustomHeader: React.FC = () => {
         {/* Right: Login and Cart Icons */}
         <div style={{ display: "flex", alignItems: "center" }}>
           <Button type="link" style={{ color: "black" }}>
-            <ShoppingCartOutlined style={{ fontSize: "24px" }} />
+            <ShoppingCartOutlined style={{ fontSize: "18px" }} />
           </Button>
           <Button type="link" style={{ color: "black" }}>
-            <UserOutlined style={{ fontSize: "24px" }} />
+            <UserOutlined style={{ fontSize: "18px" }} />
           </Button>
         </div>
       </div>
