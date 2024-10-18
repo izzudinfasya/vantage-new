@@ -1,0 +1,32 @@
+/* emailSubs.css */
+
+.ant-modal-header {
+  background-color: #222;
+  color: #fff;
+}
+
+.ant-modal-body {
+  color: #444;
+}
+
+.ant-btn-primary:hover {
+  background-color: #444;
+  border-color: #444;
+}
+
+.ant-btn {
+  border-radius: 4px;
+}
+
+.ant-input {
+  border: 1px solid #aaa;
+}
+
+.ant-input:focus {
+  border-color: #444;
+  box-shadow: 0 0 0 2px rgba(68, 68, 68, 0.2);
+}
+
+.ant-input:hover {
+  border-color: #666;
+}
