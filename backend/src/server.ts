@@ -1,27 +1,24 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
+import connectDB from "./db"; // Import koneksi MongoDB
 import voucherRoutes from "./routes/voucherRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+// Inisialisasi Express
 const app = express();
-const PORT = 5000;
 
-// Koneksi ke MongoDB
-mongoose
-  .connect("mongodb://localhost:27017/voucherdb")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-// Use express.json() before routes
+// Gunakan CORS dan JSON
 app.use(cors());
 app.use(express.json());
 
-// Rute utama
-app.use("/api/vouchers", voucherRoutes);
-app.use("/api/subscribe", subscriptionRoutes); // This should work correctly now
+// Koneksi ke MongoDB
+connectDB();
 
-// Jalankan server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Routes utama
+app.use("/api/vouchers", voucherRoutes);
+app.use("/api/subscribe", subscriptionRoutes);
+
+export default app;
