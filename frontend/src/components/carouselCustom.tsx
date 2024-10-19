@@ -159,7 +159,7 @@ const CarouselCustom: React.FC = () => {
         .content-text {
             position: absolute;
             bottom: unset;
-            top: 100%;
+            top: 90%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
