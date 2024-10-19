@@ -16,9 +16,6 @@ const sendVoucherEmail = async (email: string, voucherCode: string) => {
     },
   });
 
-  console.log("GMAIL_USER:", process.env.GMAIL_USER);
-  console.log("GMAIL_PASS:", process.env.GMAIL_PASS);
-
   const mailOptions = {
     from: "VANTAGE Official",
     to: email,
@@ -35,7 +32,7 @@ export const getVoucher = async (req: Request, res: Response) => {
   if (!errors.isEmpty()) {
     return res
       .status(400)
-      .json({ message: "Please complete all required fields." });
+      .send({ message: "Please complete all required fields." });
   }
 
   const { email, name } = req.body;
@@ -66,12 +63,12 @@ export const getVoucher = async (req: Request, res: Response) => {
     // Kirimkan email voucher
     await sendVoucherEmail(email, voucherCode);
 
-    res.status(200).json({
+    res.status(200).send({
       message: "The voucher code has been successfully sent to your email!",
     });
   } catch (err) {
     console.error("Error saving voucher:", err);
-    res.status(500).json({
+    res.status(500).send({
       message:
         "An error occurred while saving the voucher. Please try again later.",
     });

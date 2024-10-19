@@ -10,21 +10,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 
-const connectDB = async () => {
-  try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error("MONGODB_URI is not defined");
-    }
-
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("MongoDB connected");
-  } catch (err: any) {
-    console.error("MongoDB connection failed:", err.message);
-    process.exit(1);
-  }
-};
-
-connectDB();
+// Koneksi ke MongoDB
+mongoose
+  .connect("mongodb://localhost:27017/vantage")
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Use express.json() before routes
 app.use(cors());
