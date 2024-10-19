@@ -6,6 +6,7 @@
     "start": "ts-node src/server.ts"
   },
   "dependencies": {
+    "@vercel/node": "^3.2.23",
     "cors": "^2.x.x",
     "express": "^4.x.x",
     "express-validator": "^7.2.0",

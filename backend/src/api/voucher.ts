@@ -1,15 +1,15 @@
-import { Request, Response } from "express";
-import { Voucher } from "../models/Voucher";
 import nodemailer from "nodemailer";
+import { Voucher } from "../models/Voucher";
 import { validationResult } from "express-validator";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Fungsi untuk mengirim kode voucher melalui email
 const sendVoucherEmail = async (email: string, voucherCode: string) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
+      user: process.env.GMAIL_USER as string, // Pastikan gunakan environment variable
+      pass: process.env.GMAIL_PASS as string,
     },
   });
 
@@ -23,8 +23,12 @@ const sendVoucherEmail = async (email: string, voucherCode: string) => {
   await transporter.sendMail(mailOptions);
 };
 
-// Fungsi untuk menyimpan email dan mengirimkan voucher
-export const getVoucher = async (req: Request, res: Response) => {
+// Fungsi utama handler untuk serverless function di Vercel
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
@@ -39,13 +43,12 @@ export const getVoucher = async (req: Request, res: Response) => {
     const existingVoucher = await Voucher.findOne({ email });
 
     if (existingVoucher) {
-      return res
-        .status(400)
-        .send("This email is already registered. Please use another email.");
+      return res.status(400).json({
+        message: "This email is already registered. Please use another email.",
+      });
     }
 
-    const voucherCode = "DISCOUNT10";
-    //   "VOUCHER" + Math.random().toString(36).substring(7).toUpperCase();
+    const voucherCode: string = "DISCOUNT10";
 
     // Simpan email dan kode voucher ke database
     const voucher = new Voucher({
@@ -70,4 +73,4 @@ export const getVoucher = async (req: Request, res: Response) => {
         "An error occurred while saving the voucher. Please try again later.",
     });
   }
-};
+}
