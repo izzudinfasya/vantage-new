@@ -19,7 +19,7 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
 
       // Send data to the backend
       const response = await fetch(
-        "http://localhost:5000/api/vouchers/get-voucher",
+        "https://vantageofficial.vercel.app/api/vouchers/get-voucher",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

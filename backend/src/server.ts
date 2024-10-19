@@ -1,24 +1,40 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./db"; // Import koneksi MongoDB
+import mongoose from "mongoose";
 import voucherRoutes from "./routes/voucherRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
-import dotenv from "dotenv";
 
 dotenv.config();
 
-// Inisialisasi Express
 const app = express();
+const PORT = process.env.PORT;
 
-// Gunakan CORS dan JSON
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error("MONGODB_URI is not defined");
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("MongoDB connected");
+  } catch (err: any) {
+    console.error("MongoDB connection failed:", err.message);
+    process.exit(1);
+  }
+};
+
+connectDB();
+
+// Use express.json() before routes
 app.use(cors());
 app.use(express.json());
 
-// Koneksi ke MongoDB
-connectDB();
-
-// Routes utama
+// Rute utama
 app.use("/api/vouchers", voucherRoutes);
 app.use("/api/subscribe", subscriptionRoutes);
 
-export default app;
+// Jalankan server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

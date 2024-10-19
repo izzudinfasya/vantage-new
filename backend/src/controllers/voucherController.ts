@@ -11,7 +11,13 @@ const sendVoucherEmail = async (email: string, voucherCode: string) => {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
+
+  console.log("GMAIL_USER:", process.env.GMAIL_USER);
+  console.log("GMAIL_PASS:", process.env.GMAIL_PASS);
 
   const mailOptions = {
     from: "VANTAGE Official",
