@@ -23,7 +23,7 @@ const BannerPromo: React.FC = () => {
         <Col xs={24} md={16}>
           <h2 className="banner-title">
             {" "}
-            GET 10% DISCOUNT ON YOUR FIRST PURHCASE
+            GET 10% DISCOUNT ON YOUR FIRST PURCHASE
           </h2>
           <p className="banner-description">
             Subscribe to get a 10% discount on your first purchase and be the
