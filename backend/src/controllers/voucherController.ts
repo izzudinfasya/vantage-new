@@ -74,6 +74,28 @@ const sendVoucherEmail = async (
     <a href="#" style="color: #ffffff; text-decoration: underline;">Unsubscribe</a> | 
     <a href="https://shopee.com/vantage_id" style="color: #ffffff; text-decoration: underline;">Visit our store</a>
      </footer>
+
+    <style>
+        /* Default is light mode */
+        .logo-light {
+        display: inline-block;
+        }
+
+        .logo-dark {
+        display: none;
+        }
+
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+        .logo-light {
+            display: none !important;
+        }
+        
+        .logo-dark {
+            display: inline-block !important;
+        }
+        }
+    </style>
     </div>
   `,
     attachments: [
