@@ -28,8 +28,7 @@ const sendVoucherEmail = async (
     html: `
     <div style="font-family: Helvetica; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
       <header style="text-align: center; margin-bottom: 20px;">
-       <img src="cid:logo-light" alt="VANTAGE Logo Light" style="max-width: 100px;" class="logo-light">
-        <img src="cid:logo-dark" alt="VANTAGE Logo Dark" style="max-width: 100px; display: none;" class="logo-dark">
+        <img src="cid:logo" alt="VANTAGE Logo" style="max-width: 100px;">
         <h1 style="color: #1a1a1a;">Welcome to VANTAGE!</h1>
       </header>
       <p style="font-size: 16px; color: #000000">Hi <strong>${name}</strong>,</p>
@@ -74,40 +73,13 @@ const sendVoucherEmail = async (
     <a href="#" style="color: #ffffff; text-decoration: underline;">Unsubscribe</a> | 
     <a href="https://shopee.com/vantage_id" style="color: #ffffff; text-decoration: underline;">Visit our store</a>
      </footer>
-
-    <style>
-        /* Default is light mode */
-        .logo-light {
-        display: inline-block;
-        }
-
-        .logo-dark {
-        display: none;
-        }
-
-        /* Dark mode styles */
-        @media (prefers-color-scheme: dark) {
-        .logo-light {
-            display: none !important;
-        }
-        
-        .logo-dark {
-            display: inline-block !important;
-        }
-        }
-    </style>
     </div>
   `,
     attachments: [
       {
-        filename: "logo-light.png",
-        path: "../frontend/src/assets/logo-light.png",
-        cid: "logo-light",
-      },
-      {
-        filename: "logo-dark.png",
-        path: "../frontend/src/assets/logo-dark.png",
-        cid: "logo-dark",
+        filename: "logo.png",
+        path: "../frontend/src/assets/logo-email.png",
+        cid: "logo",
       },
       {
         filename: "instagram.png",
