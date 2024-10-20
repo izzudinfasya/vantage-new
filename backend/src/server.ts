@@ -8,11 +8,12 @@ import subscriptionRoutes from "./routes/subscriptionRoutes";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ? process.env.PORT : "5000";
+const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017/vantage";
 
 // Koneksi ke MongoDB
 mongoose
-  .connect("mongodb://localhost:27017/vantage")
+  .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 

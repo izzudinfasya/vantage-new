@@ -17,16 +17,15 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
       const values = await form.validateFields();
       setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:5000/api/vouchers/get-voucher",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        }
-      );
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/vouchers/get-voucher`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
