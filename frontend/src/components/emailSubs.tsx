@@ -17,6 +17,7 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
       const values = await form.validateFields();
       setLoading(true);
 
+      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/vouchers/get-voucher`;
 
       const response = await fetch(apiUrl, {
