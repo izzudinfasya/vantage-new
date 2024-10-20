@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
-import voucherRoutes from "./routes/voucherRoutes";
-import subscriptionRoutes from "./routes/subscriptionRoutes";
+import voucherRoutes from "../api/voucherRoutes";
+import subscriptionRoutes from "../api/subscriptionRoutes";
 
 dotenv.config();
 
