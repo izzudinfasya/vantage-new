@@ -21,10 +21,13 @@ const BannerPromo: React.FC = () => {
         style={{ textAlign: "center", maxWidth: "1200px", margin: "0 auto" }}
       >
         <Col xs={24} md={16}>
-          <h2 className="banner-title">SUBSCRIBE TO OUR NEWSLETTER</h2>
+          <h2 className="banner-title">
+            {" "}
+            GET 10% DISCOUNT ON YOUR FIRST PURHCASE
+          </h2>
           <p className="banner-description">
-            Be the first to receive the latest news on trends, promotions, and
-            more!
+            Subscribe to get a 10% discount on your first purchase and be the
+            first to receive the latest news on trends, promotions, and more!
           </p>
           <Button
             onClick={handleModalOpen}
@@ -62,6 +65,9 @@ const BannerPromo: React.FC = () => {
         @media only screen and (max-width: 768px) {
           .banner-title {
             font-size: 32px; /* Adjusted font size for mobile */
+            padding-right: 25px;
+            padding-left: 25px;
+            margin-bottom: 10px;
           }
 
           .banner-description {

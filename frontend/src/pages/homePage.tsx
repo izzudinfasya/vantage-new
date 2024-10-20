@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Layout } from "antd";
-import ModalPromo from "../components/modalPromo";
+// import ModalPromo from "../components/modalPromo";
 import EmailSubscriptionModal from "../components/emailSubs";
 import ProductCategories from "../components/productCategories";
 import CarouselCustom from "../components/carouselCustom";
@@ -15,10 +15,10 @@ const { Content } = Layout;
 
 const HomePage: React.FC = () => {
   const [isModalSubsOpen, setIsModalSubsOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  //   const [isModalOpen, setIsModalOpen] = useState(true);
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
+    // setIsModalOpen(false);
     setIsModalSubsOpen(false);
   };
 
@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
       {isModalSubsOpen && <EmailSubscriptionModal onClose={handleModalClose} />}
 
       {/* Tampilkan modal */}
-      {isModalOpen && <ModalPromo onClose={handleModalClose} />}
+      {/* {isModalOpen && <ModalPromo onClose={handleModalClose} />} */}
 
       {/* Section Carousel */}
       <CarouselCustom />

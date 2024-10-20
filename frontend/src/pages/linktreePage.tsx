@@ -57,10 +57,10 @@ const LinktreePage: React.FC = () => {
         </audio> */}
 
         {/* Background Music */}
-        <audio controls autoPlay loop style={{ marginBottom: "20px" }}>
+        {/* <audio controls autoPlay loop style={{ marginBottom: "20px" }}>
           <source src={backgroundMusic} type="audio/mp3" />
           Your browser does not support the audio element.
-        </audio>
+        </audio> */}
 
         {/* Music Control Button */}
         {/* <button
@@ -282,7 +282,9 @@ const LinktreePage: React.FC = () => {
           </Row>
         </div>
       </Content>
-      <Footer style={{ textAlign: "center" }}>© 2024 VANTAGE</Footer>
+      <Footer style={{ textAlign: "center" }}>
+        © 2024 VANTAGE, All rights reserved.
+      </Footer>
     </Layout>
   );
 };

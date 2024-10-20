@@ -17,28 +17,40 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
       const values = await form.validateFields();
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/api/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/vouchers/get-voucher",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`${errorText}`);
+        let errorMessage;
+
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message;
+        } catch (e) {
+          errorMessage = errorText;
+        }
+
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
 
-      message.success(data.message); // Use message here for success
+      message.success(data.message);
       onClose();
       form.resetFields();
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error during submission:", error);
-        message.error(error.message || "An error occurred. Please try again."); // Use message for errors
+        message.error(error.message || "An error occurred. Please try again.");
       } else {
         console.error("Unexpected error:", error);
         message.error("An unexpected error occurred. Please try again.");
@@ -50,9 +62,14 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
 
   return (
     <Modal
-      title="EMAIL SUBSCRIPTION"
+      title={
+        <div style={{ textAlign: "center", fontSize: "24px" }}>
+          GET 10% DISCOUNT
+        </div>
+      }
       visible={true}
       width={600}
+      closable={false}
       footer={[
         <Button
           key="back"
@@ -85,6 +102,16 @@ const EmailSubscriptionModal: React.FC<EmailSubscriptionModalProps> = ({
       className="modal-container"
       style={{ backgroundColor: "transparent" }}
     >
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "14px",
+          marginBottom: "20px",
+        }}
+      >
+        Subscribe to get a 10% discount on your first purchase and be the first
+        to receive the latest news on trends, promotions, and more!
+      </p>
       <Form
         form={form} // Link the form instance to the Form component
         layout="vertical"

@@ -59,7 +59,7 @@ const ModalPromo: React.FC<ModalPromoProps> = ({ onClose }) => {
       }
       visible={true}
       width={600}
-      closable={false} // Disable the close (X) button
+      closable={false}
       footer={[
         <Button
           key="back"

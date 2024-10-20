@@ -76,6 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       position: "relative",
       marginRight: "10px",
       transition: "background-image 0.2s ease-in-out",
+      cursor: "pointer",
     }}
     onMouseEnter={() => setHoveredProductId(product.id)}
     onMouseLeave={() => setHoveredProductId(null)}

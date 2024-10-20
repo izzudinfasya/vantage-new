@@ -130,7 +130,9 @@ const CustomFooter = () => {
         xs={24}
         style={{ margin: "0 auto", textAlign: "center" }} // Centered on all viewports
       >
-        <Text style={{ color: "black" }}>© 2024 VANTAGE</Text>
+        <Text style={{ color: "black" }}>
+          © 2024 VANTAGE, All rights reserved.
+        </Text>
       </Col>
     </Footer>
   );

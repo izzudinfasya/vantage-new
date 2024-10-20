@@ -21,8 +21,16 @@ body {
   font-family: "Helvetica", sans-serif;
 }
 
+body.ant-modal-open {
+  overflow: hidden;
+}
+
 .custom-carousel {
   overflow-x: auto;
+}
+
+.ant-modal {
+  padding-right: 15px; /* Atur padding jika perlu */
 }
 
 .overlay {
