@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install --legacy-peer-deeps",
+  "installCommand": "npm install --legacy-peer-deps",
   "version": 2,
   "builds": [
     {
@@ -7,5 +7,5 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [{ "src": "/api/(.*)", "dest": "/api/index.js" }]
+  "routes": [{ "src": "/api/(.*)", "dest": "/api/index.ts" }]
 }
