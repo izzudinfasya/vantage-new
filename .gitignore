@@ -10,11 +10,15 @@ npm-debug.log*
 frontend/node_modules/
 backend/node_modules/
 
+# Dependency directories
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+backend/.env
+.env
+
 # Build outputs
 dist/
 build/
 .next/
 .vercel/
-
-# Ignore environmental variables
-.env

@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { getVoucher } from "../src/controllers/voucherController";
+import { getVoucher } from "../controllers/voucherController";
 
 const router: Router = Router();
 
