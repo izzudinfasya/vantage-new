@@ -60,18 +60,14 @@ const PasswordPage: React.FC = () => {
 
   const handleEnter = async () => {
     try {
-      console.log("Password entered:", inputPassword);
-
-      const response = await fetch(
-        "http://localhost:5000/api/password/validate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ password: inputPassword }), // Correctly reference inputPassword
-        }
-      );
+      const apiUrl = `${process.env.REACT_APP_API_URL}/password/validate`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: inputPassword }), // Correctly reference inputPassword
+      });
 
       if (response.ok) {
         setIsPasswordCorrect(true);
@@ -103,19 +99,18 @@ const PasswordPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/password/get-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...values,
-            phoneNumber: formattedPhoneNumber,
-          }),
-        }
-      );
+      const apiUrl = `${process.env.REACT_APP_API_URL}/password/get-password`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          phoneNumber: formattedPhoneNumber,
+        }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
