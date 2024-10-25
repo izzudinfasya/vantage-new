@@ -23,6 +23,15 @@ const sendPasswordEmail = async (
     },
   });
 
+  // Mendapatkan path absolut dari attachment
+  const logoPath = path.join(
+    __dirname,
+    "../frontend/src/assets/logo-email.png"
+  );
+
+  // Console log untuk melihat path attachment
+  console.log("Logo attachment path:", logoPath);
+
   const mailOptions = {
     from: '"VANTAGE Official" <vantageofficial.id@gmail.com>',
     to: email,
