@@ -16,6 +16,12 @@ app.use(cors());
 app.use(express.json());
 
 // Rute utama
+app.get("/", (req, res) => {
+  res.json({ message: "Test backend!" });
+});
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from backend!" });
+});
 app.use("/api/vouchers", voucherRoutes);
 app.use("/api/subscribe", subscriptionRoutes);
 app.use("/api/password", passwordRoutes);
