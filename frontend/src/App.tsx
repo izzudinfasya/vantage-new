@@ -27,7 +27,7 @@ const App: React.FC = () => {
 
   // Callback to log in user after entering correct password
   const handleLogin = (password: string) => {
-    const correctPassword = "yourPassword"; // Replace with your actual password logic
+    const correctPassword = "FIRSTDROP"; // Replace with your actual password logic
     if (password === correctPassword) {
       setIsLoggedIn(true); // Set login state to true
     }
