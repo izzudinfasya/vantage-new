@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import gifAvatar from "../assets/v-white.gif"; // Path ke GIF logo
 import "./passwordPage.css"; // Import CSS file
 import { Modal, Button, Input, message, Form } from "antd";
+import axios from "axios";
 
 // Tambahkan interface untuk props
 interface PasswordPageProps {
@@ -88,39 +89,29 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-    setLoading(true);
+    setLoading(true); // Set loading to true
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/password/get-password`;
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: values.email,
-          name: values.name,
-        }),
+      const response = await axios.post(apiUrl, {
+        email: values.email,
+        name: values.name,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${errorText}`);
-      }
-
-      const data = await response.json();
-      message.success(data.message);
+      // Check response
+      message.success(response.data.message);
       handleCancel();
       form.resetFields();
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error during submission:", error);
-        message.error(error.message || "An error occurred. Please try again.");
+      // Improved error handling
+      if (axios.isAxiosError(error) && error.response) {
+        message.error(
+          error.response.data.message || "An error occurred. Please try again."
+        );
       } else {
-        console.error("Unexpected error:", error);
         message.error("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false
     }
   };
 
