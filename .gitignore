@@ -18,7 +18,7 @@ backend/.env
 .env
 
 # Build outputs
-dist/
+!dist/
 build/
 .next/
 .vercel/
