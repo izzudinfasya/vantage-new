@@ -23,15 +23,6 @@ const sendPasswordEmail = async (
     },
   });
 
-  // Mendapatkan path absolut dari attachment
-  const logoPath = path.join(
-    __dirname,
-    "../frontend/src/assets/logo-email.png"
-  );
-
-  // Console log untuk melihat path attachment
-  console.log("Logo attachment path:", logoPath);
-
   const mailOptions = {
     from: '"VANTAGE Official" <vantageofficial.id@gmail.com>',
     to: email,
@@ -69,7 +60,7 @@ const sendPasswordEmail = async (
     attachments: [
       {
         filename: "logo.png",
-        path: path.join(__dirname, "../frontend/src/assets/logo-email.png"),
+        path: "../frontend/src/assets/logo-email.png",
         cid: "logo",
       },
     ],
@@ -111,7 +102,7 @@ export const getPassword = async (req: Request, res: Response) => {
     const emailSent = await sendPasswordEmail(email, name, setPassword);
     if (!emailSent) {
       return res.status(500).send({
-        message: "Tes Message",
+        message: "Failed to send email. Please try again later.",
       });
     }
 
