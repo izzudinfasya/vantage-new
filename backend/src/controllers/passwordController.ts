@@ -68,9 +68,11 @@ const sendPasswordEmail = async (
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully.");
     return true;
   } catch (error) {
-    console.error("Error while sending email:", error);
+    console.error("Error while sending email:", error); // Show the message
+    console.error("Full error details:", error); // Show full details
     return false;
   }
 };
@@ -100,7 +102,7 @@ export const getPassword = async (req: Request, res: Response) => {
     const emailSent = await sendPasswordEmail(email, name, setPassword);
     if (!emailSent) {
       return res.status(500).send({
-        message: "Failed to send email. Please try again later.",
+        message: "Tes Message",
       });
     }
 
