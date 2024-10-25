@@ -4,10 +4,15 @@ import gifAvatar from "../assets/v-white.gif"; // Path ke GIF logo
 import "./passwordPage.css"; // Import CSS file
 import { Modal, Button, Input, message, Form } from "antd";
 
-const PasswordPage: React.FC = () => {
+// Tambahkan interface untuk props
+interface PasswordPageProps {
+  onLogin: (password: string) => void; // Fungsi onLogin yang akan digunakan
+}
+
+const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputPassword, setInputPassword] = useState(""); // Renamed to inputPassword for clarity
+  const [inputPassword, setInputPassword] = useState("");
   const [, setIsPasswordCorrect] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -55,7 +60,7 @@ const PasswordPage: React.FC = () => {
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputPassword(e.target.value); // Use setInputPassword
+    setInputPassword(e.target.value);
   };
 
   const handleEnter = async () => {
@@ -66,12 +71,14 @@ const PasswordPage: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ password: inputPassword }), // Correctly reference inputPassword
+        body: JSON.stringify({ password: inputPassword }),
       });
 
       if (response.ok) {
         setIsPasswordCorrect(true);
-        navigate("/home"); // Redirect to another page if password is correct
+        // Panggil onLogin jika password benar
+        onLogin(inputPassword);
+        navigate("/home");
       } else {
         message.error("Incorrect password");
       }
@@ -82,33 +89,18 @@ const PasswordPage: React.FC = () => {
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
-
-    // Format phone number
-    let formattedPhoneNumber = values.phoneNumber;
-
-    if (formattedPhoneNumber.startsWith("0")) {
-      formattedPhoneNumber = formattedPhoneNumber.substring(1);
-    }
-    formattedPhoneNumber = "62" + formattedPhoneNumber;
-
-    // Validate phone number
-    if (!/^\d+$/.test(formattedPhoneNumber)) {
-      message.error("Phone number must be numeric.");
-      return;
-    }
-
     setLoading(true);
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/password/get-password`;
-
+      console.log("Submitted values:", values);
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...values,
-          phoneNumber: formattedPhoneNumber,
+          email: values.email,
+          name: values.name,
         }),
       });
 
@@ -179,7 +171,7 @@ const PasswordPage: React.FC = () => {
               placeholder="Password"
               className="password-input"
               value={inputPassword}
-              onChange={handlePasswordChange} // Use the handlePasswordChange function
+              onChange={handlePasswordChange}
             />
             <button className="enter-button" onClick={handleEnter}>
               Enter
@@ -271,40 +263,6 @@ const PasswordPage: React.FC = () => {
           >
             <Input placeholder="Enter your name" style={{ height: "50px" }} />
           </Form.Item>
-
-          {/* <Form.Item
-            label="Phone Number"
-            name="phoneNumber"
-            rules={[
-              { required: true, message: "Please enter your phone number!" },
-              { pattern: /^\d+$/, message: "Phone number must be numeric." },
-            ]}
-            style={{ marginBottom: "20px" }}
-          >
-            <Space.Compact style={{ display: "flex", height: "50px" }}>
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 10px",
-                  backgroundColor: "#f0f0f0",
-                  border: "1px solid #d9d9d9",
-                  borderRight: "none",
-                  borderRadius: "4px 0 0 4px",
-                }}
-              >
-                +62
-              </span>
-              <Input
-                placeholder="Enter your phone number"
-                maxLength={12}
-                style={{
-                  height: "50px",
-                  borderRadius: "0 4px 4px 0", // Remove radius from the left side
-                }}
-              />
-            </Space.Compact>
-          </Form.Item> */}
         </Form>
       </Modal>
     </div>

@@ -12,7 +12,6 @@ router.post(
   [
     body("email").isEmail().withMessage("Please enter a valid email address"),
     body("name").not().isEmpty().withMessage("Name is required"),
-    body("phoneNumber").not().isEmpty().withMessage("Phone number is required"),
   ],
   getPassword
 );
