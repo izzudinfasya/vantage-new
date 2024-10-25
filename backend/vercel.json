@@ -2,14 +2,8 @@
   "version": 2,
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 30,
-      "memory": 512
+      "maxDuration": 30
     }
   },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.ts"
-    }
-  ]
+  "routes": [{ "src": "/api/(.*)", "dest": "api/index.ts" }]
 }
