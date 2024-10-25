@@ -76,7 +76,6 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
 
       if (response.ok) {
         setIsPasswordCorrect(true);
-        // Panggil onLogin jika password benar
         onLogin(inputPassword);
         navigate("/home");
       } else {
@@ -92,7 +91,6 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
     setLoading(true);
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/password/get-password`;
-      console.log("Submitted values:", values);
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
