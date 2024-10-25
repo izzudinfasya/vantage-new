@@ -67,9 +67,9 @@ const sendPasswordEmail = async (
 
   try {
     await transporter.sendMail(mailOptions);
+    return true;
   } catch (error) {
-    console.error("Error sending email:", error);
-    throw new Error("Failed to send email. Please try again later.");
+    return false;
   }
 };
 
@@ -94,16 +94,21 @@ export const getPassword = async (req: Request, res: Response) => {
       });
     }
 
+    // Mengirim email dengan password akses
+    const emailSent = await sendPasswordEmail(email, name, setPassword);
+    if (!emailSent) {
+      return res.status(500).send({
+        message: "Failed to send email. Please try again later.",
+      });
+    }
+
     // Menyimpan pengguna ke database
     const newUser = new PasswordModel({
       email,
       name,
-      password: setPassword,
+      password: setPassword, // Simpan password yang sudah dihasilkan
     });
     await newUser.save();
-
-    // Mengirim email dengan password akses
-    await sendPasswordEmail(email, name, setPassword);
 
     res.status(201).send({
       message:
