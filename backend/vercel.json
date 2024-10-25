@@ -3,8 +3,7 @@
   "builds": [{ "src": "dist/index.js", "use": "@vercel/node" }],
   "routes": [{ "src": "/(.*)", "dest": "dist/index.js" }],
   "functions": {
-    "api/**/*.js": {
-      "memory": 1024,
+    "api/users/**/*.js": {
       "maxDuration": 30
     }
   }
