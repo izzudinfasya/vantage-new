@@ -10,7 +10,8 @@
     "rootDir": "./src"
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts",
+    "api/**/*.ts"
   ],
   "exclude": [
     "node_modules"
