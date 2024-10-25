@@ -1,9 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "dist/server.js",
+      "use": "@vercel/node"
     }
-  },
-  "routes": [{ "src": "/api/(.*)", "dest": "api/index.ts" }]
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/dist/server.js"
+    }
+  ]
 }

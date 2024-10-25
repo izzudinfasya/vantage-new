@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import voucherRoutes from "../src/routes/voucherRoutes";
-import subscriptionRoutes from "../src/routes/subscriptionRoutes";
-import passwordRoutes from "../src/routes/passwordRoutes";
-import { db } from "../src/config/db.config";
+import voucherRoutes from "./src/routes/voucherRoutes";
+import subscriptionRoutes from "./src/routes/subscriptionRoutes";
+import passwordRoutes from "./src/routes/passwordRoutes";
+import { db } from "./src/config/db.config";
 
 dotenv.config();
 
