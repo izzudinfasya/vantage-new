@@ -30,10 +30,6 @@ const sendPasswordEmail = (email, name, password) => __awaiter(void 0, void 0, v
             rejectUnauthorized: false,
         },
     });
-    // Mendapatkan path absolut dari attachment
-    const logoPath = path.join(__dirname, "../public/assets/logo-email.png");
-    // Console log untuk melihat path
-    console.log("Logo attachment path in production:", logoPath);
     const mailOptions = {
         from: '"VANTAGE Official" <vantageofficial.id@gmail.com>',
         to: email,
@@ -68,13 +64,6 @@ const sendPasswordEmail = (email, name, password) => __awaiter(void 0, void 0, v
         </footer>
       </div>
     `,
-        attachments: [
-            {
-                filename: "logo.png",
-                path: logoPath,
-                cid: "logo",
-            },
-        ],
     };
     try {
         yield transporter.sendMail(mailOptions);
