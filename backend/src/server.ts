@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import voucherRoutes from "./routes/voucherRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
+import passwordRoutes from "./routes/passwordRoutes";
 import { db } from "./config/db.config";
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 // Rute utama
 app.use("/api/vouchers", voucherRoutes);
 app.use("/api/subscribe", subscriptionRoutes);
+app.use("/api/password", passwordRoutes);
 
 // Jalankan server
 db.then(() => {

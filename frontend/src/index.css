@@ -8,6 +8,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: "Helvetica", sans-serif;
   box-sizing: border-box; /* Mengatur box model agar lebih mudah dalam pengaturan ukuran */
   /* outline: 1px solid red; */
 }
