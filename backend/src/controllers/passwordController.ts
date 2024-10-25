@@ -10,7 +10,7 @@ const sendPasswordEmail = async (
   email: string,
   name: string,
   password: string
-) => {
+): Promise<boolean> => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -69,6 +69,7 @@ const sendPasswordEmail = async (
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
+    console.error("Error while sending email:", error);
     return false;
   }
 };
@@ -94,7 +95,7 @@ export const getPassword = async (req: Request, res: Response) => {
       });
     }
 
-    // Mengirim email dengan password akses
+    // Mengirim email dengan password akses terlebih dahulu
     const emailSent = await sendPasswordEmail(email, name, setPassword);
     if (!emailSent) {
       return res.status(500).send({
@@ -102,7 +103,7 @@ export const getPassword = async (req: Request, res: Response) => {
       });
     }
 
-    // Menyimpan pengguna ke database
+    // Menyimpan pengguna ke database hanya jika email berhasil dikirim
     const newUser = new PasswordModel({
       email,
       name,
