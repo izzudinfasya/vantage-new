@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import nodemailer from "nodemailer";
 import { validationResult } from "express-validator";
 import PasswordModel from "../models/Password";
+const path = require("path");
 
 const setPassword = "FIRSTDROP";
 
@@ -59,7 +60,7 @@ const sendPasswordEmail = async (
     attachments: [
       {
         filename: "logo.png",
-        path: "../frontend/src/assets/logo-email.png",
+        path: path.join(__dirname, "../frontend/src/assets/logo-email.png"),
         cid: "logo",
       },
     ],
