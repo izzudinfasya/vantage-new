@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Layout, Input, Button, Drawer } from "antd";
 import {
   MenuOutlined,
-  UserOutlined,
+  //   UserOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import logo from "../assets/logo.png";
@@ -72,36 +72,35 @@ const CustomHeader: React.FC = () => {
               marginRight: "10px",
             }}
           />
-
-          <a
-            href="/"
-            rel="noopener noreferrer"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img
-              src={logo}
-              alt="Logo"
-              style={{
-                height: "120px",
-                objectFit: "contain",
-                maxWidth: "150px",
-              }}
-            />
-          </a>
         </div>
 
+        <a
+          href="/"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={logo}
+            alt="Logo"
+            style={{
+              height: "120px",
+              objectFit: "contain",
+              maxWidth: "150px",
+            }}
+          />
+        </a>
         {/* Right: Login and Cart Icons */}
         <div style={{ display: "flex", alignItems: "center" }}>
           <Button type="link" style={{ color: "black" }}>
             <ShoppingCartOutlined style={{ fontSize: "18px" }} />
           </Button>
-          <Button type="link" style={{ color: "black" }}>
+          {/* <Button type="link" style={{ color: "black" }}>
             <UserOutlined style={{ fontSize: "18px" }} />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -174,10 +173,10 @@ const CustomHeader: React.FC = () => {
           <ShoppingCartOutlined style={{ fontSize: "24px" }} />
           <p>CART</p>
         </Button>
-        <Button type="link" style={{ color: "black" }}>
+        {/* <Button type="link" style={{ color: "black" }}>
           <UserOutlined style={{ fontSize: "24px" }} />
           <p>LOGIN</p>
-        </Button>
+        </Button> */}
       </div>
 
       {/* Drawer for mobile screens */}

@@ -8,13 +8,14 @@ import "slick-carousel/slick/slick-theme.css";
 // Import images
 import produk1Front from "../assets/produk1-front.jpg";
 import produk1Back from "../assets/produk1-back.jpg";
-import ComingSoon from "../assets/comingsoon.png";
+import ComingSoon from "../assets/comingsoon.jpg";
+import ProductCard from "./productCard";
 
 // Slider settings
-const settings = {
+const defaultSettings = {
   infinite: false,
   speed: 500,
-  slidesToShow: 4.5,
+  slidesToShow: 3.5,
   slidesToScroll: 1,
   arrows: false,
   swipeToSlide: true,
@@ -23,7 +24,7 @@ const settings = {
     {
       breakpoint: 1024,
       settings: {
-        slidesToShow: 3.5,
+        slidesToShow: 2.5,
         slidesToScroll: 1,
         infinite: false,
       },
@@ -45,44 +46,6 @@ const settings = {
   ],
 };
 
-// ProductCard component
-interface ProductCardProps {
-  product: {
-    id: number;
-    frontImage: string;
-    backImage: string;
-    title: string;
-    price: number;
-  };
-  hoveredProductId: number | null;
-  setHoveredProductId: (id: number | null) => void;
-}
-
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  hoveredProductId,
-  setHoveredProductId,
-}) => (
-  <div
-    style={{
-      backgroundImage: `url(${
-        hoveredProductId === product.id && product.backImage
-          ? product.backImage
-          : product.frontImage
-      })`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      height: "400px",
-      position: "relative",
-      marginRight: "10px",
-      transition: "background-image 0.2s ease-in-out",
-      cursor: "pointer",
-    }}
-    onMouseEnter={() => setHoveredProductId(product.id)}
-    onMouseLeave={() => setHoveredProductId(null)}
-  ></div>
-);
-
 const { Content } = Layout;
 
 const ProductInterest: React.FC = () => {
@@ -90,6 +53,7 @@ const ProductInterest: React.FC = () => {
   const sliderRef = useRef<Slider | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [, setSliderSettings] = useState(defaultSettings);
 
   const products = [
     {
@@ -141,27 +105,6 @@ const ProductInterest: React.FC = () => {
       title: "Coming Soon",
       price: 0,
     },
-    {
-      id: 8,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
-    {
-      id: 9,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
-    {
-      id: 10,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
   ];
 
   // Custom function to handle previous slide
@@ -181,6 +124,11 @@ const ProductInterest: React.FC = () => {
   // Update current slide on slide change
   const handleAfterChange = (current: number) => {
     setCurrentSlide(current);
+    if (current === products.length - 1) {
+      setSliderSettings({ ...defaultSettings, slidesToShow: 1 });
+    } else {
+      setSliderSettings(defaultSettings);
+    }
   };
 
   useEffect(() => {
@@ -196,6 +144,7 @@ const ProductInterest: React.FC = () => {
     // Cleanup listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   return (
     <Layout>
       {/* New Section: Anda Mungkin Suka */}
@@ -242,7 +191,7 @@ const ProductInterest: React.FC = () => {
                   onClick={handlePrev}
                 />
                 {/* Left Overlay */}
-                {!isMobileView && currentSlide >= products.length - 4.5 && (
+                {!isMobileView && currentSlide >= products.length - 3.5 && (
                   <div
                     style={{
                       position: "absolute",
@@ -262,22 +211,38 @@ const ProductInterest: React.FC = () => {
             {/* The Slider */}
             <Slider
               ref={sliderRef}
-              {...settings}
+              {...defaultSettings}
               afterChange={handleAfterChange}
             >
               {products.map((product) => (
-                <div key={product.id}>
+                <div
+                  style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}
+                  key={product.id}
+                >
                   <ProductCard
                     product={product}
                     hoveredProductId={hoveredProductId}
                     setHoveredProductId={setHoveredProductId}
                   />
-                  <div style={{ textAlign: "left", marginTop: "10px" }}>
-                    <p style={{ fontSize: "16px", fontWeight: "normal" }}>
+                  <div style={{ marginTop: "10px", textAlign: "left" }}>
+                    <p
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "normal",
+                        margin: "10px",
+                      }}
+                    >
                       {product.title}
                     </p>
-                    <p style={{ fontSize: "16px", fontWeight: "bold" }}>
-                      IDR {product.price}
+                    <p
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        margin: "10px",
+                        color: "#333",
+                      }}
+                    >
+                      IDR {product.price.toLocaleString("id-ID")}
                     </p>
                   </div>
                 </div>
@@ -285,7 +250,7 @@ const ProductInterest: React.FC = () => {
             </Slider>
 
             {/* Right Overlay */}
-            {!isMobileView && currentSlide < products.length - 4.5 && (
+            {!isMobileView && currentSlide < products.length - 3.5 && (
               <div
                 style={{
                   position: "absolute",
@@ -300,7 +265,7 @@ const ProductInterest: React.FC = () => {
             )}
 
             {/* Right Arrow */}
-            {!isMobileView && currentSlide < products.length - 4.5 && (
+            {!isMobileView && currentSlide < products.length - 3.5 && (
               <ArrowRightOutlined
                 style={{
                   position: "absolute",
@@ -331,9 +296,9 @@ const ProductInterest: React.FC = () => {
           }
 
           .slick-slide > div {
-            display: flex; /* Ensure flexbox layout */
-            justify-content: center; /* Center the content */
-            align-items: center; /* Center the content */
+            display: flex;
+            justify-content: center;
+            align-items: center;
           }
 
           .interest-title {
@@ -345,7 +310,7 @@ const ProductInterest: React.FC = () => {
           }
 
         .slick-slide div {
-            height: 80%; /* Set height to allow for aspect ratio */
+           height: auto; /* Set height to allow for aspect ratio */
           }
         }
       `}</style>

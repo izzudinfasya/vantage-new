@@ -16,7 +16,6 @@ exports.validatePassword = exports.getPassword = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const express_validator_1 = require("express-validator");
 const Password_1 = __importDefault(require("../models/Password"));
-const path = require("path");
 const setPassword = "FIRSTDROP";
 // Fungsi untuk mengirim password melalui email
 const sendPasswordEmail = (email, name, password) => __awaiter(void 0, void 0, void 0, function* () {
@@ -64,6 +63,13 @@ const sendPasswordEmail = (email, name, password) => __awaiter(void 0, void 0, v
         </footer>
       </div>
     `,
+        attachments: [
+            {
+                filename: "logo-email.png",
+                path: "./public/assets/logo-email.png",
+                cid: "logo",
+            },
+        ],
     };
     try {
         yield transporter.sendMail(mailOptions);
