@@ -4,12 +4,14 @@ import {
   Route,
   Routes,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import HomePage from "./pages/homePage";
 import LinktreePage from "./pages/linktreePage";
 import PasswordPage from "./pages/passwordPage";
 import CustomHeader from "./components/customHeader";
 import CustomFooter from "./components/customFooter";
+import DetailProduct from "./pages/detailproductPage";
 
 // Protected Route component to guard pages
 const ProtectedRoute = ({
@@ -19,11 +21,12 @@ const ProtectedRoute = ({
   isLoggedIn: boolean;
   children: React.ReactNode;
 }) => {
-  return isLoggedIn ? children : <Navigate to="/password" />;
+  return isLoggedIn ? <>{children}</> : <Navigate to="/password" />;
 };
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
+  const location = useLocation(); // Get current route location
 
   // Callback to log in user after entering correct password
   const handleLogin = (password: string) => {
@@ -33,8 +36,14 @@ const App: React.FC = () => {
     }
   };
 
+  // Kondisi untuk menentukan kapan header/footer harus disembunyikan
+  const hideHeaderFooter =
+    location.pathname === "/password" || location.pathname === "/link";
+
   return (
     <div>
+      {!hideHeaderFooter && <CustomHeader />}{" "}
+      {/* Header tidak muncul di /password dan /link */}
       <Routes>
         {/* Route untuk LinktreePage tanpa header dan footer */}
         <Route path="/link" element={<LinktreePage />} />
@@ -50,9 +59,17 @@ const App: React.FC = () => {
           path="/home"
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <CustomHeader />
               <HomePage />
-              <CustomFooter />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected route untuk DetailProduct */}
+        <Route
+          path="/product/:id"
+          element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <DetailProduct />
             </ProtectedRoute>
           }
         />
@@ -63,6 +80,8 @@ const App: React.FC = () => {
         {/* Route untuk 404 Not Found */}
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
+      {!hideHeaderFooter && <CustomFooter />}{" "}
+      {/* Footer tidak muncul di /password dan /link */}
     </div>
   );
 };

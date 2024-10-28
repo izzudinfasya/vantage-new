@@ -18,7 +18,7 @@ const ProductCatalogue: React.FC = () => {
       frontImage: produk1Front,
       backImage: produk1Back,
       title: "Signature V Tee",
-      price: 169000,
+      price: 199000,
     },
     {
       id: 2,
@@ -107,7 +107,7 @@ const ProductCatalogue: React.FC = () => {
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${columns}, 1fr)`, // Menggunakan state columns
-              gridRowGap: "30px",
+              gridRowGap: "15px",
             }}
           >
             {productsData.map((product) => (
