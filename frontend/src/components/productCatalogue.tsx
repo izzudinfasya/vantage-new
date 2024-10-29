@@ -41,34 +41,6 @@ const ProductCatalogue: React.FC = () => {
       title: "Coming Soon",
       price: 0,
     },
-    {
-      id: 5,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
-    {
-      id: 6,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
-    {
-      id: 7,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
-    {
-      id: 8,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      price: 0,
-    },
   ];
 
   // Hook untuk mengatur jumlah kolom berdasarkan ukuran jendela
