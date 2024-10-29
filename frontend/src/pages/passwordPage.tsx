@@ -87,7 +87,9 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
     } catch (error) {
       message.error("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
     }
   };
 
@@ -115,17 +117,18 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
         message.error("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
+      setLoading(false);
     }
   };
 
   return (
     <div className="password-page">
       {isLoading && (
-        <div className="loading-screen">
-          <img src={gifAvatar} alt="Loading" className="loading-logo" />
+        <div className={`loading-overlay ${!isLoading ? "hidden" : ""}`}>
+          <div className="loading-content">
+            <img src={gifAvatar} alt="Loading" className="loading-logo" />
+            <p>Loading...</p>
+          </div>
         </div>
       )}
 
