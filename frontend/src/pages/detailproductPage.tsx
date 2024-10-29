@@ -263,7 +263,9 @@ const DetailProductPage: React.FC = () => {
                   </Panel>
                   <Panel
                     header={
-                      <span style={{ fontWeight: "bold" }}>How to Care</span>
+                      <span style={{ fontWeight: "bold" }}>
+                        Washing Instructions
+                      </span>
                     }
                     key="2"
                   >
