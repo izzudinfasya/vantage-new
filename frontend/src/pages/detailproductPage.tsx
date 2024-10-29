@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { TruckOutlined, ShopOutlined } from "@ant-design/icons";
 import {
   Typography,
   Button,
@@ -53,7 +54,8 @@ const DetailProductPage: React.FC = () => {
       id,
       title: "Signature V Tee - Oversize Boxy",
       description: "",
-      price: 199000,
+      originalPrice: 259000,
+      discountedPrice: 189000,
       images: [produk1Front, produk1Back, detailImage, extraImage],
       availableSizes: ["M", "L", "XL"],
       color: "Black",
@@ -134,7 +136,12 @@ const DetailProductPage: React.FC = () => {
 
         {/* Detail Product */}
         <Col xs={24} md={8}>
-          <div className="detail-product" style={{ padding: "25px" }}>
+          <div
+            className="detail-product"
+            style={{
+              padding: "25px",
+            }}
+          >
             {loading ? (
               <>
                 <Skeleton active paragraph={{ rows: 5 }} />
@@ -150,19 +157,76 @@ const DetailProductPage: React.FC = () => {
               </>
             ) : (
               <>
-                <Title level={3} style={{ color: "#333" }}>
-                  {product.title}
-                </Title>
-                <Text
+                <span
                   style={{
-                    fontSize: "18px",
-                    color: "#333",
-                    fontWeight: "500",
+                    backgroundColor: "red",
+                    color: "white",
+                    borderRadius: "12px",
+                    padding: "4px 12px",
+                    fontSize: "12px",
                   }}
                 >
-                  IDR {product.price.toLocaleString("id-ID")}
-                </Text>
+                  EXCLUSIVE
+                </span>
+
+                <Title
+                  level={3}
+                  style={{
+                    color: "#333",
+                    marginTop: "12px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {product.title}
+                </Title>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    margin: "10px 0",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: "18px",
+                      color: "#333",
+                      fontWeight: "500",
+                      textDecoration: "line-through", // Original price strikethrough
+                      marginRight: "10px",
+                    }}
+                  >
+                    IDR {product.originalPrice.toLocaleString("id-ID")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: "18px",
+                      color: "#ff0000", // Color for the discounted price
+                      fontWeight: "500",
+                      marginRight: "10px",
+                    }}
+                  >
+                    IDR {product.discountedPrice.toLocaleString("id-ID")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: "14px",
+                      color: "#ff0000", // Color for discount percentage
+                      fontWeight: "500",
+                    }}
+                  >
+                    -
+                    {Math.round(
+                      ((product.originalPrice - product.discountedPrice) /
+                        product.originalPrice) *
+                        100
+                    )}
+                    % OFF
+                  </Text>
+                </div>
+
                 <Divider style={{ borderColor: "#ccc" }} />
+
                 <div style={{ marginTop: "20px" }}>
                   <div>
                     {product.availableSizes.map((size) => (
@@ -171,10 +235,10 @@ const DetailProductPage: React.FC = () => {
                         onClick={() => setSelectedSize(size)} // Update selected size
                         style={{
                           margin: "5px",
-                          color: "#333",
-                          borderColor: "#ccc",
+                          color: selectedSize === size ? "#fff" : "#000",
+                          borderColor: "#000",
                           backgroundColor:
-                            selectedSize === size ? "#ccc" : "transparent", // Highlight selected size
+                            selectedSize === size ? "#000" : "transparent", // Highlight selected size
                         }}
                         shape="round"
                       >
@@ -220,6 +284,7 @@ const DetailProductPage: React.FC = () => {
                     />
                   </Drawer>
                 </div>
+
                 <div style={{ marginTop: "30px" }}>
                   <Button
                     type="primary"
@@ -235,6 +300,7 @@ const DetailProductPage: React.FC = () => {
                     Buy Now
                   </Button>
                 </div>
+
                 <Collapse
                   style={{
                     marginTop: "30px",
@@ -248,7 +314,7 @@ const DetailProductPage: React.FC = () => {
                 >
                   <Panel
                     header={
-                      <span style={{ fontWeight: "bold" }}>Detail Product</span>
+                      <span style={{ fontWeight: "600" }}>Detail Product</span>
                     }
                     key="1"
                   >
@@ -263,7 +329,7 @@ const DetailProductPage: React.FC = () => {
                   </Panel>
                   <Panel
                     header={
-                      <span style={{ fontWeight: "bold" }}>
+                      <span style={{ fontWeight: "600" }}>
                         Washing Instructions
                       </span>
                     }
@@ -278,31 +344,169 @@ const DetailProductPage: React.FC = () => {
                   </Panel>
                   <Panel
                     header={
-                      <span style={{ fontWeight: "bold" }}>
+                      <span style={{ fontWeight: "600" }}>
                         Shipping and Returns
                       </span>
                     }
                     key="3"
                   >
-                    <ul style={{ paddingLeft: "20px" }}>
-                      <li>Free shipping over IDR 200.000</li>
-                      <li>Easy returns within 30 days</li>
-                      <li>
-                        Order cancellation cannot be done after the package has
-                        been processed or sent to the expedition.
-                      </li>
-                      <li>
-                        Orders are processed 1-2 days after the order is
-                        confirmed (excluding Sundays and national holidays)
-                      </li>
-                      <li>
-                        Shipping is done from Surabaya. The duration of delivery
-                        to the destination is adjusted to the distance policy
-                        and the punctuality of the delivery service.
-                      </li>
-                    </ul>
+                    <div>
+                      <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
+                        Shipping
+                      </h4>
+                      <ul style={{ paddingLeft: "20px" }}>
+                        <li>
+                          Orders are processed 1-2 days after the order is
+                          confirmed (excluding Sundays and national holidays)
+                        </li>
+                        <li>
+                          Shipping is done from Surabaya. The duration of
+                          delivery to the destination is adjusted to the
+                          distance policy and the punctuality of the delivery
+                          service.
+                        </li>
+                        <li>
+                          Order cancellation cannot be done after the package
+                          has been processed or sent to the expedition.
+                        </li>
+                      </ul>
+
+                      <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
+                        Returns
+                      </h4>
+                      <ul style={{ paddingLeft: "20px" }}>
+                        <li>
+                          You have 30 days from the date of delivery to return
+                          the item.
+                        </li>
+                        <li>
+                          Shipping costs for returns are borne by the buyer.
+                        </li>
+                      </ul>
+                    </div>
                   </Panel>
                 </Collapse>
+                <div style={{ marginTop: "20px" }}>
+                  {/* Standard Home Delivery */}
+                  <a
+                    href="https://shopee.com/vantage_id"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "15px 20px",
+                        border: "1px solid #ccc",
+                        borderRadius: "6px",
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px", // Add space between the sections
+                      }}
+                    >
+                      <TruckOutlined
+                        style={{
+                          fontSize: "25px",
+                          color: "#000",
+                          marginRight: "20px",
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <Text
+                          style={{
+                            display: "block",
+                            fontWeight: "500",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Shipping Across Indonesia
+                        </Text>
+                        <Text
+                          style={{
+                            display: "block",
+                            marginBottom: "5px",
+                            fontSize: "12px",
+                            color: "#555",
+                          }}
+                        >
+                          Checkout On Shopee
+                        </Text>
+                      </div>
+                      <Text
+                        style={{
+                          color: "#00b27d",
+                          fontWeight: "bold",
+                          marginLeft: "10px",
+                        }}
+                      >
+                        FREE
+                      </Text>
+                    </div>
+                  </a>
+                  {/* Direct Pickup Section */}
+                  <div>
+                    <a
+                      href="https://wa.me/+6285159116620?text=halo%20kak,%20saya%20mau%20ambil%20di%20lokasi%20kakak"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: "15px 20px",
+                          border: "1px solid #ccc",
+                          borderRadius: "6px",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <ShopOutlined
+                          style={{
+                            fontSize: "25px",
+                            color: "#000",
+                            marginRight: "20px",
+                          }}
+                        />
+                        <div style={{ flex: 1 }}>
+                          <Text
+                            style={{
+                              display: "block",
+                              fontWeight: "500",
+                              fontSize: "14px",
+                            }}
+                          >
+                            Direct Pickup - Surabaya
+                          </Text>
+                          <Text
+                            style={{
+                              display: "block",
+                              marginBottom: "5px",
+                              fontSize: "12px",
+                              color: "#555",
+                            }}
+                          >
+                            Available for COD orders
+                          </Text>
+                        </div>
+                        <Text
+                          style={{
+                            color: "#00b27d",
+                            fontWeight: "bold",
+                            marginLeft: "10px",
+                          }}
+                        >
+                          FREE
+                        </Text>
+                      </div>
+                    </a>
+                  </div>
+                </div>
               </>
             )}
           </div>

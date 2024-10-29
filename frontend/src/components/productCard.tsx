@@ -7,7 +7,8 @@ interface ProductCardProps {
     frontImage: string;
     backImage: string;
     title: string;
-    price: number;
+    originalPrice: number;
+    discountedPrice: number;
   };
   hoveredProductId: number | null;
   setHoveredProductId: (id: number | null) => void;

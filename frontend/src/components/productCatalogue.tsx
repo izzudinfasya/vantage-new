@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Layout } from "antd";
+import { Layout, Typography } from "antd"; // Import Badge
 import ProductCard from "./productCard";
 import produk1Front from "../assets/produk1-front.webp";
 import produk1Back from "../assets/produk1-back.webp";
 import ComingSoon from "../assets/comingsoon.webp";
 
 const { Content } = Layout;
+const { Text } = Typography;
 
 const ProductCatalogue: React.FC = () => {
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
@@ -18,28 +19,32 @@ const ProductCatalogue: React.FC = () => {
       frontImage: produk1Front,
       backImage: produk1Back,
       title: "Signature V Tee",
-      price: 199000,
+      originalPrice: 259000,
+      discountedPrice: 189000,
     },
     {
       id: 2,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 3,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 4,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
   ];
 
@@ -83,7 +88,10 @@ const ProductCatalogue: React.FC = () => {
             }}
           >
             {productsData.map((product) => (
-              <div key={product.id} style={{ textAlign: "left" }}>
+              <div
+                key={product.id}
+                style={{ textAlign: "left", position: "relative" }}
+              >
                 <ProductCard
                   product={product}
                   hoveredProductId={hoveredProductId}
@@ -99,16 +107,50 @@ const ProductCatalogue: React.FC = () => {
                   >
                     {product.title}
                   </p>
-                  <p
+                  <div
                     style={{
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      margin: "10px",
-                      color: "#333",
+                      display: "flex",
+                      flexDirection: columns < 3 ? "column" : "row", // Change to column on mobile
+                      alignItems: columns < 3 ? "flex-start" : "center", // Adjust alignment based on column count
+                      margin: "10px 10px",
                     }}
                   >
-                    IDR {product.price.toLocaleString("id-ID")}
-                  </p>
+                    {product.discountedPrice > 0 ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: "18px",
+                            color: "#333",
+                            fontWeight: "500",
+                            textDecoration: "line-through", // Original price strikethrough
+                            marginRight: "10px",
+                          }}
+                        >
+                          IDR {product.originalPrice.toLocaleString("id-ID")}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: "18px",
+                            color: "#ff0000", // Color for the discounted price
+                            fontWeight: "500",
+                            marginRight: "10px",
+                          }}
+                        >
+                          IDR {product.discountedPrice.toLocaleString("id-ID")}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: "18px",
+                          color: "#000", // Color for original price
+                          fontWeight: "500",
+                        }}
+                      >
+                        IDR {product.originalPrice.toLocaleString("id-ID")}
+                      </Text>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

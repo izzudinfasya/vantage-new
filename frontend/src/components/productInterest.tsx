@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Layout } from "antd";
+import { Layout, Typography } from "antd";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -10,6 +10,8 @@ import produk1Front from "../assets/produk1-front.webp";
 import produk1Back from "../assets/produk1-back.webp";
 import ComingSoon from "../assets/comingsoon.webp";
 import ProductCard from "./productCard";
+
+const { Text } = Typography;
 
 // Slider settings
 const defaultSettings = {
@@ -26,7 +28,6 @@ const defaultSettings = {
       settings: {
         slidesToShow: 2.5,
         slidesToScroll: 1,
-        infinite: false,
       },
     },
     {
@@ -53,7 +54,6 @@ const ProductInterest: React.FC = () => {
   const sliderRef = useRef<Slider | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [, setSliderSettings] = useState(defaultSettings);
 
   const products = [
     {
@@ -61,85 +61,82 @@ const ProductInterest: React.FC = () => {
       frontImage: produk1Front,
       backImage: produk1Back,
       title: "Signature V Tee",
-      price: 199000,
+      originalPrice: 259000,
+      discountedPrice: 189000,
     },
     {
       id: 2,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
+    // Additional product entries...
     {
       id: 3,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 4,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 5,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 6,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
     {
       id: 7,
       frontImage: ComingSoon,
       backImage: "",
       title: "Coming Soon",
-      price: 0,
+      originalPrice: 0,
+      discountedPrice: 0,
     },
   ];
 
   // Custom function to handle previous slide
   const handlePrev = () => {
-    if (sliderRef.current) {
-      sliderRef.current.slickPrev();
-    }
+    sliderRef.current?.slickPrev(); // Optional chaining for safety
   };
 
   // Custom function to handle next slide
   const handleNext = () => {
-    if (sliderRef.current) {
-      sliderRef.current.slickNext();
-    }
+    sliderRef.current?.slickNext(); // Optional chaining for safety
   };
 
   // Update current slide on slide change
   const handleAfterChange = (current: number) => {
     setCurrentSlide(current);
-    if (current === products.length - 1) {
-      setSliderSettings({ ...defaultSettings, slidesToShow: 1 });
-    } else {
-      setSliderSettings(defaultSettings);
-    }
   };
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768); // Set to true if screen width is <= 768px (mobile)
+      setIsMobileView(window.innerWidth <= 768);
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Initial check
-    handleResize();
+    handleResize(); // Initial check
 
     // Cleanup listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
@@ -147,13 +144,11 @@ const ProductInterest: React.FC = () => {
 
   return (
     <Layout>
-      {/* New Section: Anda Mungkin Suka */}
       <Content>
         <div
           style={{
             padding: "20px",
             paddingBottom: "60px",
-            zIndex: 2,
             position: "relative",
             backgroundColor: "#fff",
           }}
@@ -167,7 +162,6 @@ const ProductInterest: React.FC = () => {
               alignItems: "center",
             }}
           >
-            {" "}
             <ArrowRightOutlined style={{ marginRight: "15px" }} />
             THIS MAY BE INTERESTING FOR YOU
           </p>
@@ -191,7 +185,7 @@ const ProductInterest: React.FC = () => {
                   onClick={handlePrev}
                 />
                 {/* Left Overlay */}
-                {!isMobileView && currentSlide >= products.length - 3.5 && (
+                {currentSlide >= products.length - 3.5 && (
                   <div
                     style={{
                       position: "absolute",
@@ -216,8 +210,8 @@ const ProductInterest: React.FC = () => {
             >
               {products.map((product) => (
                 <div
-                  style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}
                   key={product.id}
+                  style={{ textAlign: "left", position: "relative" }}
                 >
                   <ProductCard
                     product={product}
@@ -234,16 +228,51 @@ const ProductInterest: React.FC = () => {
                     >
                       {product.title}
                     </p>
-                    <p
+                    <div
                       style={{
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        margin: "10px",
-                        color: "#333",
+                        display: "flex",
+                        flexDirection: isMobileView ? "column" : "row",
+                        alignItems: isMobileView ? "flex-start" : "center",
+                        margin: "10px 10px",
                       }}
                     >
-                      IDR {product.price.toLocaleString("id-ID")}
-                    </p>
+                      {product.discountedPrice > 0 ? (
+                        <>
+                          <Text
+                            style={{
+                              fontSize: "18px",
+                              color: "#333",
+                              fontWeight: "500",
+                              textDecoration: "line-through",
+                              marginRight: "10px",
+                            }}
+                          >
+                            IDR {product.originalPrice.toLocaleString("id-ID")}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: "18px",
+                              color: "#ff0000",
+                              fontWeight: "500",
+                              marginRight: "10px",
+                            }}
+                          >
+                            IDR{" "}
+                            {product.discountedPrice.toLocaleString("id-ID")}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: "18px",
+                            color: "#000",
+                            fontWeight: "500",
+                          }}
+                        >
+                          IDR {product.originalPrice.toLocaleString("id-ID")}
+                        </Text>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -284,15 +313,16 @@ const ProductInterest: React.FC = () => {
           </div>
         </div>
       </Content>
+
       {/* Media query for mobile view */}
       <style>{`
-          .interest-title {
-            font-size: 36px; /* Smaller font size for mobile */
-          }
+        .interest-title {
+          font-size: 36px; /* Adjusted for mobile */
+        }
 
         @media (max-width: 768px) {
-        .slick-slide {
-            height: auto !important; /* Set height to auto for responsiveness */
+          .slick-slide {
+            height: auto !important;
           }
 
           .slick-slide > div {
@@ -309,8 +339,8 @@ const ProductInterest: React.FC = () => {
             font-size: 28px; /* Smaller font size for icons */
           }
 
-        .slick-slide div {
-           height: auto; /* Set height to allow for aspect ratio */
+          .slick-slide div {
+            height: auto; /* Set height to allow for aspect ratio */
           }
         }
       `}</style>
