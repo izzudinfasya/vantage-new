@@ -12,6 +12,7 @@ import PasswordPage from "./pages/passwordPage";
 import CustomHeader from "./components/customHeader";
 import CustomFooter from "./components/customFooter";
 import DetailProduct from "./pages/detailproductPage";
+import AdminUpload from "./pages/adminuploadPage";
 
 // Protected Route component to guard pages
 const ProtectedRoute = ({
@@ -47,6 +48,7 @@ const App: React.FC = () => {
       <Routes>
         {/* Route untuk LinktreePage tanpa header dan footer */}
         <Route path="/link" element={<LinktreePage />} />
+        <Route path="/admin" element={<AdminUpload />} />
 
         {/* Route untuk halaman password */}
         <Route

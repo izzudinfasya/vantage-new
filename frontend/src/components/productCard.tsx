@@ -23,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleClick = () => {
     // Arahkan ke halaman detail produk dengan ID produk
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product.id}`, { state: { product } });
   };
   return (
     <div

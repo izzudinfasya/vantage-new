@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Typography } from "antd"; // Import Badge
+import { Layout, Typography } from "antd";
+import axios from "axios"; // Import axios
 import ProductCard from "./productCard";
-import produk1Front from "../assets/produk1-front.webp";
-import produk1Back from "../assets/produk1-back.webp";
 import ComingSoon from "../assets/comingsoon.webp";
 
 const { Content } = Layout;
@@ -11,42 +10,26 @@ const { Text } = Typography;
 const ProductCatalogue: React.FC = () => {
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
   const [columns, setColumns] = useState<number>(4); // Default kolom 4
+  const [productsData, setProductsData] = useState<any[]>([]); // State for fetched products
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
-  // Data produk didefinisikan di sini
-  const productsData = [
-    {
-      id: 1,
-      frontImage: produk1Front,
-      backImage: produk1Back,
-      title: "Signature V Tee",
-      originalPrice: 259000,
-      discountedPrice: 189000,
-    },
-    {
-      id: 2,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 3,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 4,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-  ];
+  const apiUrl = process.env.REACT_APP_API_URL;
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/products/get-products`);
+        setProductsData(response.data); // Store fetched data in state
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Hook untuk mengatur jumlah kolom berdasarkan ukuran jendela
   useEffect(() => {
@@ -68,6 +51,10 @@ const ProductCatalogue: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>; // Show loading state
+  }
+
   return (
     <Layout>
       <Content>
@@ -83,17 +70,28 @@ const ProductCatalogue: React.FC = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: `repeat(${columns}, 1fr)`, // Menggunakan state columns
+              gridTemplateColumns: `repeat(${columns}, 1fr)`,
               gridRowGap: "15px",
             }}
           >
             {productsData.map((product) => (
               <div
-                key={product.id}
+                key={product._id} // Use unique product identifier
                 style={{ textAlign: "left", position: "relative" }}
               >
                 <ProductCard
-                  product={product}
+                  product={{
+                    id: product._id,
+                    frontImage: product.images[3]
+                      ? `${apiUrl}/${product.images[3]}`
+                      : ComingSoon,
+                    backImage: product.images[2]
+                      ? `${apiUrl}/${product.images[2]}`
+                      : ComingSoon,
+                    title: product.title,
+                    originalPrice: product.originalPrice,
+                    discountedPrice: product.discountedPrice,
+                  }}
                   hoveredProductId={hoveredProductId}
                   setHoveredProductId={setHoveredProductId}
                 />
@@ -110,8 +108,8 @@ const ProductCatalogue: React.FC = () => {
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: columns < 3 ? "column" : "row", // Change to column on mobile
-                      alignItems: columns < 3 ? "flex-start" : "center", // Adjust alignment based on column count
+                      flexDirection: columns < 3 ? "column" : "row",
+                      alignItems: columns < 3 ? "flex-start" : "center",
                       margin: "10px 10px",
                     }}
                   >
@@ -122,7 +120,7 @@ const ProductCatalogue: React.FC = () => {
                             fontSize: "18px",
                             color: "#333",
                             fontWeight: "500",
-                            textDecoration: "line-through", // Original price strikethrough
+                            textDecoration: "line-through",
                             marginRight: "10px",
                           }}
                         >
@@ -131,7 +129,7 @@ const ProductCatalogue: React.FC = () => {
                         <Text
                           style={{
                             fontSize: "18px",
-                            color: "#ff0000", // Color for the discounted price
+                            color: "#ff0000",
                             fontWeight: "500",
                             marginRight: "10px",
                           }}
@@ -143,7 +141,7 @@ const ProductCatalogue: React.FC = () => {
                       <Text
                         style={{
                           fontSize: "18px",
-                          color: "#000", // Color for original price
+                          color: "#000",
                           fontWeight: "500",
                         }}
                       >

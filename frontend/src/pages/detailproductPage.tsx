@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { TruckOutlined, ShopOutlined } from "@ant-design/icons";
 import {
@@ -15,12 +15,8 @@ import {
 } from "antd";
 
 import ProductCatalogue from "components/productCatalogue";
-// Import your images
-import produk1Front from "../assets/produk1-front.webp";
-import produk1Back from "../assets/produk1-back.webp";
-import extraImage from "../assets/extra-image.webp";
-import detailImage from "../assets/detail-image.webp";
-import sizeChart from "../assets/size-chart.jpg";
+
+import axios from "axios";
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
@@ -29,6 +25,7 @@ const DetailProductPage: React.FC = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(""); // Default size
+  const [product, setProduct] = useState<any>(null);
 
   const showDrawer = () => {
     setVisible(true);
@@ -39,31 +36,28 @@ const DetailProductPage: React.FC = () => {
   };
 
   const { id } = useParams<{ id: string }>();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
-  // Simulate loading data
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // Simulate a 1 second loading time
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(
+          `${apiUrl}/products/get-product/${id}`
+        );
+        setProduct(response.data); // Store fetched data in state
+      } catch (error: any) {
+        console.error(
+          "Error fetching product:",
+          error.response ? error.response.data : error.message
+        );
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const product = useMemo(
-    () => ({
-      id,
-      title: "Signature V Tee - Oversize Boxy",
-      description: "",
-      originalPrice: 259000,
-      discountedPrice: 189000,
-      images: [produk1Front, produk1Back, detailImage, extraImage],
-      availableSizes: ["M", "L", "XL"],
-      color: "Black",
-      size: "L",
-      modelHeight: "175cm",
-    }),
-    [id]
-  );
+    fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   // Handle resize event to update mobile state
   useEffect(() => {
@@ -97,28 +91,13 @@ const DetailProductPage: React.FC = () => {
             <Skeleton active paragraph={{ rows: 18 }} />
           ) : isMobile ? (
             <Carousel arrows={true} dots={true} speed={500} autoplay>
-              {product.images.map((src, index) => (
-                <div key={index} style={{ position: "relative" }}>
-                  <Image
-                    src={src}
-                    alt={`Product Image ${index + 1}`}
-                    loading="lazy"
-                    style={{
-                      objectFit: "cover",
-                      width: "100%",
-                      aspectRatio: "4/5",
-                    }}
-                  />
-                </div>
-              ))}
-            </Carousel>
-          ) : (
-            <div className="scrollable">
-              <Row gutter={[8, 8]}>
-                {product.images.map((src, index) => (
-                  <Col xs={24} sm={12} md={12} key={index}>
+              {product.images
+                .slice()
+                .reverse()
+                .map((src: string, index: number) => (
+                  <div key={index} style={{ position: "relative" }}>
                     <Image
-                      src={src}
+                      src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
                       alt={`Product Image ${index + 1}`}
                       loading="lazy"
                       style={{
@@ -127,8 +106,29 @@ const DetailProductPage: React.FC = () => {
                         aspectRatio: "4/5",
                       }}
                     />
-                  </Col>
+                  </div>
                 ))}
+            </Carousel>
+          ) : (
+            <div className="scrollable">
+              <Row gutter={[8, 8]}>
+                {product.images
+                  .slice()
+                  .reverse()
+                  .map((src: string, index: number) => (
+                    <Col xs={24} sm={12} md={12} key={index}>
+                      <Image
+                        src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
+                        alt={`Product Image ${index + 1}`}
+                        loading="lazy"
+                        style={{
+                          objectFit: "cover",
+                          width: "100%",
+                          aspectRatio: "4/5",
+                        }}
+                      />
+                    </Col>
+                  ))}
               </Row>
             </div>
           )}
@@ -166,7 +166,7 @@ const DetailProductPage: React.FC = () => {
                     fontSize: "12px",
                   }}
                 >
-                  EXCLUSIVE
+                  {product.badgeType}
                 </span>
 
                 <Title
@@ -229,7 +229,7 @@ const DetailProductPage: React.FC = () => {
 
                 <div style={{ marginTop: "20px" }}>
                   <div>
-                    {product.availableSizes.map((size) => (
+                    {product.sizes.map((size: string) => (
                       <Button
                         key={size}
                         onClick={() => setSelectedSize(size)} // Update selected size
@@ -254,8 +254,8 @@ const DetailProductPage: React.FC = () => {
                       marginTop: "10px",
                     }}
                   >
-                    Ukuran dan tinggi model: {product.size} ·{" "}
-                    {product.modelHeight}
+                    Ukuran dan tinggi model: {product.sizeModel} ·{" "}
+                    {product.heightModel}
                   </Text>
                   <Text
                     onClick={showDrawer}
@@ -277,11 +277,15 @@ const DetailProductPage: React.FC = () => {
                     onClose={onClose}
                     visible={visible}
                   >
-                    <img
-                      src={sizeChart}
-                      alt="Size Chart"
-                      style={{ width: "100%" }}
-                    />
+                    {product.sizeChart.map((src: string, index: number) => (
+                      <div key={index} style={{ position: "relative" }}>
+                        <Image
+                          src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
+                          alt="Size Chart"
+                          style={{ width: "100%" }}
+                        />
+                      </div>
+                    ))}
                   </Drawer>
                 </div>
 
@@ -319,12 +323,9 @@ const DetailProductPage: React.FC = () => {
                     key="1"
                   >
                     <ul style={{ paddingLeft: "20px" }}>
-                      <li>Premium Cotton Combed 20s, 195gsm</li>
-                      <li>100% Cotton</li>
-                      <li>HDC Printing</li>
-                      <li>Thick Ribbing</li>
-                      <li>Oversize Boxy Fit</li>
-                      <li>Dropped Shoulder</li>
+                      {product.details.map((detail: string, index: number) => (
+                        <li key={index}>{detail}</li>
+                      ))}
                     </ul>
                   </Panel>
                   <Panel
@@ -336,10 +337,11 @@ const DetailProductPage: React.FC = () => {
                     key="2"
                   >
                     <ul style={{ paddingLeft: "20px" }}>
-                      <li>Hand wash in cold water</li>
-                      <li>Do not bleach</li>
-                      <li>Iron at low temperature</li>
-                      <li>Do not dry clean</li>
+                      {product.washingInstructions.map(
+                        (instruction: string, index: number) => (
+                          <li key={index}>{instruction}</li>
+                        )
+                      )}
                     </ul>
                   </Panel>
                   <Panel
@@ -355,33 +357,21 @@ const DetailProductPage: React.FC = () => {
                         Shipping
                       </h4>
                       <ul style={{ paddingLeft: "20px" }}>
-                        <li>
-                          Orders are processed 1-2 days after the order is
-                          confirmed (excluding Sundays and national holidays)
-                        </li>
-                        <li>
-                          Shipping is done from Surabaya. The duration of
-                          delivery to the destination is adjusted to the
-                          distance policy and the punctuality of the delivery
-                          service.
-                        </li>
-                        <li>
-                          Order cancellation cannot be done after the package
-                          has been processed or sent to the expedition.
-                        </li>
+                        {product.shippingPolicies.map(
+                          (sPolicies: string, index: number) => (
+                            <li key={index}>{sPolicies}</li>
+                          )
+                        )}
                       </ul>
-
                       <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
                         Returns
                       </h4>
                       <ul style={{ paddingLeft: "20px" }}>
-                        <li>
-                          You have 30 days from the date of delivery to return
-                          the item.
-                        </li>
-                        <li>
-                          Shipping costs for returns are borne by the buyer.
-                        </li>
+                        {product.returnPolicies.map(
+                          (rPolicies: string, index: number) => (
+                            <li key={index}>{rPolicies}</li>
+                          )
+                        )}
                       </ul>
                     </div>
                   </Panel>
@@ -512,7 +502,7 @@ const DetailProductPage: React.FC = () => {
           </div>
         </Col>
       </Row>
-      {/* Section Baru - "You may be like" */}
+
       <div
         className="you-may-like"
         style={{
@@ -530,7 +520,7 @@ const DetailProductPage: React.FC = () => {
 
       <style>{`
         .you-may-like{
-            margin-top: 25px;
+          margin-top: 25px;
         }
 
         .slick-dots li {

@@ -9,8 +9,10 @@ const cors_1 = __importDefault(require("cors"));
 const voucherRoutes_1 = __importDefault(require("./routes/voucherRoutes"));
 const subscriptionRoutes_1 = __importDefault(require("./routes/subscriptionRoutes"));
 const passwordRoutes_1 = __importDefault(require("./routes/passwordRoutes"));
+const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
 const db_config_1 = require("./config/db.config");
 dotenv_1.default.config();
+const path = require("path");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT ? process.env.PORT : "5000";
 // Use express.json() before routes
@@ -23,9 +25,11 @@ app.get("/", (req, res) => {
 app.get("/api", (req, res) => {
     res.json({ message: "Hello from backend!" });
 });
+app.use("/api/uploads", express_1.default.static(path.join(__dirname, "../uploads")));
 app.use("/api/vouchers", voucherRoutes_1.default);
 app.use("/api/subscribe", subscriptionRoutes_1.default);
 app.use("/api/password", passwordRoutes_1.default);
+app.use("/api/products", productRoutes_1.default);
 // Jalankan server
 db_config_1.db.then(() => {
     app.listen(PORT, () => {
