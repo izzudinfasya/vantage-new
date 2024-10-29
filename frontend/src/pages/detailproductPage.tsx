@@ -99,8 +99,12 @@ const DetailProductPage: React.FC = () => {
               dotPosition="right"
               draggable={true}
               speed={500}
-              swipeToSlide
-              touchMove
+              slidesToShow={1}
+              slidesToScroll={1}
+              vertical={true}
+              verticalSwiping={true}
+              swipeToSlide={true}
+              touchMove={true}
             >
               {product.images.map((src, index) => (
                 <div key={index} style={{ position: "relative" }}>
