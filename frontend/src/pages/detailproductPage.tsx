@@ -15,10 +15,10 @@ import {
 
 import ProductCatalogue from "components/productCatalogue";
 // Import your images
-import produk1Front from "../assets/produk1-front.jpg";
-import produk1Back from "../assets/produk1-back.jpg";
-import extraImage from "../assets/extra-image.jpg";
-import detailImage from "../assets/detail-image.jpg";
+import produk1Front from "../assets/produk1-front.webp";
+import produk1Back from "../assets/produk1-back.webp";
+import extraImage from "../assets/extra-image.webp";
+import detailImage from "../assets/detail-image.webp";
 import sizeChart from "../assets/size-chart.jpg";
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
