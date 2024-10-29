@@ -92,7 +92,7 @@ const DetailProductPage: React.FC = () => {
         {/* Product Images - Mobile View with Carousel */}
         <Col xs={24} md={16} style={{ padding: "0" }}>
           {loading ? (
-            <Skeleton active paragraph={{ rows: 8 }} />
+            <Skeleton active paragraph={{ rows: 18 }} />
           ) : isMobile ? (
             <Carousel dots={true} swipeToSlide touchMove>
               {product.images.map((src, index) => (

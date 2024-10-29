@@ -29,7 +29,6 @@ const sendPasswordEmail = async (
     html: `
       <div style="font-family: Helvetica, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
         <header style="text-align: center; margin-bottom: 20px;">
-          <img src="cid:logo" alt="VANTAGE Logo" style="max-width: 100px;">
           <h1 style="color: #1a1a1a; font-size: 28px;">You’re In!</h1>
           <p style="font-size: 18px; color: #666;">Exclusive Access Just for You</p>
         </header>
@@ -56,12 +55,6 @@ const sendPasswordEmail = async (
         </footer>
       </div>
     `,
-    attachments: [
-      {
-        filename: "logo-email.png",
-        cid: "logo",
-      },
-    ],
   };
 
   try {
