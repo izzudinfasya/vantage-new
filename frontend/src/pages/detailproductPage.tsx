@@ -94,7 +94,14 @@ const DetailProductPage: React.FC = () => {
           {loading ? (
             <Skeleton active paragraph={{ rows: 18 }} />
           ) : isMobile ? (
-            <Carousel dots={true}>
+            <Carousel
+              dots={true}
+              dotPosition="right"
+              draggable={true}
+              speed={500}
+              swipeToSlide
+              touchMove
+            >
               {product.images.map((src, index) => (
                 <div key={index} style={{ position: "relative" }}>
                   <Image
@@ -328,13 +335,13 @@ const DetailProductPage: React.FC = () => {
         }
 
         .slick-dots li {
-        margin: 0 5px;
+        margin: 5px 0;
         }
 
         .slick-dots li button {
         background-color: black !important;
-        width: 20px !important;
-        height: 3px !important;
+        width: 3px !important;
+        height: 20px  !important;
         border-radius: 6px !important;
         }
 
@@ -346,6 +353,7 @@ const DetailProductPage: React.FC = () => {
         bottom: 35px !important;
         display: flex !important;
         justify-content: center !important;
+        flex-direction: column !important;
         }
 
         .slick-dots li {
