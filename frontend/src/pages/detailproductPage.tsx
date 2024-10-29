@@ -94,18 +94,7 @@ const DetailProductPage: React.FC = () => {
           {loading ? (
             <Skeleton active paragraph={{ rows: 18 }} />
           ) : isMobile ? (
-            <Carousel
-              dots={true}
-              dotPosition="right"
-              draggable={true}
-              speed={500}
-              slidesToShow={1}
-              slidesToScroll={1}
-              vertical={true}
-              verticalSwiping={true}
-              swipeToSlide={true}
-              touchMove={true}
-            >
+            <Carousel arrows={true} dots={true} speed={500} autoplay>
               {product.images.map((src, index) => (
                 <div key={index} style={{ position: "relative" }}>
                   <Image
@@ -339,13 +328,13 @@ const DetailProductPage: React.FC = () => {
         }
 
         .slick-dots li {
-        margin: 5px 0;
+        margin: 0 5px;
         }
 
         .slick-dots li button {
         background-color: black !important;
-        width: 3px !important;
-        height: 20px  !important;
+        width: 20px !important;
+        height: 3px !important;
         border-radius: 6px !important;
         }
 
@@ -357,7 +346,6 @@ const DetailProductPage: React.FC = () => {
         bottom: 35px !important;
         display: flex !important;
         justify-content: center !important;
-        flex-direction: column !important;
         }
 
         .slick-dots li {
@@ -378,6 +366,36 @@ const DetailProductPage: React.FC = () => {
 
         .scrollable::-webkit-scrollbar {
           display: none; /* For Chrome, Safari, and Opera */
+        }
+
+        .ant-carousel .slick-prev,
+        .ant-carousel .slick-next {
+        color: black; /* Mengatur warna panah menjadi hitam */
+        }
+
+        /* Mengubah background arrow untuk lebih terlihat (opsional) */
+        .ant-carousel .slick-prev:before,
+        .ant-carousel .slick-next:before {
+        color: black; /* Pastikan simbol panah hitam */
+        }
+
+        .ant-carousel .slick-prev:after,
+        .ant-carousel .slick-next:after {
+        display: none;
+        }
+
+        /* Mengatur ukuran panah jika diperlukan */
+        .ant-carousel .slick-prev,
+        .ant-carousel .slick-next {
+        font-size: 24px; /* Ukuran font panah */
+        line-height: 1; /* Mengatur tinggi baris */
+        margin: 0 15px;
+        }
+
+        /* Mengubah warna saat hover (opsional) */
+        .ant-carousel .slick-prev:hover,
+        .ant-carousel .slick-next:hover {
+        color: grey; /* Warna saat hover */
         }
 
         @media (max-width: 767px) {
