@@ -96,6 +96,8 @@ export const getPassword = async (req: Request, res: Response) => {
       });
     }
 
+    // Debug: Log email sending process
+    console.log("Sending email to:", email, "with password:", setPassword);
     // Mengirim email dengan password akses terlebih dahulu
     const emailSent = await sendPasswordEmail(email, name, setPassword);
     if (!emailSent) {

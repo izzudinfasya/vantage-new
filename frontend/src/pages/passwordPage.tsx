@@ -16,6 +16,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
   const [inputPassword, setInputPassword] = useState("");
   const [, setIsPasswordCorrect] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Timer states
@@ -65,6 +66,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
   };
 
   const handleEnter = async () => {
+    setIsLoading(true);
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/password/validate`;
       const response = await fetch(apiUrl, {
@@ -84,6 +86,8 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
       }
     } catch (error) {
       message.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,6 +121,12 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
 
   return (
     <div className="password-page">
+      {isLoading && (
+        <div className="loading-screen">
+          <img src={gifAvatar} alt="Loading" className="loading-logo" />
+        </div>
+      )}
+
       <div className="avatar-container">
         <img src={gifAvatar} alt="Avatar" className="avatar-gif" />
       </div>
