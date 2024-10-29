@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   Typography,
@@ -13,14 +13,13 @@ import {
   Skeleton,
 } from "antd";
 
+import ProductCatalogue from "components/productCatalogue";
 // Import your images
 import produk1Front from "../assets/produk1-front.jpg";
 import produk1Back from "../assets/produk1-back.jpg";
 import extraImage from "../assets/extra-image.jpg";
 import detailImage from "../assets/detail-image.jpg";
 import sizeChart from "../assets/size-chart.jpg";
-import ProductCatalogue from "../components/productCatalogue";
-
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
@@ -28,7 +27,7 @@ const DetailProductPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState("L"); // Default size
+  const [selectedSize, setSelectedSize] = useState(""); // Default size
 
   const showDrawer = () => {
     setVisible(true);
@@ -49,17 +48,20 @@ const DetailProductPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const product = {
-    id,
-    title: "Signature V Tee - Oversize Boxy",
-    description: "",
-    price: 199000,
-    images: [produk1Front, produk1Back, detailImage, extraImage],
-    availableSizes: ["M", "L", "XL"],
-    color: "Black",
-    size: "L",
-    modelHeight: "175cm",
-  };
+  const product = useMemo(
+    () => ({
+      id,
+      title: "Signature V Tee - Oversize Boxy",
+      description: "",
+      price: 199000,
+      images: [produk1Front, produk1Back, detailImage, extraImage],
+      availableSizes: ["M", "L", "XL"],
+      color: "Black",
+      size: "L",
+      modelHeight: "175cm",
+    }),
+    [id]
+  );
 
   // Handle resize event to update mobile state
   useEffect(() => {
@@ -98,6 +100,7 @@ const DetailProductPage: React.FC = () => {
                   <Image
                     src={src}
                     alt={`Product Image ${index + 1}`}
+                    loading="lazy"
                     style={{
                       objectFit: "cover",
                       width: "100%",
@@ -115,6 +118,7 @@ const DetailProductPage: React.FC = () => {
                     <Image
                       src={src}
                       alt={`Product Image ${index + 1}`}
+                      loading="lazy"
                       style={{
                         objectFit: "cover",
                         width: "100%",
@@ -264,10 +268,9 @@ const DetailProductPage: React.FC = () => {
                     key="2"
                   >
                     <ul style={{ paddingLeft: "20px" }}>
-                      <li>Wash with cold waters</li>
-                      <li>Avoid bleach</li>
-                      <li>Tumble dry low</li>
-                      <li>Iron on low heat</li>
+                      <li>Hand wash in cold water</li>
+                      <li>Do not bleach</li>
+                      <li>Iron at low temperature</li>
                       <li>Do not dry clean</li>
                     </ul>
                   </Panel>
@@ -303,7 +306,6 @@ const DetailProductPage: React.FC = () => {
           </div>
         </Col>
       </Row>
-
       {/* Section Baru - "You may be like" */}
       <div
         className="you-may-like"
@@ -359,6 +361,7 @@ const DetailProductPage: React.FC = () => {
           overflow-y: scroll; /* Allow vertical scrolling */
           scrollbar-width: none; /* For Firefox */
           overflow-x: hidden;
+          scroll-behavior: smooth;
         }
 
         .scrollable::-webkit-scrollbar {

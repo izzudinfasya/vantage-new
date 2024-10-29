@@ -65,14 +65,7 @@ const App: React.FC = () => {
         />
 
         {/* Protected route untuk DetailProduct */}
-        <Route
-          path="/product/:id"
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <DetailProduct />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/product/:id" element={<DetailProduct />} />
 
         {/* Redirect dari / ke /password jika belum login */}
         <Route path="/" element={<Navigate to="/password" />} />
