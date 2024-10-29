@@ -6,9 +6,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 // Import images
-import produk1Front from "../assets/produk1-front.jpg";
-import produk1Back from "../assets/produk1-back.jpg";
-import ComingSoon from "../assets/comingsoon.jpg";
+import produk1Front from "../assets/produk1-front.webp";
+import produk1Back from "../assets/produk1-back.webp";
+import ComingSoon from "../assets/comingsoon.webp";
 import ProductCard from "./productCard";
 
 // Slider settings
