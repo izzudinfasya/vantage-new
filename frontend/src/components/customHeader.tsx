@@ -75,7 +75,7 @@ const CustomHeader: React.FC = () => {
         </div>
 
         <a
-          href="/"
+          href="/home"
           rel="noopener noreferrer"
           style={{
             display: "flex",
