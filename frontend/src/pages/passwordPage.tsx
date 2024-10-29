@@ -115,7 +115,9 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
         message.error("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false); // Set loading to false
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
   };
 
