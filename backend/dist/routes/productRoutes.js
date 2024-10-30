@@ -8,9 +8,6 @@ const multer_1 = __importDefault(require("multer"));
 const productController_1 = require("../controllers/productController");
 // Multer configuration
 const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Directory to save uploaded files temporarily
-    },
     filename: (req, file, cb) => {
         cb(null, Date.now() + "-" + file.originalname); // Save files with unique names
     },

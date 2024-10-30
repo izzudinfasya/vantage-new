@@ -8,9 +8,6 @@ import {
 
 // Multer configuration
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Directory to save uploaded files temporarily
-  },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname); // Save files with unique names
   },

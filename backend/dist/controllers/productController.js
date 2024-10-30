@@ -8,16 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProduct = exports.getProducts = exports.uploadProduct = void 0;
-const multer_1 = __importDefault(require("multer")); // Import multer for handling file uploads
 const Product_1 = require("../models/Product"); // Adjust the import based on your model path
 const cloudinary_1 = require("cloudinary");
-// Initialize multer for file storage
-const upload = (0, multer_1.default)({ dest: "uploads/" }); // Specify your upload directory
 // Cloudinary configuration
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dt7mzgm7n",

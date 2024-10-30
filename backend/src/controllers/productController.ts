@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
-import multer from "multer"; // Import multer for handling file uploads
 import { Products } from "../models/Product"; // Adjust the import based on your model path
 import { v2 as cloudinary } from "cloudinary";
-
-// Initialize multer for file storage
-const upload = multer({ dest: "uploads/" }); // Specify your upload directory
 
 // Cloudinary configuration
 cloudinary.config({
