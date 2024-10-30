@@ -1,17 +1,26 @@
 import { Request, Response } from "express";
 import multer from "multer"; // Import multer for handling file uploads
 import { Products } from "../models/Product"; // Adjust the import based on your model path
+import { v2 as cloudinary } from "cloudinary";
 
 // Initialize multer for file storage
 const upload = multer({ dest: "uploads/" }); // Specify your upload directory
 
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dt7mzgm7n",
+  api_key: process.env.CLOUDINARY_API_KEY || "295888324517958",
+  api_secret:
+    process.env.CLOUDINARY_API_SECRET || "BYN7w1S1QtwwU0UItTeJ-FJ7RzA",
+});
+
 // Controller for uploading a product
 export const uploadProduct = async (req: Request, res: Response) => {
   try {
-    // Log the entire body to understand its structure
+    // Log incoming request body
     console.log("Incoming request body:", req.body);
 
-    // Check if req.body is an array and access the first element if it is
+    // Access product data safely
     const productData = Array.isArray(req.body) ? req.body[0] : req.body;
 
     // Log the product data to ensure it is defined
@@ -46,15 +55,7 @@ export const uploadProduct = async (req: Request, res: Response) => {
       if (!data) return [];
       try {
         const parsedData = JSON.parse(data);
-        // Ensure parsed data is an array
-        if (Array.isArray(parsedData)) {
-          return parsedData;
-        } else if (typeof parsedData === "string") {
-          // If it's a string, wrap it in an array
-          return [parsedData];
-        } else {
-          return []; // Return empty array for any other type
-        }
+        return Array.isArray(parsedData) ? parsedData : [parsedData];
       } catch (error) {
         console.error("JSON parsing error:", error);
         return []; // Return empty array on error
@@ -81,12 +82,31 @@ export const uploadProduct = async (req: Request, res: Response) => {
     const images = files.images || []; // Get images safely
     const sizeChart = files.sizeChart || []; // Get sizeChart safely
 
-    const imagePaths = Array.isArray(images)
-      ? images.map((file) => file.path)
-      : [];
-    const sizechartPaths = Array.isArray(sizeChart)
-      ? sizeChart.map((file) => file.path)
-      : [];
+    // Upload images to Cloudinary and get URLs
+    const imagePaths = await Promise.all(
+      images.map(async (file) => {
+        try {
+          const uploadResponse = await cloudinary.uploader.upload(file.path);
+          return uploadResponse.secure_url;
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          throw new Error("Failed to upload image to Cloudinary");
+        }
+      })
+    );
+
+    // Upload size charts to Cloudinary and get URLs
+    const sizechartPaths = await Promise.all(
+      sizeChart.map(async (file) => {
+        try {
+          const uploadResponse = await cloudinary.uploader.upload(file.path);
+          return uploadResponse.secure_url; // Return the URL of the uploaded image
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          throw new Error("Failed to upload image to Cloudinary");
+        }
+      })
+    );
 
     // Create a new product instance with the provided data
     const newProduct = new Products({
@@ -135,6 +155,7 @@ export const getProducts = async (req: Request, res: Response) => {
   }
 };
 
+// Controller for getting a single product by ID
 export const getProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
 

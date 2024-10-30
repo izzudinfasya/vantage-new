@@ -61,7 +61,6 @@ const ProductCatalogue: React.FC = () => {
         <div
           style={{
             padding: "20px",
-            paddingBottom: "40px",
             zIndex: 2,
             position: "relative",
             backgroundColor: "#fff",
@@ -82,12 +81,14 @@ const ProductCatalogue: React.FC = () => {
                 <ProductCard
                   product={{
                     id: product._id,
-                    frontImage: product.images[3]
-                      ? `${apiUrl}/${product.images[3]}`
-                      : ComingSoon,
-                    backImage: product.images[2]
-                      ? `${apiUrl}/${product.images[2]}`
-                      : ComingSoon,
+                    frontImage:
+                      product.images[2] ||
+                      product.images[1] ||
+                      product.images[0],
+                    backImage:
+                      product.images[3] ||
+                      product.images[1] ||
+                      product.images[0],
                     title: product.title,
                     originalPrice: product.originalPrice,
                     discountedPrice: product.discountedPrice,

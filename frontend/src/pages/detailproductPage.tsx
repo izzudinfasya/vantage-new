@@ -97,7 +97,7 @@ const DetailProductPage: React.FC = () => {
                 .map((src: string, index: number) => (
                   <div key={index} style={{ position: "relative" }}>
                     <Image
-                      src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
+                      src={src}
                       alt={`Product Image ${index + 1}`}
                       loading="lazy"
                       style={{
@@ -118,7 +118,7 @@ const DetailProductPage: React.FC = () => {
                   .map((src: string, index: number) => (
                     <Col xs={24} sm={12} md={12} key={index}>
                       <Image
-                        src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
+                        src={src}
                         alt={`Product Image ${index + 1}`}
                         loading="lazy"
                         style={{
@@ -255,7 +255,7 @@ const DetailProductPage: React.FC = () => {
                     }}
                   >
                     Ukuran dan tinggi model: {product.sizeModel} ·{" "}
-                    {product.heightModel}
+                    {product.heightModel}cm
                   </Text>
                   <Text
                     onClick={showDrawer}
@@ -280,7 +280,7 @@ const DetailProductPage: React.FC = () => {
                     {product.sizeChart.map((src: string, index: number) => (
                       <div key={index} style={{ position: "relative" }}>
                         <Image
-                          src={`${apiUrl}/${src.replace(/\\/g, "/")}`}
+                          src={src}
                           alt="Size Chart"
                           style={{ width: "100%" }}
                         />

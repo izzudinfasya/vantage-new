@@ -15,14 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProduct = exports.getProducts = exports.uploadProduct = void 0;
 const multer_1 = __importDefault(require("multer")); // Import multer for handling file uploads
 const Product_1 = require("../models/Product"); // Adjust the import based on your model path
+const cloudinary_1 = require("cloudinary");
 // Initialize multer for file storage
 const upload = (0, multer_1.default)({ dest: "uploads/" }); // Specify your upload directory
+// Cloudinary configuration
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dt7mzgm7n",
+    api_key: process.env.CLOUDINARY_API_KEY || "295888324517958",
+    api_secret: process.env.CLOUDINARY_API_SECRET || "BYN7w1S1QtwwU0UItTeJ-FJ7RzA",
+});
 // Controller for uploading a product
 const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Log the entire body to understand its structure
+        // Log incoming request body
         console.log("Incoming request body:", req.body);
-        // Check if req.body is an array and access the first element if it is
+        // Access product data safely
         const productData = Array.isArray(req.body) ? req.body[0] : req.body;
         // Log the product data to ensure it is defined
         console.log("Product data to be processed:", productData);
@@ -40,17 +47,7 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 return [];
             try {
                 const parsedData = JSON.parse(data);
-                // Ensure parsed data is an array
-                if (Array.isArray(parsedData)) {
-                    return parsedData;
-                }
-                else if (typeof parsedData === "string") {
-                    // If it's a string, wrap it in an array
-                    return [parsedData];
-                }
-                else {
-                    return []; // Return empty array for any other type
-                }
+                return Array.isArray(parsedData) ? parsedData : [parsedData];
             }
             catch (error) {
                 console.error("JSON parsing error:", error);
@@ -75,12 +72,28 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const files = req.files; // Cast req.files to the expected type
         const images = files.images || []; // Get images safely
         const sizeChart = files.sizeChart || []; // Get sizeChart safely
-        const imagePaths = Array.isArray(images)
-            ? images.map((file) => file.path)
-            : [];
-        const sizechartPaths = Array.isArray(sizeChart)
-            ? sizeChart.map((file) => file.path)
-            : [];
+        // Upload images to Cloudinary and get URLs
+        const imagePaths = yield Promise.all(images.map((file) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const uploadResponse = yield cloudinary_1.v2.uploader.upload(file.path);
+                return uploadResponse.secure_url;
+            }
+            catch (uploadError) {
+                console.error("Image upload error:", uploadError);
+                throw new Error("Failed to upload image to Cloudinary");
+            }
+        })));
+        // Upload size charts to Cloudinary and get URLs
+        const sizechartPaths = yield Promise.all(sizeChart.map((file) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const uploadResponse = yield cloudinary_1.v2.uploader.upload(file.path);
+                return uploadResponse.secure_url; // Return the URL of the uploaded image
+            }
+            catch (uploadError) {
+                console.error("Image upload error:", uploadError);
+                throw new Error("Failed to upload image to Cloudinary");
+            }
+        })));
         // Create a new product instance with the provided data
         const newProduct = new Product_1.Products({
             title,
@@ -128,6 +141,7 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getProducts = getProducts;
+// Controller for getting a single product by ID
 const getProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
