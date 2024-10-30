@@ -86,7 +86,11 @@ const ProductInterest: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768);
+      const mobileView = window.innerWidth <= 768;
+      setIsMobileView(mobileView);
+      if (sliderRef.current && mobileView) {
+        sliderRef.current.slickGoTo(0); // Reset to first slide on mobile view
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -164,7 +168,7 @@ const ProductInterest: React.FC = () => {
             >
               {productsData.map((product) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   style={{ textAlign: "left", position: "relative" }}
                 >
                   <ProductCard
@@ -296,6 +300,7 @@ const ProductInterest: React.FC = () => {
             display: flex;
             justify-content: center;
             align-items: center;
+            height: auto;
           }
 
           .interest-title {

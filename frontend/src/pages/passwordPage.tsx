@@ -85,10 +85,11 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
         message.error("Incorrect password");
       }
     } catch (error) {
+      setIsLoading(false);
       message.error("An error occurred. Please try again.");
     } finally {
       setTimeout(() => {
-        setLoading(false);
+        setIsLoading(false);
       }, 3000);
     }
   };
