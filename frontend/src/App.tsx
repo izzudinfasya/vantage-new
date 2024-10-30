@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -13,6 +13,7 @@ import CustomHeader from "./components/customHeader";
 import CustomFooter from "./components/customFooter";
 import DetailProduct from "./pages/detailproductPage";
 import AdminUpload from "./pages/adminuploadPage";
+import Loading from "./components/loading";
 
 // Protected Route component to guard pages
 const ProtectedRoute = ({
@@ -27,6 +28,7 @@ const ProtectedRoute = ({
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
+  const [isLoading, setIsLoading] = useState(false); // State untuk loading
   const location = useLocation(); // Get current route location
 
   // Callback to log in user after entering correct password
@@ -37,12 +39,23 @@ const App: React.FC = () => {
     }
   };
 
+  // Effect untuk mendeteksi perubahan route
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location]);
+
   // Kondisi untuk menentukan kapan header/footer harus disembunyikan
   const hideHeaderFooter =
     location.pathname === "/password" || location.pathname === "/link";
 
   return (
     <div>
+      {isLoading && <Loading isLoading={isLoading} />}{" "}
       {!hideHeaderFooter && <CustomHeader />}{" "}
       {/* Header tidak muncul di /password dan /link */}
       <Routes>

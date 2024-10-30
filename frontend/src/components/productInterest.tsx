@@ -119,6 +119,7 @@ const ProductInterest: React.FC = () => {
             <ArrowRightOutlined style={{ marginRight: "15px" }} />
             THIS MAY BE INTERESTING FOR YOU
           </p>
+
           <div style={{ position: "relative" }}>
             {/* Left Arrow */}
             {!isMobileView && currentSlide > 0 && (
@@ -298,7 +299,15 @@ const ProductInterest: React.FC = () => {
           }
 
           .interest-title {
-            font-size: 28px; /* Smaller title for mobile */
+            font-size: 28px; /* Smaller font size for mobile */
+          }
+
+          .anticon {
+            font-size: 28px; /* Smaller font size for icons */
+          }
+
+          .slick-slide div {
+            height: auto; /* Set height to allow for aspect ratio */
           }
         }
       `}</style>
