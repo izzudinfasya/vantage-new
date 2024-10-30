@@ -52,7 +52,6 @@ const ProductInterest: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobileView, setIsMobileView] = useState(false);
   const [productsData, setProductsData] = useState<any[]>([]); // State for fetched products
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -63,8 +62,6 @@ const ProductInterest: React.FC = () => {
         setProductsData(response.data); // Store fetched data in state
       } catch (error) {
         console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false); // Stop loading
       }
     };
 
@@ -99,10 +96,6 @@ const ProductInterest: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading state
-  }
-
   return (
     <Layout>
       <Content>
@@ -126,7 +119,6 @@ const ProductInterest: React.FC = () => {
             <ArrowRightOutlined style={{ marginRight: "15px" }} />
             THIS MAY BE INTERESTING FOR YOU
           </p>
-
           <div style={{ position: "relative" }}>
             {/* Left Arrow */}
             {!isMobileView && currentSlide > 0 && (
@@ -306,15 +298,7 @@ const ProductInterest: React.FC = () => {
           }
 
           .interest-title {
-            font-size: 28px; /* Smaller font size for mobile */
-          }
-
-          .anticon {
-            font-size: 28px; /* Smaller font size for icons */
-          }
-
-          .slick-slide div {
-            height: auto; /* Set height to allow for aspect ratio */
+            font-size: 28px; /* Smaller title for mobile */
           }
         }
       `}</style>

@@ -10,7 +10,6 @@ const ProductCatalogue: React.FC = () => {
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
   const [columns, setColumns] = useState<number>(4); // Default kolom 4
   const [productsData, setProductsData] = useState<any[]>([]); // State for fetched products
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   const apiUrl = process.env.REACT_APP_API_URL;
   // Fetch products from API
@@ -21,8 +20,6 @@ const ProductCatalogue: React.FC = () => {
         setProductsData(response.data); // Store fetched data in state
       } catch (error) {
         console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false); // Stop loading
       }
     };
 
@@ -49,10 +46,6 @@ const ProductCatalogue: React.FC = () => {
     // Bersihkan event listener saat komponen di-unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  if (loading) {
-    return <div>Loading...</div>; // Show loading state
-  }
 
   return (
     <Layout>

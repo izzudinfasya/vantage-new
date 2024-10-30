@@ -4,6 +4,7 @@ import gifAvatar from "../assets/v-white.gif"; // Path ke GIF logo
 import "./passwordPage.css"; // Import CSS file
 import { Modal, Button, Input, message, Form } from "antd";
 import axios from "axios";
+import Loading from "../components/loading";
 
 // Tambahkan interface untuk props
 interface PasswordPageProps {
@@ -88,7 +89,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
       message.error("An error occurred. Please try again.");
     } finally {
       setTimeout(() => {
-        setLoading(false);
+        setIsLoading(false);
       }, 3000);
     }
   };
@@ -123,13 +124,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
 
   return (
     <div className="password-page">
-      {isLoading && (
-        <div className={`loading-overlay ${isLoading ? "" : "hidden"}`}>
-          <div className="loading-content">
-            <img src={gifAvatar} alt="Loading" className="loading-logo" />
-          </div>
-        </div>
-      )}
+      <Loading isLoading={isLoading} />
 
       <div className="avatar-container">
         <img src={gifAvatar} alt="Avatar" className="avatar-gif" />
