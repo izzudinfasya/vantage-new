@@ -22,7 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const navigate = useNavigate(); // Inisialisasi useNavigate
 
   const handleClick = () => {
-    // Arahkan ke halaman detail produk dengan ID produk
+    window.scrollTo({ top: 0, behavior: "smooth" });
     navigate(`/product/${product.id}`, { state: { product } });
   };
   return (

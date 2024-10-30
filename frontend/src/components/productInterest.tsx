@@ -4,11 +4,8 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import axios from "axios";
 
-// Import images
-import produk1Front from "../assets/produk1-front.webp";
-import produk1Back from "../assets/produk1-back.webp";
-import ComingSoon from "../assets/comingsoon.webp";
 import ProductCard from "./productCard";
 
 const { Text } = Typography;
@@ -54,66 +51,26 @@ const ProductInterest: React.FC = () => {
   const sliderRef = useRef<Slider | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [productsData, setProductsData] = useState<any[]>([]); // State for fetched products
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
-  const products = [
-    {
-      id: 1,
-      frontImage: produk1Front,
-      backImage: produk1Back,
-      title: "Signature V Tee",
-      originalPrice: 259000,
-      discountedPrice: 189000,
-    },
-    {
-      id: 2,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    // Additional product entries...
-    {
-      id: 3,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 4,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 5,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 6,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-    {
-      id: 7,
-      frontImage: ComingSoon,
-      backImage: "",
-      title: "Coming Soon",
-      originalPrice: 0,
-      discountedPrice: 0,
-    },
-  ];
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/products/get-products`);
+        setProductsData(response.data); // Store fetched data in state
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Custom function to handle previous slide
   const handlePrev = () => {
@@ -141,6 +98,10 @@ const ProductInterest: React.FC = () => {
     // Cleanup listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading state
+  }
 
   return (
     <Layout>
@@ -185,7 +146,7 @@ const ProductInterest: React.FC = () => {
                   onClick={handlePrev}
                 />
                 {/* Left Overlay */}
-                {currentSlide >= products.length - 3.5 && (
+                {currentSlide >= productsData.length - 3.5 && (
                   <div
                     style={{
                       position: "absolute",
@@ -208,13 +169,26 @@ const ProductInterest: React.FC = () => {
               {...defaultSettings}
               afterChange={handleAfterChange}
             >
-              {products.map((product) => (
+              {productsData.map((product) => (
                 <div
                   key={product.id}
                   style={{ textAlign: "left", position: "relative" }}
                 >
                   <ProductCard
-                    product={product}
+                    product={{
+                      id: product._id,
+                      frontImage:
+                        product.images[3] ||
+                        product.images[1] ||
+                        product.images[0],
+                      backImage:
+                        product.images[2] ||
+                        product.images[1] ||
+                        product.images[0],
+                      title: product.title,
+                      originalPrice: product.originalPrice,
+                      discountedPrice: product.discountedPrice,
+                    }}
                     hoveredProductId={hoveredProductId}
                     setHoveredProductId={setHoveredProductId}
                   />
@@ -279,7 +253,7 @@ const ProductInterest: React.FC = () => {
             </Slider>
 
             {/* Right Overlay */}
-            {!isMobileView && currentSlide < products.length - 3.5 && (
+            {!isMobileView && currentSlide < productsData.length - 3.5 && (
               <div
                 style={{
                   position: "absolute",
@@ -294,7 +268,7 @@ const ProductInterest: React.FC = () => {
             )}
 
             {/* Right Arrow */}
-            {!isMobileView && currentSlide < products.length - 3.5 && (
+            {!isMobileView && currentSlide < productsData.length - 3.5 && (
               <ArrowRightOutlined
                 style={{
                   position: "absolute",

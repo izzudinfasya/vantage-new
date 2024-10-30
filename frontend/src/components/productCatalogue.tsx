@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Typography } from "antd";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import ProductCard from "./productCard";
-import ComingSoon from "../assets/comingsoon.webp";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -82,11 +81,11 @@ const ProductCatalogue: React.FC = () => {
                   product={{
                     id: product._id,
                     frontImage:
-                      product.images[2] ||
+                      product.images[3] ||
                       product.images[1] ||
                       product.images[0],
                     backImage:
-                      product.images[3] ||
+                      product.images[2] ||
                       product.images[1] ||
                       product.images[0],
                     title: product.title,
