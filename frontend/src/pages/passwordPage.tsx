@@ -124,13 +124,11 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
 
   return (
     <div className="password-page">
-      {isLoading && (
-        <div className={`loading-overlay ${isLoading ? "" : "hidden"}`}>
-          <div className="loading-content">
-            <img src={gifAvatar} alt="Loading" className="loading-logo" />
-          </div>
+      <div className={`loading-overlay ${isLoading ? "" : "hidden"}`}>
+        <div className="loading-content">
+          <img src={gifAvatar} alt="Loading" className="loading-logo" />
         </div>
-      )}
+      </div>
 
       <div className="avatar-container">
         <img src={gifAvatar} alt="Avatar" className="avatar-gif" />
