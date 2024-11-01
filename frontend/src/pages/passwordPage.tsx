@@ -80,9 +80,10 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
       if (response.ok) {
         setIsPasswordCorrect(true);
         onLogin(inputPassword);
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        setIsLoading(false);
-        navigate("/home");
+        setTimeout(() => {
+          setIsLoading(false);
+          setTimeout(() => navigate("/home"), 1000); // Adjust delay if needed
+        }, 2500);
       } else {
         setIsLoading(false);
         message.error("Incorrect password");
