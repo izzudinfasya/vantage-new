@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProduct = exports.getProducts = exports.uploadProduct = void 0;
+exports.deleteProduct = exports.updateProduct = exports.getProduct = exports.getProducts = exports.uploadProduct = void 0;
 const Product_1 = require("../models/Product"); // Adjust the import based on your model path
 const cloudinary_1 = require("cloudinary");
 // Cloudinary configuration
@@ -21,14 +21,10 @@ cloudinary_1.v2.config({
 // Controller for uploading a product
 const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Log incoming request body
-        console.log("Incoming request body:", req.body);
         // Access product data safely
         const productData = Array.isArray(req.body) ? req.body[0] : req.body;
-        // Log the product data to ensure it is defined
-        console.log("Product data to be processed:", productData);
         // Destructure productData safely
-        const { title, badgeType, originalPrice, discountedPrice, details, sizes, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData || {}; // Default to empty object to avoid destructuring errors
+        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData || {};
         // Validate required fields
         if (!title || !badgeType || !originalPrice || !discountedPrice) {
             return res.status(400).json({ message: "Missing required fields." });
@@ -96,6 +92,7 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             discountedPrice,
             details: parsedDetails,
             sizes: parsedSizes,
+            qtyTotal,
             sizeModel,
             heightModel,
             washingInstructions: parsedWashingInstructions,
@@ -154,3 +151,93 @@ const getProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.getProduct = getProduct;
+const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const productId = req.params.id;
+        // Access product data safely
+        const productData = Array.isArray(req.body) ? req.body[0] : req.body;
+        // Validate the presence of product data
+        if (!productData) {
+            return res.status(400).json({ message: "No product data provided." });
+        }
+        // Destructure productData safely, only getting necessary fields
+        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData;
+        // Validate required fields
+        if (!title || !badgeType || !originalPrice || !discountedPrice) {
+            return res.status(400).json({ message: "Missing required fields." });
+        }
+        // Safe JSON parsing with error handling
+        const safeParseJSON = (data) => {
+            if (!data)
+                return [];
+            try {
+                const parsedData = JSON.parse(data);
+                return Array.isArray(parsedData) ? parsedData : [parsedData];
+            }
+            catch (error) {
+                console.error("JSON parsing error:", error);
+                return []; // Return empty array on error
+            }
+        };
+        // Parse JSON fields
+        const parsedDetails = safeParseJSON(details);
+        const parsedSizes = safeParseJSON(sizes);
+        const parsedWashingInstructions = safeParseJSON(washingInstructions);
+        const parsedReturnPolicies = safeParseJSON(returnPolicies);
+        const parsedShippingPolicies = safeParseJSON(shippingPolicies);
+        // Create an object with only fields that need to be updated
+        const updateFields = {
+            title,
+            badgeType,
+            originalPrice,
+            discountedPrice,
+            details: parsedDetails,
+            sizes: parsedSizes,
+            qtyTotal,
+            sizeModel,
+            heightModel,
+            washingInstructions: parsedWashingInstructions,
+            returnPolicies: parsedReturnPolicies,
+            shippingPolicies: parsedShippingPolicies,
+            linkProduct,
+        };
+        // Filter out undefined fields to avoid overwriting with `undefined`
+        Object.keys(updateFields).forEach((key) => {
+            if (updateFields[key] === undefined) {
+                delete updateFields[key];
+            }
+        });
+        // Update the product in the database
+        const updatedProduct = yield Product_1.Products.findByIdAndUpdate(productId, updateFields, { new: true } // Option to return the updated document
+        );
+        if (!updatedProduct) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+        return res.status(200).json({
+            message: "Product updated successfully!",
+            product: updatedProduct,
+        });
+    }
+    catch (error) {
+        console.error("Update error:", error);
+        return res.status(500).json({
+            message: "An error occurred while updating the product.",
+            error: error.message,
+        });
+    }
+});
+exports.updateProduct = updateProduct;
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const deletedProduct = yield Product_1.Products.findByIdAndDelete(id);
+        if (!deletedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        res.status(200).json({ message: "Product deleted successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error deleting product", error });
+    }
+});
+exports.deleteProduct = deleteProduct;

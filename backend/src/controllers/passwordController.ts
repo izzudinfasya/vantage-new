@@ -3,7 +3,8 @@ import nodemailer from "nodemailer";
 import { validationResult } from "express-validator";
 import PasswordModel from "../models/Password";
 
-const setPassword = "FIRSTDROP";
+const adminPassword = "adminvntg";
+const customerPassword = "FIRSTDROP";
 
 // Fungsi untuk mengirim password melalui email
 const sendPasswordEmail = async (
@@ -90,9 +91,9 @@ export const getPassword = async (req: Request, res: Response) => {
     }
 
     // Debug: Log email sending process
-    console.log("Sending email to:", email, "with password:", setPassword);
+    console.log("Sending email to:", email, "with password:", customerPassword);
     // Mengirim email dengan password akses terlebih dahulu
-    const emailSent = await sendPasswordEmail(email, name, setPassword);
+    const emailSent = await sendPasswordEmail(email, name, customerPassword);
     if (!emailSent) {
       return res.status(500).send({
         message: "Failed to send email. Please try again later.",
@@ -103,7 +104,7 @@ export const getPassword = async (req: Request, res: Response) => {
     const newUser = new PasswordModel({
       email,
       name,
-      password: setPassword, // Simpan password yang sudah dihasilkan
+      password: customerPassword, // Simpan password yang sudah dihasilkan
     });
     await newUser.save();
 
@@ -125,8 +126,16 @@ export const getPassword = async (req: Request, res: Response) => {
 export const validatePassword = (req: Request, res: Response) => {
   const { password } = req.body;
 
-  if (password === setPassword) {
-    return res.status(200).send({ message: "Password is correct." });
+  if (password === adminPassword) {
+    return res.status(200).send({
+      message: "Admin password is correct.",
+      redirectTo: "/admin",
+    });
+  } else if (password === customerPassword) {
+    return res.status(200).send({
+      message: "Your password is correct.",
+      redirectTo: "/home",
+    });
   } else {
     return res.status(401).send({ message: "Incorrect password." });
   }

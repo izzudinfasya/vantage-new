@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import gifAvatar from "../assets/v-white.gif"; // Path ke GIF logo
 import "./passwordPage.css"; // Import CSS file
 import { Modal, Button, Input, message, Form } from "antd";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // Tambahkan interface untuk props
 interface PasswordPageProps {
@@ -11,13 +11,13 @@ interface PasswordPageProps {
 }
 
 const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
   const [, setIsPasswordCorrect] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   // Timer states
   const [timer, setTimer] = useState({
@@ -77,11 +77,14 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
         body: JSON.stringify({ password: inputPassword }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        setIsPasswordCorrect(true);
-        onLogin(inputPassword);
+        setIsPasswordCorrect(true); // Update local state for success
+        onLogin(inputPassword); // Call parent login function
+
         setTimeout(() => {
-          navigate("/home");
+          navigate(data.redirectTo);
         }, 1500);
       } else {
         setIsLoading(false);

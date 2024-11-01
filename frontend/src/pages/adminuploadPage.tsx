@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Form,
   Input,
@@ -8,14 +9,20 @@ import {
   message,
   Space,
   Upload,
+  Row,
+  Col,
+  Layout,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { UploadChangeParam, UploadFile } from "antd/es/upload/interface";
 
 const { Title } = Typography;
+const { Content } = Layout;
 
 const AdminUpload: React.FC = () => {
+  const location = useLocation();
+  const product = location.state?.product;
   const [form] = Form.useForm();
   const [details, setDetails] = useState<string[]>([""]);
   const [washingInstructions, setWashingInstructions] = useState<string[]>([
@@ -23,15 +30,40 @@ const AdminUpload: React.FC = () => {
   ]);
   const [returnPolicies, setReturnPolicies] = useState<string[]>([""]);
   const [shippingPolicies, setShippingPolicies] = useState<string[]>([""]);
-  const [sizes, setSizes] = useState<string[]>([""]);
+  const [sizes, setSizes] = useState([{ name: "", qty: 0 }]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileList2, setFileList2] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (product) {
+      // Populate form with existing product data
+      form.setFieldsValue({
+        id: product._id,
+        title: product.title,
+        linkProduct: product.linkProduct,
+        qtyTotal: product.qtyTotal,
+        badgeType: product.badgeType,
+        originalPrice: product.originalPrice,
+        discountedPrice: product.discountedPrice,
+        sizeModel: product.sizeModel,
+        heightModel: product.heightModel,
+      });
+      setDetails(product.details || [""]);
+      setSizes(product.sizes || [""]);
+      setWashingInstructions(product.washingInstructions || [""]);
+      setReturnPolicies(product.returnPolicies || [""]);
+      setShippingPolicies(product.shippingPolicies || [""]);
+      // Populate file lists if images are available
+      setFileList(product.images || []);
+      setFileList2(product.sizeChart || []);
+    }
+  }, [form, product]);
+
   const resetForm = () => {
     form.resetFields();
     setDetails([""]);
-    setSizes([""]);
+    setSizes([{ name: "", qty: 0 }]);
     setWashingInstructions([""]);
     setReturnPolicies([""]);
     setShippingPolicies([""]);
@@ -45,6 +77,7 @@ const AdminUpload: React.FC = () => {
     formData.append("badgeType", values.badgeType);
     formData.append("linkProduct", values.linkProduct);
     formData.append("sizeModel", values.sizeModel);
+    formData.append("qtyTotal", values.qtyTotal);
     formData.append("heightModel", values.heightModel);
     formData.append("originalPrice", values.originalPrice);
     formData.append("discountedPrice", values.discountedPrice);
@@ -65,50 +98,58 @@ const AdminUpload: React.FC = () => {
     // Append custom fields
     details.forEach((detail, index) => {
       if (detail.trim()) {
-        // Ensure detail is not just whitespace
         formData.append(`details[${index}]`, detail);
       }
     });
 
     sizes.forEach((size, index) => {
-      if (size.trim()) {
-        // Ensure size is not just whitespace
-        formData.append(`sizes[${index}]`, size);
+      const name = size.name || "";
+      if (name.trim()) {
+        formData.append(`sizes[${index}][name]`, name);
+        formData.append(`sizes[${index}][qty]`, String(size.qty));
       }
     });
 
     washingInstructions.forEach((instruction, index) => {
       if (instruction.trim()) {
-        // Ensure instruction is not just whitespace
         formData.append(`washingInstructions[${index}]`, instruction);
       }
     });
 
     returnPolicies.forEach((policy, index) => {
       if (policy.trim()) {
-        // Ensure policy is not just whitespace
         formData.append(`returnPolicies[${index}]`, policy);
       }
     });
 
     shippingPolicies.forEach((policy, index) => {
       if (policy.trim()) {
-        // Ensure policy is not just whitespace
         formData.append(`shippingPolicies[${index}]`, policy);
       }
     });
 
     try {
       setLoading(true);
-      const apiUrl = `${process.env.REACT_APP_API_URL}/products/upload`;
-      const response = await axios.post(apiUrl, formData, {
+      const apiUrl = product
+        ? `${process.env.REACT_APP_API_URL}/products/update/${product._id}`
+        : `${process.env.REACT_APP_API_URL}/products/upload`;
+      const method = product ? "put" : "post";
+
+      const response = await axios({
+        method,
+        url: apiUrl,
+        data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response.status === 201) {
-        message.success("Product uploaded successfully!");
+      if (response.status === 200 || response.status === 201) {
+        message.success(
+          product
+            ? "Product updated successfully!"
+            : "Product uploaded successfully!"
+        );
         resetForm();
       } else {
         message.error("Failed to upload product.");
@@ -142,9 +183,14 @@ const AdminUpload: React.FC = () => {
   const handleRemoveDetail = (index: number) =>
     setDetails(details.filter((_, i) => i !== index));
 
-  const handleAddSize = () => setSizes([...sizes, ""]);
-  const handleRemoveSize = (index: number) =>
-    setSizes(sizes.filter((_, i) => i !== index));
+  const handleAddSize = () => {
+    setSizes([...sizes, { name: "", qty: 0 }]);
+  };
+
+  const handleRemoveSize = (index: number) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
 
   const handleAddWashingInstruction = () =>
     setWashingInstructions([...washingInstructions, ""]);
@@ -162,281 +208,398 @@ const AdminUpload: React.FC = () => {
     setShippingPolicies(shippingPolicies.filter((_, i) => i !== index));
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        maxWidth: "600px",
-        margin: "0 auto",
-        backgroundColor: "#ffffff",
-        color: "#000000",
-      }}
-    >
-      <Title level={2} style={{ textAlign: "center" }}>
-        Admin Product Upload
-      </Title>
-      <Form
-        form={form}
-        name="productUpload"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        layout="vertical"
-      >
-        <Form.Item
-          label="Product Title"
-          name="title"
-          rules={[
-            { required: true, message: "Please input the product title!" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Content>
+        <Row justify="center">
+          <Col span={24} md={24} lg={24}>
+            <div
+              style={{
+                padding: "20px",
+                maxWidth: "100%",
+                margin: "0 auto",
+                backgroundColor: "#ffffff",
+                color: "#000000",
+              }}
+            >
+              <Title
+                level={4}
+                style={{ textAlign: "left", marginBottom: "20px" }}
+              >
+                {product ? "Edit Product" : "Upload Product"}
+              </Title>
 
-        <Form.Item label="Link Product" name="linkProduct">
-          <Input />
-        </Form.Item>
+              <Form
+                form={form}
+                name="productUpload"
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                layout="vertical"
+              >
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Product Title"
+                      name="title"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the product title!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-        <Form.Item
-          label="Badge Type"
-          name="badgeType"
-          rules={[{ required: true, message: "Please input the badge type!" }]}
-        >
-          <Input />
-        </Form.Item>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Link Product" name="linkProduct">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Badge Type"
+                      name="badgeType"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the badge type!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Original Price"
+                      name="originalPrice"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the original price!",
+                        },
+                      ]}
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Discounted Price"
+                      name="discountedPrice"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the discounted price!",
+                        },
+                      ]}
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Qty Product"
+                      name="qtyTotal"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the qty product!",
+                        },
+                      ]}
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                  </Col>
+                </Row>
 
-        <Form.Item
-          label="Original Price"
-          name="originalPrice"
-          rules={[
-            { required: true, message: "Please input the original price!" },
-          ]}
-        >
-          <InputNumber style={{ width: "100%" }} min={0} />
-        </Form.Item>
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Product Images"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please upload product images!",
+                        },
+                      ]}
+                    >
+                      <Upload
+                        listType="picture-card"
+                        showUploadList={true}
+                        multiple
+                        fileList={fileList}
+                        onChange={handleChange1}
+                        beforeUpload={() => false}
+                      >
+                        <div>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload</div>
+                        </div>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
 
-        <Form.Item
-          label="Discounted Price"
-          name="discountedPrice"
-          rules={[
-            { required: true, message: "Please input the discounted price!" },
-          ]}
-        >
-          <InputNumber style={{ width: "100%" }} min={0} />
-        </Form.Item>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Size Chart Product"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please upload size chart product!",
+                        },
+                      ]}
+                    >
+                      <Upload
+                        listType="picture-card"
+                        showUploadList={true}
+                        multiple
+                        fileList={fileList2}
+                        onChange={handleChange2}
+                        beforeUpload={() => false}
+                      >
+                        <div>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload</div>
+                        </div>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                </Row>
 
-        <Form.Item
-          label="Product Images"
-          rules={[{ required: true, message: "Please upload product images!" }]}
-        >
-          <Upload
-            listType="picture-card"
-            showUploadList={true}
-            multiple
-            fileList={fileList}
-            onChange={handleChange1}
-            beforeUpload={() => false}
-          >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    {/* Dynamic Fields: Detail Item, Size, Washing Instructions, Return Policies, Shipping Policies */}
+                    <Form.Item label="Detail Item (add one at a time)">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        {details.map((detail, index) => (
+                          <Space key={index} style={{ width: "100%" }}>
+                            <Input
+                              value={detail}
+                              onChange={(e) => {
+                                const newDetails = [...details];
+                                newDetails[index] = e.target.value;
+                                setDetails(newDetails);
+                              }}
+                              placeholder={`Detail ${index + 1}`}
+                            />
+                            <Button
+                              type="text"
+                              icon={<MinusCircleOutlined />}
+                              onClick={() => handleRemoveDetail(index)}
+                            />
+                          </Space>
+                        ))}
+                        <Button
+                          type="dashed"
+                          onClick={handleAddDetail}
+                          style={{ width: "100%" }}
+                        >
+                          Add Detail
+                        </Button>
+                      </Space>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Available Size (add one at a time)">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        {sizes.map((size, index) => (
+                          <Space
+                            key={index}
+                            style={{ width: "100%" }}
+                            align="baseline"
+                          >
+                            <Input
+                              value={size.name}
+                              onChange={(e) => {
+                                const newSizes = [...sizes];
+                                newSizes[index] = {
+                                  ...newSizes[index],
+                                  name: e.target.value,
+                                };
+                                setSizes(newSizes);
+                              }}
+                              placeholder={`Size ${index + 1}`}
+                              style={{ marginRight: "8px" }}
+                            />
+                            <InputNumber
+                              value={size.qty}
+                              onChange={(value) => {
+                                const newSizes = [...sizes];
+                                newSizes[index] = {
+                                  ...newSizes[index],
+                                  qty: value !== null ? value : 0,
+                                };
+                                setSizes(newSizes);
+                              }}
+                              placeholder="Qty"
+                              min={0}
+                              style={{ width: "100px", marginRight: "8px" }}
+                            />
+
+                            <Button
+                              type="text"
+                              icon={<MinusCircleOutlined />}
+                              onClick={() => handleRemoveSize(index)}
+                            />
+                          </Space>
+                        ))}
+                        <Button
+                          type="dashed"
+                          onClick={handleAddSize}
+                          style={{ width: "100%" }}
+                        >
+                          Add Size
+                        </Button>
+                      </Space>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Size Model" name="sizeModel">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Height Model" name="heightModel">
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    {" "}
+                    <Form.Item label="Washing Instructions (add one at a time)">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        {washingInstructions.map((instruction, index) => (
+                          <Space key={index} style={{ width: "100%" }}>
+                            <Input
+                              value={instruction}
+                              onChange={(e) => {
+                                const newInstructions = [
+                                  ...washingInstructions,
+                                ];
+                                newInstructions[index] = e.target.value;
+                                setWashingInstructions(newInstructions);
+                              }}
+                              placeholder={`Instruction ${index + 1}`}
+                            />
+                            <Button
+                              type="text"
+                              icon={<MinusCircleOutlined />}
+                              onClick={() =>
+                                handleRemoveWashingInstruction(index)
+                              }
+                            />
+                          </Space>
+                        ))}
+                        <Button
+                          type="dashed"
+                          onClick={handleAddWashingInstruction}
+                          style={{ width: "100%" }}
+                        >
+                          Add Washing Instruction
+                        </Button>
+                      </Space>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    {" "}
+                    <Form.Item label="Return Policies (add one at a time)">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        {returnPolicies.map((policy, index) => (
+                          <Space key={index} style={{ width: "100%" }}>
+                            <Input
+                              value={policy}
+                              onChange={(e) => {
+                                const newPolicies = [...returnPolicies];
+                                newPolicies[index] = e.target.value;
+                                setReturnPolicies(newPolicies);
+                              }}
+                              placeholder={`Policy ${index + 1}`}
+                            />
+                            <Button
+                              type="text"
+                              icon={<MinusCircleOutlined />}
+                              onClick={() => handleRemoveReturnPolicy(index)}
+                            />
+                          </Space>
+                        ))}
+                        <Button
+                          type="dashed"
+                          onClick={handleAddReturnPolicy}
+                          style={{ width: "100%" }}
+                        >
+                          Add Return Policy
+                        </Button>
+                      </Space>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item label="Shipping Policies (add one at a time)">
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    {shippingPolicies.map((policy, index) => (
+                      <Space key={index} style={{ width: "100%" }}>
+                        <Input
+                          value={policy}
+                          onChange={(e) => {
+                            const newPolicies = [...shippingPolicies];
+                            newPolicies[index] = e.target.value;
+                            setShippingPolicies(newPolicies);
+                          }}
+                          placeholder={`Policy ${index + 1}`}
+                        />
+                        <Button
+                          type="text"
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => handleRemoveShippingPolicy(index)}
+                        />
+                      </Space>
+                    ))}
+                    <Button
+                      type="dashed"
+                      onClick={handleAddShippingPolicy}
+                      style={{ width: "100%" }}
+                    >
+                      Add Shipping Policy
+                    </Button>
+                  </Space>
+                </Form.Item>
+
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    style={{
+                      width: "100%",
+                      marginBottom: "10px",
+                      backgroundColor: "#000",
+                    }}
+                  >
+                    {product ? "Edit Product" : "Upload Product"}
+                  </Button>
+                  {product && (
+                    <Button
+                      type="default"
+                      onClick={resetForm}
+                      style={{ width: "100%" }}
+                    >
+                      Reset Form
+                    </Button>
+                  )}
+                </Form.Item>
+              </Form>
             </div>
-          </Upload>
-        </Form.Item>
-
-        <Form.Item
-          label="Size Chart Product"
-          rules={[
-            {
-              required: true,
-              message: "Please upload size chart product!",
-            },
-          ]}
-        >
-          <Upload
-            listType="picture-card"
-            showUploadList={true}
-            multiple
-            fileList={fileList2}
-            onChange={handleChange2}
-            beforeUpload={() => false}
-          >
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
-            </div>
-          </Upload>
-        </Form.Item>
-
-        {/* Dynamic Fields: Detail Item, Size, Washing Instructions, Return Policies, Shipping Policies */}
-        <Form.Item label="Detail Item (add one at a time)">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            {details.map((detail, index) => (
-              <Space key={index} style={{ width: "100%" }}>
-                <Input
-                  value={detail}
-                  onChange={(e) => {
-                    const newDetails = [...details];
-                    newDetails[index] = e.target.value;
-                    setDetails(newDetails);
-                  }}
-                  placeholder={`Detail ${index + 1}`}
-                />
-                <Button
-                  type="text"
-                  icon={<MinusCircleOutlined />}
-                  onClick={() => handleRemoveDetail(index)}
-                />
-              </Space>
-            ))}
-            <Button
-              type="dashed"
-              onClick={handleAddDetail}
-              style={{ width: "100%" }}
-            >
-              Add Detail
-            </Button>
-          </Space>
-        </Form.Item>
-
-        <Form.Item label="Available Size (add one at a time)">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            {sizes.map((size, index) => (
-              <Space key={index} style={{ width: "100%" }}>
-                <Input
-                  value={size}
-                  onChange={(e) => {
-                    const newSizes = [...sizes];
-                    newSizes[index] = e.target.value;
-                    setSizes(newSizes);
-                  }}
-                  placeholder={`Size ${index + 1}`}
-                />
-                <Button
-                  type="text"
-                  icon={<MinusCircleOutlined />}
-                  onClick={() => handleRemoveSize(index)}
-                />
-              </Space>
-            ))}
-            <Button
-              type="dashed"
-              onClick={handleAddSize}
-              style={{ width: "100%" }}
-            >
-              Add Size
-            </Button>
-          </Space>
-        </Form.Item>
-
-        <Form.Item label="Size Model" name="sizeModel">
-          <Input />
-        </Form.Item>
-
-        <Form.Item label="Height Model" name="heightModel">
-          <InputNumber style={{ width: "100%" }} min={0} />
-        </Form.Item>
-
-        <Form.Item label="Washing Instructions (add one at a time)">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            {washingInstructions.map((instruction, index) => (
-              <Space key={index} style={{ width: "100%" }}>
-                <Input
-                  value={instruction}
-                  onChange={(e) => {
-                    const newInstructions = [...washingInstructions];
-                    newInstructions[index] = e.target.value;
-                    setWashingInstructions(newInstructions);
-                  }}
-                  placeholder={`Instruction ${index + 1}`}
-                />
-                <Button
-                  type="text"
-                  icon={<MinusCircleOutlined />}
-                  onClick={() => handleRemoveWashingInstruction(index)}
-                />
-              </Space>
-            ))}
-            <Button
-              type="dashed"
-              onClick={handleAddWashingInstruction}
-              style={{ width: "100%" }}
-            >
-              Add Washing Instruction
-            </Button>
-          </Space>
-        </Form.Item>
-
-        <Form.Item label="Return Policies (add one at a time)">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            {returnPolicies.map((policy, index) => (
-              <Space key={index} style={{ width: "100%" }}>
-                <Input
-                  value={policy}
-                  onChange={(e) => {
-                    const newPolicies = [...returnPolicies];
-                    newPolicies[index] = e.target.value;
-                    setReturnPolicies(newPolicies);
-                  }}
-                  placeholder={`Policy ${index + 1}`}
-                />
-                <Button
-                  type="text"
-                  icon={<MinusCircleOutlined />}
-                  onClick={() => handleRemoveReturnPolicy(index)}
-                />
-              </Space>
-            ))}
-            <Button
-              type="dashed"
-              onClick={handleAddReturnPolicy}
-              style={{ width: "100%" }}
-            >
-              Add Return Policy
-            </Button>
-          </Space>
-        </Form.Item>
-
-        <Form.Item label="Shipping Policies (add one at a time)">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            {shippingPolicies.map((policy, index) => (
-              <Space key={index} style={{ width: "100%" }}>
-                <Input
-                  value={policy}
-                  onChange={(e) => {
-                    const newPolicies = [...shippingPolicies];
-                    newPolicies[index] = e.target.value;
-                    setShippingPolicies(newPolicies);
-                  }}
-                  placeholder={`Policy ${index + 1}`}
-                />
-                <Button
-                  type="text"
-                  icon={<MinusCircleOutlined />}
-                  onClick={() => handleRemoveShippingPolicy(index)}
-                />
-              </Space>
-            ))}
-            <Button
-              type="dashed"
-              onClick={handleAddShippingPolicy}
-              style={{ width: "100%" }}
-            >
-              Add Shipping Policy
-            </Button>
-          </Space>
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            style={{ width: "100%" }}
-          >
-            Upload Product
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          </Col>
+        </Row>
+      </Content>
+    </Layout>
   );
 };
 

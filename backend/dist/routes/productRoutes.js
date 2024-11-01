@@ -22,4 +22,6 @@ router.post("/upload", upload.fields([
 ]), productController_1.uploadProduct);
 router.get("/get-products", productController_1.getProducts);
 router.get("/get-product/:id", productController_1.getProduct);
+router.put("/update/:id", productController_1.updateProduct);
+router.delete("/:id", productController_1.deleteProduct);
 exports.default = router;

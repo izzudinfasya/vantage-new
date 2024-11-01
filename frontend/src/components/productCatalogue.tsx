@@ -2,24 +2,34 @@ import React, { useState, useEffect } from "react";
 import { Layout, Typography } from "antd";
 import axios from "axios";
 import ProductCard from "./productCard";
+import SkeletonCard from "./skeletonCard"; // Import your SkeletonCard component
 
 const { Content } = Layout;
 const { Text } = Typography;
 
 const ProductCatalogue: React.FC = () => {
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
-  const [columns, setColumns] = useState<number>(4); // Default kolom 4
+  const [columns, setColumns] = useState<number>(4); // Default column count
   const [productsData, setProductsData] = useState<any[]>([]); // State for fetched products
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [expectedProductCount, setExpectedProductCount] = useState<number>(0);
 
   const apiUrl = process.env.REACT_APP_API_URL;
+
   // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${apiUrl}/products/get-products`);
-        setProductsData(response.data); // Store fetched data in state
+        setProductsData(response.data);
+        setExpectedProductCount(response.data.length);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
@@ -27,23 +37,23 @@ const ProductCatalogue: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Hook untuk mengatur jumlah kolom berdasarkan ukuran jendela
+  // Hook to set column count based on window size
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setColumns(2); // 2 kolom untuk mobile
+        setColumns(2); // 2 columns for mobile
       } else {
-        setColumns(4); // 4 kolom untuk desktop
+        setColumns(4); // 4 columns for desktop
       }
     };
 
     // Set initial column count
     handleResize();
 
-    // Tambahkan event listener untuk resize
+    // Add resize event listener
     window.addEventListener("resize", handleResize);
 
-    // Bersihkan event listener saat komponen di-unmount
+    // Clean up event listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -65,86 +75,94 @@ const ProductCatalogue: React.FC = () => {
               gridRowGap: "15px",
             }}
           >
-            {productsData.map((product) => (
-              <div
-                key={product._id} // Use unique product identifier
-                style={{ textAlign: "left", position: "relative" }}
-              >
-                <ProductCard
-                  product={{
-                    id: product._id,
-                    frontImage:
-                      product.images[3] ||
-                      product.images[1] ||
-                      product.images[0],
-                    backImage:
-                      product.images[2] ||
-                      product.images[1] ||
-                      product.images[0],
-                    title: product.title,
-                    originalPrice: product.originalPrice,
-                    discountedPrice: product.discountedPrice,
-                  }}
-                  hoveredProductId={hoveredProductId}
-                  setHoveredProductId={setHoveredProductId}
-                />
-                <div style={{ marginTop: "10px", textAlign: "left" }}>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "normal",
-                      margin: "10px",
-                    }}
-                  >
-                    {product.title}
-                  </p>
+            {loading
+              ? // Render skeleton cards while loading
+                Array.from({ length: expectedProductCount }).map((_, index) => (
+                  <SkeletonCard key={index} />
+                ))
+              : // Render product cards when data is loaded
+                productsData.map((product) => (
                   <div
-                    style={{
-                      display: "flex",
-                      flexDirection: columns < 3 ? "column" : "row",
-                      alignItems: columns < 3 ? "flex-start" : "center",
-                      margin: "10px 10px",
-                    }}
+                    key={product._id} // Use unique product identifier
+                    style={{ textAlign: "left", position: "relative" }}
                   >
-                    {product.discountedPrice > 0 ? (
-                      <>
-                        <Text
-                          style={{
-                            fontSize: "18px",
-                            color: "#333",
-                            fontWeight: "500",
-                            textDecoration: "line-through",
-                            marginRight: "10px",
-                          }}
-                        >
-                          IDR {product.originalPrice.toLocaleString("id-ID")}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: "18px",
-                            color: "#ff0000",
-                            fontWeight: "500",
-                            marginRight: "10px",
-                          }}
-                        >
-                          IDR {product.discountedPrice.toLocaleString("id-ID")}
-                        </Text>
-                      </>
-                    ) : (
-                      <Text
+                    <ProductCard
+                      product={{
+                        id: product._id,
+                        frontImage:
+                          product.images[3] ||
+                          product.images[1] ||
+                          product.images[0],
+                        backImage:
+                          product.images[2] ||
+                          product.images[1] ||
+                          product.images[0],
+                        title: product.title,
+                        originalPrice: product.originalPrice,
+                        discountedPrice: product.discountedPrice,
+                      }}
+                      hoveredProductId={hoveredProductId}
+                      setHoveredProductId={setHoveredProductId}
+                    />
+                    <div style={{ marginTop: "10px", textAlign: "left" }}>
+                      <p
                         style={{
-                          fontSize: "18px",
-                          color: "#000",
-                          fontWeight: "500",
+                          fontSize: "16px",
+                          fontWeight: "normal",
+                          margin: "10px",
                         }}
                       >
-                        IDR {product.originalPrice.toLocaleString("id-ID")}
-                      </Text>
-                    )}
+                        {product.title}
+                      </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: columns < 3 ? "column" : "row",
+                          alignItems: columns < 3 ? "flex-start" : "center",
+                          margin: "10px 10px",
+                        }}
+                      >
+                        {product.discountedPrice > 0 ? (
+                          <>
+                            <Text
+                              style={{
+                                fontSize: "18px",
+                                color: "#333",
+                                fontWeight: "500",
+                                textDecoration: "line-through",
+                                marginRight: "10px",
+                              }}
+                            >
+                              IDR{" "}
+                              {product.originalPrice.toLocaleString("id-ID")}
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: "18px",
+                                color: "#ff0000",
+                                fontWeight: "500",
+                                marginRight: "10px",
+                              }}
+                            >
+                              IDR{" "}
+                              {product.discountedPrice.toLocaleString("id-ID")}
+                            </Text>
+                          </>
+                        ) : (
+                          <Text
+                            style={{
+                              fontSize: "18px",
+                              color: "#000",
+                              fontWeight: "500",
+                            }}
+                          >
+                            IDR {product.originalPrice.toLocaleString("id-ID")}
+                          </Text>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                ))}
           </div>
         </div>
       </Content>

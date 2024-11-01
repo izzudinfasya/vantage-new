@@ -16,7 +16,8 @@ exports.validatePassword = exports.getPassword = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const express_validator_1 = require("express-validator");
 const Password_1 = __importDefault(require("../models/Password"));
-const setPassword = "FIRSTDROP";
+const adminPassword = "adminvntg";
+const customerPassword = "FIRSTDROP";
 // Fungsi untuk mengirim password melalui email
 const sendPasswordEmail = (email, name, password) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
@@ -93,9 +94,9 @@ const getPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             });
         }
         // Debug: Log email sending process
-        console.log("Sending email to:", email, "with password:", setPassword);
+        console.log("Sending email to:", email, "with password:", customerPassword);
         // Mengirim email dengan password akses terlebih dahulu
-        const emailSent = yield sendPasswordEmail(email, name, setPassword);
+        const emailSent = yield sendPasswordEmail(email, name, customerPassword);
         if (!emailSent) {
             return res.status(500).send({
                 message: "Failed to send email. Please try again later.",
@@ -105,7 +106,7 @@ const getPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const newUser = new Password_1.default({
             email,
             name,
-            password: setPassword, // Simpan password yang sudah dihasilkan
+            password: customerPassword, // Simpan password yang sudah dihasilkan
         });
         yield newUser.save();
         res.status(201).send({
@@ -123,8 +124,15 @@ const getPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getPassword = getPassword;
 const validatePassword = (req, res) => {
     const { password } = req.body;
-    if (password === setPassword) {
-        return res.status(200).send({ message: "Password is correct." });
+    if (password === adminPassword) {
+        return res
+            .status(200)
+            .send({ message: "Admin password is correct.", redirectTo: "/admin" });
+    }
+    else if (password === customerPassword) {
+        return res
+            .status(200)
+            .send({ message: "Your password is correct.", redirectTo: "/home" });
     }
     else {
         return res.status(401).send({ message: "Incorrect password." });

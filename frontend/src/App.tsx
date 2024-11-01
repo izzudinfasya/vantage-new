@@ -5,6 +5,7 @@ import {
   Routes,
   Navigate,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import HomePage from "./pages/homePage";
 import LinktreePage from "./pages/linktreePage";
@@ -12,83 +13,158 @@ import PasswordPage from "./pages/passwordPage";
 import CustomHeader from "./components/customHeader";
 import CustomFooter from "./components/customFooter";
 import DetailProduct from "./pages/detailproductPage";
-import AdminUpload from "./pages/adminuploadPage";
+import UploadPage from "./pages/adminuploadPage";
+import AdminPage from "./pages/adminPage";
+import ProductPage from "./pages/productPage";
+import Sidebar from "./components/sidebarAdmin"; // Import the Sidebar component
+import Navbar from "./components/navbarAdmin"; // Import the Navbar component
+import { Layout } from "antd";
+
+const { Content } = Layout; // Destructure Content from Layout
 
 // Protected Route component to guard pages
 const ProtectedRoute = ({
   isLoggedIn,
+  adminPasswordRequired = false,
+  adminPassword = "",
   children,
 }: {
   isLoggedIn: boolean;
+  adminPasswordRequired?: boolean;
+  adminPassword?: string;
   children: React.ReactNode;
 }) => {
-  return isLoggedIn ? <>{children}</> : <Navigate to="/password" />;
+  const isAdminValid = adminPasswordRequired
+    ? adminPassword === "adminvntg"
+    : true;
+
+  return isLoggedIn && isAdminValid ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/password" />
+  );
 };
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
+  const [collapsed, setCollapsed] = useState(false); // State for sidebar collapse
+  const [adminPassword, setAdminPassword] = useState(""); // State for admin password input
   const location = useLocation(); // Get current route location
+  const navigate = useNavigate(); // Use the navigate hook for redirection
 
   // Callback to log in user after entering correct password
   const handleLogin = (password: string) => {
-    const correctPassword = "FIRSTDROP"; // Replace with your actual password logic
-    if (password === correctPassword) {
-      setIsLoggedIn(true); // Set login state to true
+    const userPassword = "FIRSTDROP"; // User password
+    const adminPassword = "adminvntg"; // Admin password
+
+    if (password === userPassword) {
+      setIsLoggedIn(true);
+    } else if (password === adminPassword) {
+      setIsLoggedIn(true);
+      setAdminPassword(password);
+    } else {
+      alert("Incorrect password. Please try again.");
     }
   };
 
-  // Kondisi untuk menentukan kapan header/footer harus disembunyikan
+  // Condition to determine when to hide header/footer
   const hideHeaderFooter =
-    location.pathname === "/password" || location.pathname === "/link";
+    location.pathname === "/password" ||
+    location.pathname === "/link" ||
+    location.pathname.startsWith("/admin");
+
+  // Non-admin routes
+  const renderNonAdminRoutes = () => (
+    <Routes>
+      <Route path="/link" element={<LinktreePage />} />
+      <Route
+        path="/password"
+        element={<PasswordPage onLogin={handleLogin} />}
+      />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/product/:id"
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <DetailProduct />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to="/password" />} />
+      <Route path="*" element={<h1>404 Not Found</h1>} />
+    </Routes>
+  );
+
+  // Admin routes with layout
+  const renderAdminRoutes = () => (
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sidebar collapsed={collapsed} />
+      <Layout>
+        <Navbar toggleSidebar={() => setCollapsed(!collapsed)} />
+        <Content style={{ padding: "24px" }}>
+          <Routes>
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute
+                  isLoggedIn={isLoggedIn}
+                  adminPasswordRequired={true}
+                  adminPassword={adminPassword}
+                >
+                  <AdminPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/product/settings"
+              element={
+                <ProtectedRoute
+                  isLoggedIn={isLoggedIn}
+                  adminPasswordRequired={true}
+                  adminPassword={adminPassword}
+                >
+                  <UploadPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/product"
+              element={
+                <ProtectedRoute
+                  isLoggedIn={isLoggedIn}
+                  adminPasswordRequired={true}
+                  adminPassword={adminPassword}
+                >
+                  <ProductPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Content>
+      </Layout>
+    </Layout>
+  );
 
   return (
-    <div>
-      {!hideHeaderFooter && <CustomHeader />}{" "}
-      {/* Header tidak muncul di /password dan /link */}
-      <Routes>
-        {/* Route untuk LinktreePage tanpa header dan footer */}
-        <Route path="/link" element={<LinktreePage />} />
-        <Route path="/admin" element={<AdminUpload />} />
-
-        {/* Route untuk halaman password */}
-        <Route
-          path="/password"
-          element={<PasswordPage onLogin={handleLogin} />}
-        />
-
-        {/* Protected route untuk HomePage, hanya bisa diakses jika sudah login */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Protected route untuk DetailProduct */}
-        <Route
-          path="/product/:id"
-          element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <DetailProduct />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Redirect dari / ke /password jika belum login */}
-        <Route path="/" element={<Navigate to="/password" />} />
-
-        {/* Route untuk 404 Not Found */}
-        <Route path="*" element={<h1>404 Not Found</h1>} />
-      </Routes>
-      {!hideHeaderFooter && <CustomFooter />}{" "}
-      {/* Footer tidak muncul di /password dan /link */}
-    </div>
+    <>
+      {!hideHeaderFooter && <CustomHeader />}
+      {/* Render either the admin layout or non-admin routes based on the path */}
+      {location.pathname.startsWith("/admin")
+        ? renderAdminRoutes()
+        : renderNonAdminRoutes()}
+      {!hideHeaderFooter && <CustomFooter />}
+    </>
   );
 };
 
-// Komponen pembungkus untuk Router
+// Wrapper component for Router
 const AppWrapper: React.FC = () => {
   return (
     <Router>

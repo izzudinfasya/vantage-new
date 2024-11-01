@@ -14,6 +14,7 @@ import {
   Skeleton,
 } from "antd";
 
+import SkeletonImage from "components/skeletonImage";
 import ProductCatalogue from "components/productCatalogue";
 
 import axios from "axios";
@@ -26,6 +27,7 @@ const DetailProductPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(""); // Default size
   const [product, setProduct] = useState<any>(null);
+  const [expectedProductCount, setExpectedProductCount] = useState<number>(0);
 
   const showDrawer = () => {
     setVisible(true);
@@ -45,13 +47,16 @@ const DetailProductPage: React.FC = () => {
           `${apiUrl}/products/get-product/${id}`
         );
         setProduct(response.data); // Store fetched data in state
+        setExpectedProductCount(response.data.images.length);
       } catch (error: any) {
         console.error(
           "Error fetching product:",
           error.response ? error.response.data : error.message
         );
       } finally {
-        setLoading(false); // Stop loading
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
@@ -88,7 +93,25 @@ const DetailProductPage: React.FC = () => {
         {/* Product Images - Mobile View with Carousel */}
         <Col xs={24} md={16} style={{ padding: "0" }}>
           {loading ? (
-            <Skeleton active paragraph={{ rows: 18 }} />
+            isMobile ? (
+              <div style={{ padding: "0" }}>
+                <SkeletonImage />
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: "10px",
+                }}
+              >
+                {Array.from({ length: expectedProductCount }).map(
+                  (_, index) => (
+                    <SkeletonImage key={index} />
+                  )
+                )}
+              </div>
+            )
           ) : isMobile ? (
             <Carousel arrows={true} dots={true} speed={500} autoplay>
               {product.images
@@ -151,7 +174,7 @@ const DetailProductPage: React.FC = () => {
                 />
                 <Skeleton
                   active
-                  paragraph={{ rows: 4 }}
+                  paragraph={{ rows: 12 }}
                   style={{ marginTop: "30px" }}
                 />
               </>
@@ -227,67 +250,94 @@ const DetailProductPage: React.FC = () => {
 
                 <Divider style={{ borderColor: "#ccc" }} />
 
-                <div style={{ marginTop: "20px" }}>
-                  <div>
-                    {product.sizes.map((size: string) => (
-                      <Button
-                        key={size}
-                        onClick={() => setSelectedSize(size)} // Update selected size
-                        style={{
-                          margin: "5px",
-                          color: selectedSize === size ? "#fff" : "#000",
-                          borderColor: "#000",
-                          backgroundColor:
-                            selectedSize === size ? "#000" : "transparent", // Highlight selected size
-                        }}
-                        shape="round"
-                      >
-                        {size}
-                      </Button>
-                    ))}
+                <div
+                  style={{
+                    marginTop: "20px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    {product.sizes.map(
+                      (size: { name: string; qty: number; _id: string }) => (
+                        <Button
+                          key={size._id}
+                          onClick={() => setSelectedSize(size.name)} // Update selected size
+                          style={{
+                            margin: "0 5px", // Small horizontal margin between buttons
+                            color: selectedSize === size.name ? "#fff" : "#000",
+                            borderColor: "#000",
+                            backgroundColor:
+                              selectedSize === size.name
+                                ? "#000"
+                                : "transparent", // Highlight selected size
+                          }}
+                          shape="round"
+                        >
+                          {size.name}
+                        </Button>
+                      )
+                    )}
                   </div>
-                  <Text
+                  <span
                     style={{
-                      color: "#555",
-                      fontSize: "14px",
-                      display: "block",
-                      marginTop: "10px",
+                      marginLeft: "20px", // Space between size buttons and quantity display
+                      color: "#000",
                     }}
                   >
-                    Ukuran dan tinggi model: {product.sizeModel} ·{" "}
-                    {product.heightModel}cm
-                  </Text>
-                  <Text
-                    onClick={showDrawer}
-                    style={{
-                      color: "#555",
-                      textDecoration: "underline",
-                      cursor: "pointer",
-                      display: "block",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Panduan Ukuran
-                  </Text>
-
-                  <Drawer
-                    title="Panduan Ukuran"
-                    placement="right"
-                    onClose={onClose}
-                    visible={visible}
-                  >
-                    {product.sizeChart.map((src: string, index: number) => (
-                      <div key={index} style={{ position: "relative" }}>
-                        <Image
-                          src={src}
-                          alt="Size Chart"
-                          style={{ width: "100%" }}
-                        />
-                      </div>
-                    ))}
-                  </Drawer>
+                    {selectedSize &&
+                      (product.sizes.find(
+                        (s: { name: string; qty: number; _id: string }) =>
+                          s.name === selectedSize
+                      )?.qty ||
+                        0)}{" "}
+                    available
+                  </span>
                 </div>
+
+                <Text
+                  style={{
+                    color: "#555",
+                    fontSize: "14px",
+                    display: "block",
+                    marginTop: "10px",
+                  }}
+                >
+                  Ukuran dan tinggi model: {product.sizeModel} ·{" "}
+                  {product.heightModel} cm
+                </Text>
+                <Text
+                  onClick={showDrawer}
+                  style={{
+                    color: "#555",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                    display: "block",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    width: "110px",
+                  }}
+                >
+                  Panduan Ukuran
+                </Text>
+
+                <Drawer
+                  title="Panduan Ukuran"
+                  placement="right"
+                  onClose={onClose}
+                  visible={visible}
+                >
+                  {product.sizeChart.map((src: string, index: number) => (
+                    <div key={index} style={{ position: "relative" }}>
+                      <Image
+                        src={src}
+                        alt="Size Chart"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  ))}
+                </Drawer>
 
                 <div style={{ marginTop: "30px" }}>
                   <Button

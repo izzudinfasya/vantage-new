@@ -13,14 +13,8 @@ cloudinary.config({
 // Controller for uploading a product
 export const uploadProduct = async (req: Request, res: Response) => {
   try {
-    // Log incoming request body
-    console.log("Incoming request body:", req.body);
-
     // Access product data safely
     const productData = Array.isArray(req.body) ? req.body[0] : req.body;
-
-    // Log the product data to ensure it is defined
-    console.log("Product data to be processed:", productData);
 
     // Destructure productData safely
     const {
@@ -30,13 +24,14 @@ export const uploadProduct = async (req: Request, res: Response) => {
       discountedPrice,
       details,
       sizes,
+      qtyTotal,
       sizeModel,
       heightModel,
       washingInstructions,
       returnPolicies,
       shippingPolicies,
       linkProduct,
-    } = productData || {}; // Default to empty object to avoid destructuring errors
+    } = productData || {};
 
     // Validate required fields
     if (!title || !badgeType || !originalPrice || !discountedPrice) {
@@ -112,6 +107,7 @@ export const uploadProduct = async (req: Request, res: Response) => {
       discountedPrice,
       details: parsedDetails,
       sizes: parsedSizes,
+      qtyTotal,
       sizeModel,
       heightModel,
       washingInstructions: parsedWashingInstructions,
@@ -169,5 +165,120 @@ export const getProduct = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ message: "Failed to fetch product", error: error.message });
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const productId = req.params.id;
+
+    // Access product data safely
+    const productData = Array.isArray(req.body) ? req.body[0] : req.body;
+
+    // Validate the presence of product data
+    if (!productData) {
+      return res.status(400).json({ message: "No product data provided." });
+    }
+
+    // Destructure productData safely, only getting necessary fields
+    const {
+      title,
+      badgeType,
+      originalPrice,
+      discountedPrice,
+      details,
+      sizes,
+      qtyTotal,
+      sizeModel,
+      heightModel,
+      washingInstructions,
+      returnPolicies,
+      shippingPolicies,
+      linkProduct,
+    } = productData;
+
+    // Validate required fields
+    if (!title || !badgeType || !originalPrice || !discountedPrice) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    // Safe JSON parsing with error handling
+    const safeParseJSON = (data: string | undefined): any[] => {
+      if (!data) return [];
+      try {
+        const parsedData = JSON.parse(data);
+        return Array.isArray(parsedData) ? parsedData : [parsedData];
+      } catch (error) {
+        console.error("JSON parsing error:", error);
+        return []; // Return empty array on error
+      }
+    };
+
+    // Parse JSON fields
+    const parsedDetails = safeParseJSON(details);
+    const parsedSizes = safeParseJSON(sizes);
+    const parsedWashingInstructions = safeParseJSON(washingInstructions);
+    const parsedReturnPolicies = safeParseJSON(returnPolicies);
+    const parsedShippingPolicies = safeParseJSON(shippingPolicies);
+
+    // Create an object with only fields that need to be updated
+    const updateFields: any = {
+      title,
+      badgeType,
+      originalPrice,
+      discountedPrice,
+      details: parsedDetails,
+      sizes: parsedSizes,
+      qtyTotal,
+      sizeModel,
+      heightModel,
+      washingInstructions: parsedWashingInstructions,
+      returnPolicies: parsedReturnPolicies,
+      shippingPolicies: parsedShippingPolicies,
+      linkProduct,
+    };
+
+    // Filter out undefined fields to avoid overwriting with `undefined`
+    Object.keys(updateFields).forEach((key) => {
+      if (updateFields[key] === undefined) {
+        delete updateFields[key];
+      }
+    });
+
+    // Update the product in the database
+    const updatedProduct = await Products.findByIdAndUpdate(
+      productId,
+      updateFields,
+      { new: true } // Option to return the updated document
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    return res.status(200).json({
+      message: "Product updated successfully!",
+      product: updatedProduct,
+    });
+  } catch (error: any) {
+    console.error("Update error:", error);
+    return res.status(500).json({
+      message: "An error occurred while updating the product.",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const deletedProduct = await Products.findByIdAndDelete(id);
+    if (!deletedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting product", error });
   }
 };
