@@ -86,6 +86,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
           navigate("/home");
         }, 2000);
       } else {
+        setIsLoading(false);
         message.error("Incorrect password");
       }
     } catch (error) {
