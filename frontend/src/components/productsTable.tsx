@@ -131,8 +131,6 @@ const ProductsTable: React.FC = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100%",
-        minHeight: "400px",
       }}
     >
       {loading ? (
@@ -146,11 +144,10 @@ const ProductsTable: React.FC = () => {
         />
       )}
       <style>{`
-    .ant-spin-dot-item {
-        background-color: black !important;
-    }
-  
-  `}</style>
+        .ant-spin-dot-item {
+          background-color: black !important;
+        }
+      `}</style>
     </div>
   );
 };

@@ -28,8 +28,6 @@ export const uploadProduct = async (req: Request, res: Response) => {
       sizeModel,
       heightModel,
       washingInstructions,
-      returnPolicies,
-      shippingPolicies,
       linkProduct,
     } = productData || {};
 
@@ -37,9 +35,6 @@ export const uploadProduct = async (req: Request, res: Response) => {
     if (!title || !badgeType || !originalPrice || !discountedPrice) {
       return res.status(400).json({ message: "Missing required fields." });
     }
-
-    // Log incoming product data for debugging
-    console.log("Incoming product data:", productData);
 
     // Safe JSON parsing with error handling
     const safeParseJSON = (data: string | undefined): any[] => {
@@ -61,12 +56,6 @@ export const uploadProduct = async (req: Request, res: Response) => {
     const parsedWashingInstructions = Array.isArray(washingInstructions)
       ? washingInstructions
       : safeParseJSON(washingInstructions);
-    const parsedReturnPolicies = Array.isArray(returnPolicies)
-      ? returnPolicies
-      : safeParseJSON(returnPolicies);
-    const parsedShippingPolicies = Array.isArray(shippingPolicies)
-      ? shippingPolicies
-      : safeParseJSON(shippingPolicies);
 
     // Ensure files are provided and mapped correctly
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Cast req.files to the expected type
@@ -111,8 +100,6 @@ export const uploadProduct = async (req: Request, res: Response) => {
       sizeModel,
       heightModel,
       washingInstructions: parsedWashingInstructions,
-      returnPolicies: parsedReturnPolicies,
-      shippingPolicies: parsedShippingPolicies,
       linkProduct,
       images: imagePaths,
       sizeChart: sizechartPaths,
@@ -192,8 +179,6 @@ export const updateProduct = async (req: Request, res: Response) => {
       sizeModel,
       heightModel,
       washingInstructions,
-      returnPolicies,
-      shippingPolicies,
       linkProduct,
     } = productData;
 
@@ -224,13 +209,37 @@ export const updateProduct = async (req: Request, res: Response) => {
     const parsedWashingInstructions = Array.isArray(washingInstructions)
       ? washingInstructions
       : safeParseJSON(washingInstructions);
-    const parsedReturnPolicies = Array.isArray(returnPolicies)
-      ? returnPolicies
-      : safeParseJSON(returnPolicies);
-    const parsedShippingPolicies = Array.isArray(shippingPolicies)
-      ? shippingPolicies
-      : safeParseJSON(shippingPolicies);
 
+    // Ensure files are provided and mapped correctly
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Cast req.files to the expected type
+    const images = files.images || []; // Get images safely
+    const sizeChart = files.sizeChart || []; // Get sizeChart safely
+
+    // Upload images to Cloudinary and get URLs
+    const imagePaths = await Promise.all(
+      images.map(async (file) => {
+        try {
+          const uploadResponse = await cloudinary.uploader.upload(file.path);
+          return uploadResponse.secure_url;
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          throw new Error("Failed to upload image to Cloudinary");
+        }
+      })
+    );
+
+    // Upload size charts to Cloudinary and get URLs
+    const sizechartPaths = await Promise.all(
+      sizeChart.map(async (file) => {
+        try {
+          const uploadResponse = await cloudinary.uploader.upload(file.path);
+          return uploadResponse.secure_url; // Return the URL of the uploaded image
+        } catch (uploadError) {
+          console.error("Image upload error:", uploadError);
+          throw new Error("Failed to upload image to Cloudinary");
+        }
+      })
+    );
     // Create an object with only fields that need to be updated
     const updateFields: any = {
       title,
@@ -243,9 +252,9 @@ export const updateProduct = async (req: Request, res: Response) => {
       sizeModel,
       heightModel,
       washingInstructions: parsedWashingInstructions,
-      returnPolicies: parsedReturnPolicies,
-      shippingPolicies: parsedShippingPolicies,
       linkProduct,
+      images: imagePaths,
+      sizeChart: sizechartPaths,
     };
 
     // Handle file uploads

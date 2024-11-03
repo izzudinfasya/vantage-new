@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import gifAvatar from "../assets/v-white.gif"; // Path ke GIF logo
+import gifAvatar from "../assets/gifAvatar.gif";
 import "./passwordPage.css"; // Import CSS file
 import { Modal, Button, Input, message, Form } from "antd";
 import axios from "axios";
@@ -27,7 +27,12 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
     seconds: 0,
   });
   const [isTimeUp, setIsTimeUp] = useState(false);
-  const targetDate = new Date("2024-10-25T20:40:00+07:00").getTime();
+
+  // Retrieve target date from local storage
+  const storedTargetDate = localStorage.getItem("countdownTargetDate");
+  const targetDate = storedTargetDate
+    ? new Date(storedTargetDate).getTime()
+    : new Date().getTime();
 
   useEffect(() => {
     const countdown = setInterval(() => {

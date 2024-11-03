@@ -19,8 +19,6 @@ export interface IProducts extends Document {
   sizeModel: string[];
   heightModel: number[];
   washingInstructions: string[];
-  returnPolicies: string[];
-  shippingPolicies: string[];
   linkProduct: string;
   qtyTotal: number;
   createdAt: Date;
@@ -49,8 +47,6 @@ const productsSchema = new Schema<IProducts>(
     sizeModel: { type: [String], required: true },
     heightModel: { type: [Number], required: true },
     washingInstructions: { type: [String], required: true },
-    returnPolicies: { type: [String], required: true },
-    shippingPolicies: { type: [String], required: true },
     qtyTotal: { type: Number, required: true },
   },
   { timestamps: true }

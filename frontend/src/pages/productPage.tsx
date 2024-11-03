@@ -33,6 +33,12 @@ const ProductPage: React.FC = () => {
                     borderColor: "black",
                     color: "white",
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#333")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "black")
+                  }
                 >
                   Add Product
                 </Button>

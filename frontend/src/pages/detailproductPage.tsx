@@ -407,21 +407,36 @@ const DetailProductPage: React.FC = () => {
                         Shipping
                       </h4>
                       <ul style={{ paddingLeft: "20px" }}>
-                        {product.shippingPolicies.map(
-                          (sPolicies: string, index: number) => (
-                            <li key={index}>{sPolicies}</li>
-                          )
-                        )}
+                        <li>
+                          Orders are processed 1-2 days after the order is
+                          confirmed (excluding Sundays and national holidays)
+                        </li>
+                        <li>
+                          Shipping is done from Surabaya. The duration of
+                          delivery to the destination is adjusted to the
+                          distance policy and the punctuality of the delivery
+                          service.
+                        </li>
+                        <li>
+                          Order cancellation cannot be done after the package
+                          has been processed or sent to the expedition.
+                        </li>
                       </ul>
                       <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
                         Returns
                       </h4>
                       <ul style={{ paddingLeft: "20px" }}>
-                        {product.returnPolicies.map(
-                          (rPolicies: string, index: number) => (
-                            <li key={index}>{rPolicies}</li>
-                          )
-                        )}
+                        <li>
+                          You have 30 days from the date of delivery to return
+                          the item.
+                        </li>
+                        <li>
+                          Shipping costs for returns are borne by the buyer.
+                        </li>
+                        <li>
+                          Must provide <b>UNBOXING VIDEO</b> if you want a
+                          return
+                        </li>
                       </ul>
                     </div>
                   </Panel>

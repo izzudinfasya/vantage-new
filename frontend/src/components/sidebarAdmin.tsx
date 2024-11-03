@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import {
@@ -19,6 +19,21 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
   const logo = collapsed ? logoSmall : logoBig;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Render sidebar only if not in mobile view
+  if (isMobile) return null;
 
   return (
     <Sider
@@ -42,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
       <Menu
         mode="inline"
         defaultSelectedKeys={["1"]}
-        style={{ height: "100vh !important", borderRight: 0, padding: "10px" }}
+        style={{ height: "100vh", borderRight: 0, padding: "10px" }}
       >
         <Menu.Item key="1" icon={<HomeOutlined />}>
           <Link to="/admin">Dashboard</Link>
@@ -51,10 +66,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
           <Link to="/admin/product">Manage Stock</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<ShoppingCartOutlined />}>
-          <Link to="/admin">Orders</Link>
+          <Link to="/admin/none">Orders</Link>
         </Menu.Item>
         <Menu.Item key="4" icon={<FileDoneOutlined />}>
-          <Link to="/admin">Reports</Link>
+          <Link to="/admin/none">Reports</Link>
         </Menu.Item>
       </Menu>
     </Sider>

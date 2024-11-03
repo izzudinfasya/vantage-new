@@ -146,7 +146,11 @@ const CustomHeader: React.FC = () => {
           <img
             src={logo}
             alt="Logo"
-            style={{ height: "150px", objectFit: "contain", maxWidth: "150px" }}
+            style={{
+              height: "150px",
+              objectFit: "contain",
+              maxWidth: "150px",
+            }}
           />
         </a>
       </div>

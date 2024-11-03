@@ -60,7 +60,7 @@ body.ant-modal-open {
 .link-button:hover {
   background-color: #333 !important;
   color: #f0f0f0;
-  transform: translateY(-2px);
+  transform: translateY(-10px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 

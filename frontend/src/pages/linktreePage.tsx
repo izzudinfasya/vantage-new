@@ -1,28 +1,35 @@
-// import React, { useRef, useState } from "react";
+import React from "react";
 import { Layout, Avatar, Row } from "antd";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import shopeeImage from "../assets/shopee.png";
 import webLogo from "../assets/weblogo.png";
-import gifAvatar from "../assets/avatar.gif";
-import backgroundMusic from "../assets/music.mp3";
+import gifAvatar from "../assets/gifAvatar.gif";
 
 const { Content, Footer } = Layout;
 
+// CSS styles for the fade-in animation
+const fadeInFromTopStyle = `
+.fade-in {
+  opacity: 0;
+  animation: fadeInAnimation 1s ease forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+`;
+
+// Add this style globally
+const GlobalStyles = () => <style>{fadeInFromTopStyle}</style>;
+
 const LinktreePage: React.FC = () => {
-  //   const audioRef = useRef<HTMLAudioElement | null>(null);
-  //   const [isPlaying, setIsPlaying] = useState(true);
-
-  //   const toggleMusic = () => {
-  //     if (audioRef.current) {
-  //       if (isPlaying) {
-  //         audioRef.current.pause();
-  //       } else {
-  //         audioRef.current.play();
-  //       }
-  //       setIsPlaying(!isPlaying);
-  //     }
-  //   };
-
   return (
     <Layout
       style={{
@@ -32,6 +39,7 @@ const LinktreePage: React.FC = () => {
         fontFamily: "Helvetica, Arial, sans-serif",
       }}
     >
+      <GlobalStyles />
       <Content
         style={{
           paddingTop: "50px",
@@ -46,39 +54,44 @@ const LinktreePage: React.FC = () => {
           flex: 1,
         }}
       >
+        {/* Avatar with initial fade-in */}
         <Avatar
           src={gifAvatar}
-          style={{ marginBottom: "20px", width: "370px", height: "120px" }}
-        />
-
-        {/* <audio ref={audioRef} autoPlay loop style={{ display: "none" }}>
-          <source src={backgroundMusic} type="audio/mp3" />
-          Your browser does not support the audio element.
-        </audio> */}
-
-        {/* Background Music */}
-        {/* <audio controls autoPlay loop style={{ marginBottom: "20px" }}>
-          <source src={backgroundMusic} type="audio/mp3" />
-          Your browser does not support the audio element.
-        </audio> */}
-
-        {/* Music Control Button */}
-        {/* <button
-          onClick={toggleMusic}
+          className="fade-in"
           style={{
             marginBottom: "20px",
-            padding: "10px 20px",
-            backgroundColor: isPlaying ? "red" : "green",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
+            width: "120px",
+            height: "120px",
+            animationDelay: "0s",
           }}
-        >
-          {isPlaying ? "Stop Music" : "Play Music"}
-        </button> */}
+        />
 
-        {/* Social media buttons in vertical layout */}
+        {/* Brand Name */}
+        <h1
+          style={{
+            color: "black",
+            fontSize: "32px",
+            animationDelay: "0.3s",
+          }}
+          className="fade-in"
+        >
+          VANTAGE
+        </h1>
+
+        {/* Tagline */}
+        <p
+          style={{
+            color: "gray",
+            fontSize: "14px",
+            marginTop: "5px",
+            marginBottom: "15px",
+            animationDelay: "0.6s",
+          }}
+          className="fade-in"
+        >
+          Faith Over Fear
+        </p>
+
         <div
           style={{
             background: "transparent",
@@ -92,7 +105,7 @@ const LinktreePage: React.FC = () => {
           {/* Website Button */}
           <Row justify="center" style={{ marginBottom: "20px" }}>
             <a
-              className="link-button"
+              className="link-button fade-in"
               href="/home"
               style={{
                 display: "flex",
@@ -104,16 +117,17 @@ const LinktreePage: React.FC = () => {
                 textDecoration: "none",
                 borderRadius: "10px",
                 width: "100%",
+                animationDelay: "0.9s",
               }}
             >
               <div
                 style={{
                   backgroundImage: `url(${webLogo})`,
-                  backgroundSize: "contain", // Atur agar gambar sesuai konten
+                  backgroundSize: "contain",
                   backgroundRepeat: "no-repeat",
                   width: "22px",
                   height: "22px",
-                  marginRight: "10px", // Memberikan jarak antara gambar dan teks
+                  marginRight: "10px",
                 }}
               ></div>
               <p
@@ -133,8 +147,8 @@ const LinktreePage: React.FC = () => {
           {/* Shopee Button */}
           <Row justify="center" style={{ marginBottom: "20px" }}>
             <a
-              className="link-button"
-              href="https://shopee.com/vantage_id" // File path from assets
+              className="link-button fade-in"
+              href="https://shopee.com/vantage_id"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -147,16 +161,17 @@ const LinktreePage: React.FC = () => {
                 textDecoration: "none",
                 borderRadius: "10px",
                 width: "100%",
+                animationDelay: "1.2s",
               }}
             >
               <div
                 style={{
                   backgroundImage: `url(${shopeeImage})`,
-                  backgroundSize: "contain", // Atur agar gambar sesuai konten
+                  backgroundSize: "contain",
                   backgroundRepeat: "no-repeat",
                   width: "22px",
                   height: "22px",
-                  marginRight: "10px", // Memberikan jarak antara gambar dan teks
+                  marginRight: "10px",
                 }}
               ></div>
               <p
@@ -176,7 +191,7 @@ const LinktreePage: React.FC = () => {
           {/* Instagram Button */}
           <Row justify="center" style={{ marginBottom: "20px" }}>
             <a
-              className="link-button"
+              className="link-button fade-in"
               href="https://instagram.com/vantageofficial.id"
               target="_blank"
               rel="noopener noreferrer"
@@ -190,6 +205,7 @@ const LinktreePage: React.FC = () => {
                 textDecoration: "none",
                 borderRadius: "10px",
                 width: "100%",
+                animationDelay: "1.5s",
               }}
             >
               <div style={{ fontSize: "25px" }}>
@@ -212,7 +228,7 @@ const LinktreePage: React.FC = () => {
           {/* TikTok Button */}
           <Row justify="center" style={{ marginBottom: "20px" }}>
             <a
-              className="link-button"
+              className="link-button fade-in"
               href="https://tiktok.com/vantageofficial.id"
               target="_blank"
               rel="noopener noreferrer"
@@ -226,6 +242,7 @@ const LinktreePage: React.FC = () => {
                 textDecoration: "none",
                 borderRadius: "10px",
                 width: "100%",
+                animationDelay: "1.8s",
               }}
             >
               <div style={{ fontSize: "22px" }}>
@@ -248,7 +265,7 @@ const LinktreePage: React.FC = () => {
           {/* Customer Service Button */}
           <Row justify="center">
             <a
-              className="link-button"
+              className="link-button fade-in"
               href="https://wa.me/+6285159116620"
               target="_blank"
               rel="noopener noreferrer"
@@ -262,6 +279,7 @@ const LinktreePage: React.FC = () => {
                 textDecoration: "none",
                 borderRadius: "10px",
                 width: "100%",
+                animationDelay: "2.1s",
               }}
             >
               <div style={{ fontSize: "22px" }}>

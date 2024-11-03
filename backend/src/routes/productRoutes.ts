@@ -38,7 +38,14 @@ router.post(
 
 router.get("/get-products", getProducts);
 router.get("/get-product/:id", getProduct);
-router.put("/update/:id", upload.any(), updateProduct);
+router.put(
+  "/update/:id",
+  upload.fields([
+    { name: "images", maxCount: 6 },
+    { name: "sizeChart", maxCount: 1 },
+  ]),
+  updateProduct
+);
 router.delete("/:id", deleteProduct);
 
 export default router;

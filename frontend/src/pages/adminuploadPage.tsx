@@ -28,8 +28,6 @@ const AdminUpload: React.FC = () => {
   const [washingInstructions, setWashingInstructions] = useState<string[]>([
     "",
   ]);
-  const [returnPolicies, setReturnPolicies] = useState<string[]>([""]);
-  const [shippingPolicies, setShippingPolicies] = useState<string[]>([""]);
   const [sizes, setSizes] = useState([{ name: "", qty: 0 }]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileList2, setFileList2] = useState<UploadFile[]>([]);
@@ -52,9 +50,7 @@ const AdminUpload: React.FC = () => {
       setDetails(product.details || [""]);
       setSizes(product.sizes || [""]);
       setWashingInstructions(product.washingInstructions || [""]);
-      setReturnPolicies(product.returnPolicies || [""]);
-      setShippingPolicies(product.shippingPolicies || [""]);
-      // Populate file lists if images are available
+
       setFileList(product.images || []);
       setFileList2(product.sizeChart || []);
     }
@@ -65,8 +61,6 @@ const AdminUpload: React.FC = () => {
     setDetails([""]);
     setSizes([{ name: "", qty: 0 }]);
     setWashingInstructions([""]);
-    setReturnPolicies([""]);
-    setShippingPolicies([""]);
     setFileList([]);
     setFileList2([]);
   };
@@ -124,8 +118,6 @@ const AdminUpload: React.FC = () => {
     });
 
     appendCustomFields("washingInstructions", washingInstructions);
-    appendCustomFields("returnPolicies", returnPolicies);
-    appendCustomFields("shippingPolicies", shippingPolicies);
 
     try {
       setLoading(true);
@@ -195,16 +187,6 @@ const AdminUpload: React.FC = () => {
     setWashingInstructions([...washingInstructions, ""]);
   const handleRemoveWashingInstruction = (index: number) =>
     setWashingInstructions(washingInstructions.filter((_, i) => i !== index));
-
-  const handleAddReturnPolicy = () =>
-    setReturnPolicies([...returnPolicies, ""]);
-  const handleRemoveReturnPolicy = (index: number) =>
-    setReturnPolicies(returnPolicies.filter((_, i) => i !== index));
-
-  const handleAddShippingPolicy = () =>
-    setShippingPolicies([...shippingPolicies, ""]);
-  const handleRemoveShippingPolicy = (index: number) =>
-    setShippingPolicies(shippingPolicies.filter((_, i) => i !== index));
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -506,69 +488,7 @@ const AdminUpload: React.FC = () => {
                       </Space>
                     </Form.Item>
                   </Col>
-                  <Col xs={24} sm={12}>
-                    {" "}
-                    <Form.Item label="Return Policies (add one at a time)">
-                      <Space direction="vertical" style={{ width: "100%" }}>
-                        {returnPolicies.map((policy, index) => (
-                          <Space key={index} style={{ width: "100%" }}>
-                            <Input
-                              value={policy}
-                              onChange={(e) => {
-                                const newPolicies = [...returnPolicies];
-                                newPolicies[index] = e.target.value;
-                                setReturnPolicies(newPolicies);
-                              }}
-                              placeholder={`Policy ${index + 1}`}
-                            />
-                            <Button
-                              type="text"
-                              icon={<MinusCircleOutlined />}
-                              onClick={() => handleRemoveReturnPolicy(index)}
-                            />
-                          </Space>
-                        ))}
-                        <Button
-                          type="dashed"
-                          onClick={handleAddReturnPolicy}
-                          style={{ width: "100%" }}
-                        >
-                          Add Return Policy
-                        </Button>
-                      </Space>
-                    </Form.Item>
-                  </Col>
                 </Row>
-
-                <Form.Item label="Shipping Policies (add one at a time)">
-                  <Space direction="vertical" style={{ width: "100%" }}>
-                    {shippingPolicies.map((policy, index) => (
-                      <Space key={index} style={{ width: "100%" }}>
-                        <Input
-                          value={policy}
-                          onChange={(e) => {
-                            const newPolicies = [...shippingPolicies];
-                            newPolicies[index] = e.target.value;
-                            setShippingPolicies(newPolicies);
-                          }}
-                          placeholder={`Policy ${index + 1}`}
-                        />
-                        <Button
-                          type="text"
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => handleRemoveShippingPolicy(index)}
-                        />
-                      </Space>
-                    ))}
-                    <Button
-                      type="dashed"
-                      onClick={handleAddShippingPolicy}
-                      style={{ width: "100%" }}
-                    >
-                      Add Shipping Policy
-                    </Button>
-                  </Space>
-                </Form.Item>
 
                 <Form.Item>
                   <Button

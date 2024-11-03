@@ -23,8 +23,6 @@ const productsSchema = new mongoose_1.Schema({
     sizeModel: { type: [String], required: true },
     heightModel: { type: [Number], required: true },
     washingInstructions: { type: [String], required: true },
-    returnPolicies: { type: [String], required: true },
-    shippingPolicies: { type: [String], required: true },
     qtyTotal: { type: Number, required: true },
 }, { timestamps: true });
 exports.Products = (0, mongoose_1.model)("Products", productsSchema);

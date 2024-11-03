@@ -24,13 +24,11 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         // Access product data safely
         const productData = Array.isArray(req.body) ? req.body[0] : req.body;
         // Destructure productData safely
-        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData || {};
+        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, linkProduct, } = productData || {};
         // Validate required fields
         if (!title || !badgeType || !originalPrice || !discountedPrice) {
             return res.status(400).json({ message: "Missing required fields." });
         }
-        // Log incoming product data for debugging
-        console.log("Incoming product data:", productData);
         // Safe JSON parsing with error handling
         const safeParseJSON = (data) => {
             if (!data)
@@ -52,12 +50,6 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const parsedWashingInstructions = Array.isArray(washingInstructions)
             ? washingInstructions
             : safeParseJSON(washingInstructions);
-        const parsedReturnPolicies = Array.isArray(returnPolicies)
-            ? returnPolicies
-            : safeParseJSON(returnPolicies);
-        const parsedShippingPolicies = Array.isArray(shippingPolicies)
-            ? shippingPolicies
-            : safeParseJSON(shippingPolicies);
         // Ensure files are provided and mapped correctly
         const files = req.files; // Cast req.files to the expected type
         const images = files.images || []; // Get images safely
@@ -96,8 +88,6 @@ const uploadProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             sizeModel,
             heightModel,
             washingInstructions: parsedWashingInstructions,
-            returnPolicies: parsedReturnPolicies,
-            shippingPolicies: parsedShippingPolicies,
             linkProduct,
             images: imagePaths,
             sizeChart: sizechartPaths,
@@ -154,8 +144,6 @@ exports.getProduct = getProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productId = req.params.id;
-        console.log("Request Params (ID):", productId);
-        console.log("Request Body:", req.body);
         // Access product data safely
         const productData = Array.isArray(req.body) ? req.body[0] : req.body;
         // If no data is provided, return an error
@@ -163,7 +151,7 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(400).json({ message: "No product data provided." });
         }
         // Destructure fields from the product data
-        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData;
+        const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, linkProduct, } = productData;
         // Only require fields if it's a new upload (no productId)
         if (!productId) {
             if (!title || !badgeType || !originalPrice || !discountedPrice) {
@@ -191,12 +179,32 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const parsedWashingInstructions = Array.isArray(washingInstructions)
             ? washingInstructions
             : safeParseJSON(washingInstructions);
-        const parsedReturnPolicies = Array.isArray(returnPolicies)
-            ? returnPolicies
-            : safeParseJSON(returnPolicies);
-        const parsedShippingPolicies = Array.isArray(shippingPolicies)
-            ? shippingPolicies
-            : safeParseJSON(shippingPolicies);
+        // Ensure files are provided and mapped correctly
+        const files = req.files; // Cast req.files to the expected type
+        const images = files.images || []; // Get images safely
+        const sizeChart = files.sizeChart || []; // Get sizeChart safely
+        // Upload images to Cloudinary and get URLs
+        const imagePaths = yield Promise.all(images.map((file) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const uploadResponse = yield cloudinary_1.v2.uploader.upload(file.path);
+                return uploadResponse.secure_url;
+            }
+            catch (uploadError) {
+                console.error("Image upload error:", uploadError);
+                throw new Error("Failed to upload image to Cloudinary");
+            }
+        })));
+        // Upload size charts to Cloudinary and get URLs
+        const sizechartPaths = yield Promise.all(sizeChart.map((file) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const uploadResponse = yield cloudinary_1.v2.uploader.upload(file.path);
+                return uploadResponse.secure_url; // Return the URL of the uploaded image
+            }
+            catch (uploadError) {
+                console.error("Image upload error:", uploadError);
+                throw new Error("Failed to upload image to Cloudinary");
+            }
+        })));
         // Create an object with only fields that need to be updated
         const updateFields = {
             title,
@@ -209,9 +217,9 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             sizeModel,
             heightModel,
             washingInstructions: parsedWashingInstructions,
-            returnPolicies: parsedReturnPolicies,
-            shippingPolicies: parsedShippingPolicies,
             linkProduct,
+            images: imagePaths,
+            sizeChart: sizechartPaths,
         };
         // Handle file uploads
         if (req.files) {
