@@ -175,12 +175,12 @@ export const updateProduct = async (req: Request, res: Response) => {
     // Access product data safely
     const productData = Array.isArray(req.body) ? req.body[0] : req.body;
 
-    // Validate the presence of product data
+    // If no data is provided, return an error
     if (!productData) {
       return res.status(400).json({ message: "No product data provided." });
     }
 
-    // Destructure productData safely, only getting necessary fields
+    // Destructure fields from the product data
     const {
       title,
       badgeType,
@@ -197,9 +197,11 @@ export const updateProduct = async (req: Request, res: Response) => {
       linkProduct,
     } = productData;
 
-    // Validate required fields
-    if (!title || !badgeType || !originalPrice || !discountedPrice) {
-      return res.status(400).json({ message: "Missing required fields." });
+    // Only require fields if it's a new upload (no productId)
+    if (!productId) {
+      if (!title || !badgeType || !originalPrice || !discountedPrice) {
+        return res.status(400).json({ message: "Missing required fields." });
+      }
     }
 
     // Safe JSON parsing with error handling
@@ -210,16 +212,24 @@ export const updateProduct = async (req: Request, res: Response) => {
         return Array.isArray(parsedData) ? parsedData : [parsedData];
       } catch (error) {
         console.error("JSON parsing error:", error);
-        return []; // Return empty array on error
+        return [];
       }
     };
 
     // Parse JSON fields
-    const parsedDetails = safeParseJSON(details);
-    const parsedSizes = safeParseJSON(sizes);
-    const parsedWashingInstructions = safeParseJSON(washingInstructions);
-    const parsedReturnPolicies = safeParseJSON(returnPolicies);
-    const parsedShippingPolicies = safeParseJSON(shippingPolicies);
+    const parsedDetails = Array.isArray(details)
+      ? details
+      : safeParseJSON(details);
+    const parsedSizes = Array.isArray(sizes) ? sizes : safeParseJSON(sizes);
+    const parsedWashingInstructions = Array.isArray(washingInstructions)
+      ? washingInstructions
+      : safeParseJSON(washingInstructions);
+    const parsedReturnPolicies = Array.isArray(returnPolicies)
+      ? returnPolicies
+      : safeParseJSON(returnPolicies);
+    const parsedShippingPolicies = Array.isArray(shippingPolicies)
+      ? shippingPolicies
+      : safeParseJSON(shippingPolicies);
 
     // Create an object with only fields that need to be updated
     const updateFields: any = {
@@ -237,6 +247,14 @@ export const updateProduct = async (req: Request, res: Response) => {
       shippingPolicies: parsedShippingPolicies,
       linkProduct,
     };
+
+    // Handle file uploads
+    if (req.files) {
+      const images = (req.files as Express.Multer.File[]).map(
+        (file) => file.path
+      );
+      updateFields.images = images;
+    }
 
     // Filter out undefined fields to avoid overwriting with `undefined`
     Object.keys(updateFields).forEach((key) => {

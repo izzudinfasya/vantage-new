@@ -38,7 +38,7 @@ router.post(
 
 router.get("/get-products", getProducts);
 router.get("/get-product/:id", getProduct);
-router.put("/update/:id", updateProduct);
+router.put("/update/:id", upload.any(), updateProduct);
 router.delete("/:id", deleteProduct);
 
 export default router;

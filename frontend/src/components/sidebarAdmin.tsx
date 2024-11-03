@@ -15,10 +15,9 @@ const { Sider } = Layout;
 
 interface SidebarProps {
   collapsed: boolean; // Prop definition
-  onClose: () => void; // New prop for closing the drawer
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
   const logo = collapsed ? logoSmall : logoBig;
 
   return (
@@ -46,24 +45,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onClose }) => {
         style={{ height: "100vh !important", borderRight: 0, padding: "10px" }}
       >
         <Menu.Item key="1" icon={<HomeOutlined />}>
-          <Link to="/admin" onClick={onClose}>
-            Dashboard
-          </Link>
+          <Link to="/admin">Dashboard</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<AppstoreAddOutlined />}>
-          <Link to="/admin/product" onClick={onClose}>
-            Manage Stock
-          </Link>
+          <Link to="/admin/product">Manage Stock</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<ShoppingCartOutlined />}>
-          <Link to="/admin" onClick={onClose}>
-            Orders
-          </Link>
+          <Link to="/admin">Orders</Link>
         </Menu.Item>
         <Menu.Item key="4" icon={<FileDoneOutlined />}>
-          <Link to="/admin" onClick={onClose}>
-            Reports
-          </Link>
+          <Link to="/admin">Reports</Link>
         </Menu.Item>
       </Menu>
     </Sider>

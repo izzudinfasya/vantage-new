@@ -125,14 +125,16 @@ exports.getPassword = getPassword;
 const validatePassword = (req, res) => {
     const { password } = req.body;
     if (password === adminPassword) {
-        return res
-            .status(200)
-            .send({ message: "Admin password is correct.", redirectTo: "/admin" });
+        return res.status(200).send({
+            message: "Admin password is correct.",
+            redirectTo: "/admin",
+        });
     }
     else if (password === customerPassword) {
-        return res
-            .status(200)
-            .send({ message: "Your password is correct.", redirectTo: "/home" });
+        return res.status(200).send({
+            message: "Your password is correct.",
+            redirectTo: "/home",
+        });
     }
     else {
         return res.status(401).send({ message: "Incorrect password." });

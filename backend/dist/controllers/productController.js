@@ -154,17 +154,21 @@ exports.getProduct = getProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productId = req.params.id;
+        console.log("Request Params (ID):", productId);
+        console.log("Request Body:", req.body);
         // Access product data safely
         const productData = Array.isArray(req.body) ? req.body[0] : req.body;
-        // Validate the presence of product data
+        // If no data is provided, return an error
         if (!productData) {
             return res.status(400).json({ message: "No product data provided." });
         }
-        // Destructure productData safely, only getting necessary fields
+        // Destructure fields from the product data
         const { title, badgeType, originalPrice, discountedPrice, details, sizes, qtyTotal, sizeModel, heightModel, washingInstructions, returnPolicies, shippingPolicies, linkProduct, } = productData;
-        // Validate required fields
-        if (!title || !badgeType || !originalPrice || !discountedPrice) {
-            return res.status(400).json({ message: "Missing required fields." });
+        // Only require fields if it's a new upload (no productId)
+        if (!productId) {
+            if (!title || !badgeType || !originalPrice || !discountedPrice) {
+                return res.status(400).json({ message: "Missing required fields." });
+            }
         }
         // Safe JSON parsing with error handling
         const safeParseJSON = (data) => {
@@ -176,15 +180,23 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             }
             catch (error) {
                 console.error("JSON parsing error:", error);
-                return []; // Return empty array on error
+                return [];
             }
         };
         // Parse JSON fields
-        const parsedDetails = safeParseJSON(details);
-        const parsedSizes = safeParseJSON(sizes);
-        const parsedWashingInstructions = safeParseJSON(washingInstructions);
-        const parsedReturnPolicies = safeParseJSON(returnPolicies);
-        const parsedShippingPolicies = safeParseJSON(shippingPolicies);
+        const parsedDetails = Array.isArray(details)
+            ? details
+            : safeParseJSON(details);
+        const parsedSizes = Array.isArray(sizes) ? sizes : safeParseJSON(sizes);
+        const parsedWashingInstructions = Array.isArray(washingInstructions)
+            ? washingInstructions
+            : safeParseJSON(washingInstructions);
+        const parsedReturnPolicies = Array.isArray(returnPolicies)
+            ? returnPolicies
+            : safeParseJSON(returnPolicies);
+        const parsedShippingPolicies = Array.isArray(shippingPolicies)
+            ? shippingPolicies
+            : safeParseJSON(shippingPolicies);
         // Create an object with only fields that need to be updated
         const updateFields = {
             title,
@@ -201,6 +213,11 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             shippingPolicies: parsedShippingPolicies,
             linkProduct,
         };
+        // Handle file uploads
+        if (req.files) {
+            const images = req.files.map((file) => file.path);
+            updateFields.images = images;
+        }
         // Filter out undefined fields to avoid overwriting with `undefined`
         Object.keys(updateFields).forEach((key) => {
             if (updateFields[key] === undefined) {

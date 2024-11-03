@@ -73,14 +73,24 @@ const AdminUpload: React.FC = () => {
 
   const onFinish = async (values: any) => {
     const formData = new FormData();
-    formData.append("title", values.title);
-    formData.append("badgeType", values.badgeType);
-    formData.append("linkProduct", values.linkProduct);
-    formData.append("sizeModel", values.sizeModel);
-    formData.append("qtyTotal", values.qtyTotal);
-    formData.append("heightModel", values.heightModel);
-    formData.append("originalPrice", values.originalPrice);
-    formData.append("discountedPrice", values.discountedPrice);
+
+    // Append necessary product fields
+    const fieldsToAppend = [
+      "title",
+      "badgeType",
+      "linkProduct",
+      "sizeModel",
+      "qtyTotal",
+      "heightModel",
+      "originalPrice",
+      "discountedPrice",
+    ];
+
+    fieldsToAppend.forEach((field) => {
+      if (values[field] !== undefined) {
+        formData.append(field, values[field]);
+      }
+    });
 
     // Append product images
     fileList.forEach((file) => {
@@ -96,12 +106,15 @@ const AdminUpload: React.FC = () => {
     });
 
     // Append custom fields
-    details.forEach((detail, index) => {
-      if (detail.trim()) {
-        formData.append(`details[${index}]`, detail);
-      }
-    });
+    const appendCustomFields = (fieldName: string, items: string[]) => {
+      items.forEach((item, index) => {
+        if (item.trim()) {
+          formData.append(`${fieldName}[${index}]`, item);
+        }
+      });
+    };
 
+    appendCustomFields("details", details);
     sizes.forEach((size, index) => {
       const name = size.name || "";
       if (name.trim()) {
@@ -110,23 +123,9 @@ const AdminUpload: React.FC = () => {
       }
     });
 
-    washingInstructions.forEach((instruction, index) => {
-      if (instruction.trim()) {
-        formData.append(`washingInstructions[${index}]`, instruction);
-      }
-    });
-
-    returnPolicies.forEach((policy, index) => {
-      if (policy.trim()) {
-        formData.append(`returnPolicies[${index}]`, policy);
-      }
-    });
-
-    shippingPolicies.forEach((policy, index) => {
-      if (policy.trim()) {
-        formData.append(`shippingPolicies[${index}]`, policy);
-      }
-    });
+    appendCustomFields("washingInstructions", washingInstructions);
+    appendCustomFields("returnPolicies", returnPolicies);
+    appendCustomFields("shippingPolicies", shippingPolicies);
 
     try {
       setLoading(true);
