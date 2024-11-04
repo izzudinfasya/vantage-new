@@ -50,7 +50,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
           alt="Logo"
           style={{
             width: collapsed ? "40px" : "100%", // Logo size changes based on collapsed state
-            opacity: collapsed ? 0.7 : 1, // Adjust opacity for added effect
           }}
         />
       </div>

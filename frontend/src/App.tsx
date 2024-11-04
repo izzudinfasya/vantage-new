@@ -153,6 +153,7 @@ const App: React.FC = () => {
     <>
       {!hideHeaderFooter && (
         <>
+          <Marquee />
           <CustomHeader />
         </>
       )}

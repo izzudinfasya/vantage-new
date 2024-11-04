@@ -3,7 +3,8 @@ import { Layout, Avatar, Row } from "antd";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import shopeeImage from "../assets/shopee.png";
 import webLogo from "../assets/weblogo.png";
-import gifAvatar from "../assets/gifAvatar.gif";
+import gifAvatar from "../assets/v-black.webm";
+import skyVideo from "../assets/sky.mp4";
 
 const { Content, Footer } = Layout;
 
@@ -37,9 +38,28 @@ const LinktreePage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         fontFamily: "Helvetica, Arial, sans-serif",
+        background: "transparent",
       }}
     >
       <GlobalStyles />
+
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        src={skyVideo}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: -1,
+        }}
+      />
+
       <Content
         style={{
           paddingTop: "50px",
@@ -52,10 +72,12 @@ const LinktreePage: React.FC = () => {
           justifyContent: "center",
           textAlign: "center",
           flex: 1,
+          zIndex: 1,
+          color: "white", // Set font color to white for better contrast with background
         }}
       >
         {/* Avatar with initial fade-in */}
-        <Avatar
+        {/* <Avatar
           src={gifAvatar}
           className="fade-in"
           style={{
@@ -64,7 +86,24 @@ const LinktreePage: React.FC = () => {
             height: "120px",
             animationDelay: "0s",
           }}
-        />
+        /> */}
+
+        <video
+          className="fade-in"
+          style={{
+            marginBottom: "20px",
+            width: "120px",
+            height: "120px",
+            animationDelay: "0s",
+            objectFit: "cover", // Ensures video fills the Avatar-like shape
+          }}
+          autoPlay
+          loop
+          muted
+        >
+          <source src={gifAvatar} type="video/webm" />
+          Your browser does not support the video tag.
+        </video>
 
         {/* Brand Name */}
         <h1
@@ -300,7 +339,10 @@ const LinktreePage: React.FC = () => {
           </Row>
         </div>
       </Content>
-      <Footer style={{ textAlign: "center" }}>
+      <Footer
+        className="fade-in"
+        style={{ textAlign: "center", background: "transparent" }}
+      >
         © 2024 VANTAGE, All rights reserved.
       </Footer>
     </Layout>

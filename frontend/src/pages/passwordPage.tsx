@@ -167,7 +167,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
           </div>
 
           <button className="signup-countdown" onClick={showModal}>
-            SIGN UP FOR PASSWORD
+            JOIN WAITING LIST
           </button>
         </>
       )}
