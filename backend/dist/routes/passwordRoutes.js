@@ -9,4 +9,6 @@ router.post("/get-password", [
     (0, express_validator_1.body)("name").not().isEmpty().withMessage("Name is required"),
 ], passwordController_1.getPassword);
 router.post("/validate", passwordController_1.validatePassword);
+router.get("/get-waiting-list", passwordController_1.waitingList);
+router.delete("/:id", passwordController_1.deleteWaitingList);
 exports.default = router;

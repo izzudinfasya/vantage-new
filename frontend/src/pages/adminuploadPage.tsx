@@ -228,13 +228,13 @@ const AdminUpload: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input />
+                      <Input style={{ height: "40px" }} />
                     </Form.Item>
                   </Col>
 
                   <Col xs={24} sm={12}>
                     <Form.Item label="Link Product" name="linkProduct">
-                      <Input />
+                      <Input style={{ height: "40px" }} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -248,7 +248,7 @@ const AdminUpload: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input />
+                      <Input style={{ height: "40px" }} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -262,7 +262,10 @@ const AdminUpload: React.FC = () => {
                         },
                       ]}
                     >
-                      <InputNumber style={{ width: "100%" }} min={0} />
+                      <InputNumber
+                        style={{ width: "100%", height: "40px" }}
+                        min={0}
+                      />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -276,7 +279,10 @@ const AdminUpload: React.FC = () => {
                         },
                       ]}
                     >
-                      <InputNumber style={{ width: "100%" }} min={0} />
+                      <InputNumber
+                        style={{ width: "100%", height: "40px" }}
+                        min={0}
+                      />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -290,7 +296,10 @@ const AdminUpload: React.FC = () => {
                         },
                       ]}
                     >
-                      <InputNumber style={{ width: "100%" }} min={0} />
+                      <InputNumber
+                        style={{ width: "100%", height: "40px" }}
+                        min={0}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -441,12 +450,15 @@ const AdminUpload: React.FC = () => {
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item label="Size Model" name="sizeModel">
-                      <Input />
+                      <Input style={{ height: "40px" }} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item label="Height Model" name="heightModel">
-                      <InputNumber style={{ width: "100%" }} min={0} />
+                      <InputNumber
+                        style={{ width: "100%", height: "40px" }}
+                        min={0}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>

@@ -15,10 +15,12 @@ import DetailProduct from "./pages/detailproductPage";
 import UploadPage from "./pages/adminuploadPage";
 import AdminPage from "./pages/adminPage";
 import ProductPage from "./pages/productPage";
+import ConfirmOrderPage from "./pages/confirmOrder";
 import Sidebar from "./components/sidebarAdmin"; // Import the Sidebar component
 import Navbar from "./components/navbarAdmin"; // Import the Navbar component
 import Marquee from "components/marquee";
 import { Layout } from "antd";
+import WaitingListPage from "pages/waitingListPage";
 
 const { Content } = Layout; // Destructure Content from Layout
 
@@ -96,6 +98,14 @@ const App: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/product/:id/confirm-order"
+        element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+            <ConfirmOrderPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<Navigate to="/password" />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
     </Routes>
@@ -113,6 +123,10 @@ const App: React.FC = () => {
     {
       path: "/admin/product",
       element: <ProductPage />,
+    },
+    {
+      path: "/admin/waiting-list",
+      element: <WaitingListPage />,
     },
     { path: "/admin/*", element: <h1>404 Not Found</h1> },
   ];

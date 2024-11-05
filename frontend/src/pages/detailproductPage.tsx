@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { TruckOutlined, ShopOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Button,
@@ -25,9 +26,10 @@ const DetailProductPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState(""); // Default size
+  const [selectedSize, setSelectedSize] = useState("M"); // Default size
   const [product, setProduct] = useState<any>(null);
   const [expectedProductCount, setExpectedProductCount] = useState<number>(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const showDrawer = () => {
     setVisible(true);
@@ -73,6 +75,30 @@ const DetailProductPage: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleBuyNow = () => {
+    const productData = {
+      product: {
+        id: product._id,
+        title: product.title,
+        images: [product.images],
+        qty: "1",
+        originalPrice: product.originalPrice,
+        discountPrice: product.discountedPrice,
+        discount: product.originalPrice - product.discountedPrice,
+        selectedSize: selectedSize,
+      },
+    };
+
+    navigate(`/product/${productData.product.id}/confirm-order`, {
+      state: {
+        product: [productData.product],
+        selectedSize: selectedSize,
+      },
+    });
+  };
+
   return (
     <div
       className="photo-container"
@@ -91,7 +117,7 @@ const DetailProductPage: React.FC = () => {
         style={{ margin: "0 30px" }}
       >
         {/* Product Images - Mobile View with Carousel */}
-        <Col xs={24} md={16} style={{ padding: "0" }}>
+        <Col xs={24} sm={24} md={20} lg={12} xl={16} style={{ padding: "0" }}>
           {loading ? (
             isMobile ? (
               <div style={{ padding: "0" }}>
@@ -158,7 +184,7 @@ const DetailProductPage: React.FC = () => {
         </Col>
 
         {/* Detail Product */}
-        <Col xs={24} md={8}>
+        <Col xs={24} sm={24} md={20} lg={12} xl={8}>
           <div
             className="detail-product"
             style={{
@@ -341,15 +367,19 @@ const DetailProductPage: React.FC = () => {
 
                 <div style={{ marginTop: "30px" }}>
                   <Button
+                    onClick={handleBuyNow}
                     type="primary"
                     size="large"
                     style={{
-                      backgroundColor: "#000",
-                      borderColor: "#000",
+                      backgroundColor: isHovered ? "#808080" : "#000", // Gray on hover
+                      borderColor: isHovered ? "#808080" : "#000", // Gray border on hover
                       borderRadius: "6px",
                       width: "100%",
                       height: "50px",
+                      transition: "background-color 0.3s, border-color 0.3s", // Smooth transition
                     }}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                   >
                     Buy Now
                   </Button>

@@ -6,6 +6,7 @@ import {
   AppstoreAddOutlined,
   ShoppingCartOutlined,
   FileDoneOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
 import logoBig from "../assets/logo.png"; // Import your regular logo
 import logoSmall from "../assets/logo-email.png";
@@ -62,12 +63,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
           <Link to="/admin">Dashboard</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<AppstoreAddOutlined />}>
-          <Link to="/admin/product">Manage Stock</Link>
+          <Link to="/admin/product">Manage Product</Link>
         </Menu.Item>
-        <Menu.Item key="3" icon={<ShoppingCartOutlined />}>
+        <Menu.Item key="3" icon={<UserAddOutlined />}>
+          <Link to="/admin/waiting-list">Waiting List</Link>
+        </Menu.Item>
+        <Menu.Item key="4" icon={<ShoppingCartOutlined />}>
           <Link to="/admin/none">Orders</Link>
         </Menu.Item>
-        <Menu.Item key="4" icon={<FileDoneOutlined />}>
+        <Menu.Item key="5" icon={<FileDoneOutlined />}>
           <Link to="/admin/none">Reports</Link>
         </Menu.Item>
       </Menu>

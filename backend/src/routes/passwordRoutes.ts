@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
+  deleteWaitingList,
   getPassword,
   validatePassword,
+  waitingList,
 } from "../controllers/passwordController";
 import { body } from "express-validator";
 
@@ -17,5 +19,7 @@ router.post(
 );
 
 router.post("/validate", validatePassword);
+router.get("/get-waiting-list", waitingList);
+router.delete("/:id", deleteWaitingList);
 
 export default router;

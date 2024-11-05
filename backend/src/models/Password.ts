@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IPassword extends Document {
+  _id: string;
   email: string;
   name: string;
   password: string;

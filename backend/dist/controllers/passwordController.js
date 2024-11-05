@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePassword = exports.getPassword = void 0;
+exports.deleteWaitingList = exports.waitingList = exports.validatePassword = exports.getPassword = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const express_validator_1 = require("express-validator");
 const Password_1 = __importDefault(require("../models/Password"));
@@ -141,3 +141,29 @@ const validatePassword = (req, res) => {
     }
 };
 exports.validatePassword = validatePassword;
+const waitingList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const waitinglist = yield Password_1.default.find();
+        res.status(200).json(waitinglist);
+    }
+    catch (error) {
+        res
+            .status(500)
+            .json({ message: "Failed to fetch waiting lists", error: error.message });
+    }
+});
+exports.waitingList = waitingList;
+const deleteWaitingList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const deletedWaitingList = yield Password_1.default.findByIdAndDelete(id);
+        if (!deletedWaitingList) {
+            return res.status(404).json({ message: "Waiting List not found" });
+        }
+        res.status(200).json({ message: "Waiting List deleted successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error deleting waiting list", error });
+    }
+});
+exports.deleteWaitingList = deleteWaitingList;

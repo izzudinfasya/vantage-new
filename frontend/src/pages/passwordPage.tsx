@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import gifAvatar from "../assets/gifAvatar.gif";
 import "./passwordPage.css"; // Import CSS file
-import { Modal, Button, Input, message, Form } from "antd";
+import { Modal, Input, message, Form } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -167,7 +167,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
           </div>
 
           <button className="signup-countdown" onClick={showModal}>
-            JOIN WAITLIST
+            JOIN WAITLIST FOR PASSWORD
           </button>
         </>
       )}
@@ -187,7 +187,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
             </button>
           </div>
           <button className="signup-button" onClick={showModal}>
-            <p className="underline-text">JOIN WAITLIST</p>
+            <p className="underline-text">JOIN WAITLIST FOR PASSWORD</p>
           </button>
           <div className="signup-desc">
             <p>**DROPS ARE ONLY ACCESSIBLE WITH PASSWORD**</p>
@@ -196,6 +196,40 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
       )}
 
       <Modal
+        cancelButtonProps={{
+          style: {
+            borderColor: "#000000",
+            color: "#000000",
+          },
+          onMouseEnter: (e) => {
+            const target = e.target as HTMLElement;
+            target.style.borderColor = "#808080";
+          },
+          onMouseLeave: (e) => {
+            const target = e.target as HTMLElement;
+            target.style.borderColor = "#000000";
+          },
+        }}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#000000", // Black background
+            color: "#FFFFFF", // White text
+            borderColor: "#000000",
+          },
+          onMouseEnter: (e) => {
+            const target = e.target as HTMLElement;
+            target.style.backgroundColor = "#808080"; // Gray background on hover
+            target.style.borderColor = "#808080";
+          },
+          onMouseLeave: (e) => {
+            const target = e.target as HTMLElement;
+            target.style.backgroundColor = "#000000"; // Back to black when not hovering
+            target.style.borderColor = "#000000";
+          },
+          loading: loading,
+        }}
+        okText="Submit"
+        onOk={handleSubmit}
         title={
           <div
             style={{
@@ -230,24 +264,6 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
         closable={false}
         open={isModalOpen}
         onCancel={handleCancel}
-        footer={[
-          <Button
-            key="cancel"
-            onClick={handleCancel}
-            style={{ backgroundColor: "transparent", color: "#000" }}
-          >
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            style={{ backgroundColor: "#000", color: "#fff" }}
-            onClick={handleSubmit}
-            loading={loading}
-          >
-            Submit
-          </Button>,
-        ]}
         centered
         style={{ maxWidth: "85%", top: 20 }}
       >
@@ -261,7 +277,16 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
             ]}
             style={{ marginBottom: "20px" }}
           >
-            <Input placeholder="Enter your email" style={{ height: "50px" }} />
+            <Input
+              placeholder="Enter your email"
+              style={{ height: "50px" }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#808080";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d9d9d9";
+              }}
+            />
           </Form.Item>
 
           <Form.Item
@@ -270,7 +295,16 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
             rules={[{ required: true, message: "Please enter your name!" }]}
             style={{ marginBottom: "20px" }}
           >
-            <Input placeholder="Enter your name" style={{ height: "50px" }} />
+            <Input
+              placeholder="Enter your name"
+              style={{ height: "50px" }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#808080";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d9d9d9";
+              }}
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Input, Button, Drawer } from "antd";
+import { Layout, Button, Drawer, Menu } from "antd";
+import { Link } from "react-router-dom";
 import {
   MenuOutlined,
   //   UserOutlined,
-  ShoppingCartOutlined,
+  //   ShoppingCartOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import logo from "../assets/logo.png";
 
@@ -95,9 +97,9 @@ const CustomHeader: React.FC = () => {
         </a>
         {/* Right: Login and Cart Icons */}
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Button type="link" style={{ color: "black" }}>
+          {/* <Button type="link" style={{ color: "black" }}>
             <ShoppingCartOutlined style={{ fontSize: "18px" }} />
-          </Button>
+          </Button> */}
           {/* <Button type="link" style={{ color: "black" }}>
             <UserOutlined style={{ fontSize: "18px" }} />
           </Button> */}
@@ -115,9 +117,9 @@ const CustomHeader: React.FC = () => {
           gap: "30px",
         }}
       >
-        <a href="/" rel="noopener noreferrer" style={{ color: "black" }}>
+        {/* <a href="/" rel="noopener noreferrer" style={{ color: "black" }}>
           NEW COLLECTION
-        </a>
+        </a> */}
         {/* <a href="/" rel="noopener noreferrer" style={{ color: "black" }}>
           PROMO
         </a> */}
@@ -165,18 +167,38 @@ const CustomHeader: React.FC = () => {
           flex: 1,
         }}
       >
-        <Input.Search
+        <Menu
+          mode="horizontal"
+          theme="light"
+          style={{
+            lineHeight: "64px",
+            background: "none",
+            border: "none",
+            flex: 1,
+            justifyContent: "flex-end",
+          }}
+        >
+          <Menu.Item
+            key="logout"
+            icon={<LogoutOutlined style={{ color: "red" }} />}
+          >
+            <Link to="/password" style={{ color: "red" }}>
+              Logout
+            </Link>
+          </Menu.Item>
+        </Menu>
+        {/* <Input.Search
           placeholder="Search"
           style={{
             marginRight: "20px",
             width: 170,
             color: "black",
           }}
-        />
-        <Button type="link" style={{ color: "black" }}>
+        /> */}
+        {/* <Button type="link" style={{ color: "black" }}>
           <ShoppingCartOutlined style={{ fontSize: "24px" }} />
           <p>CART</p>
-        </Button>
+        </Button> */}
         {/* <Button type="link" style={{ color: "black" }}>
           <UserOutlined style={{ fontSize: "24px" }} />
           <p>LOGIN</p>
@@ -185,38 +207,34 @@ const CustomHeader: React.FC = () => {
 
       {/* Drawer for mobile screens */}
       <Drawer
-        title="Menu"
+        title={
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>VANTAGE</span>
+        } // Increase title size
         placement="left"
         onClose={hideDrawer}
         open={drawerVisible}
         className="mobile-menu"
+        closeIcon={<span style={{ fontSize: "16px", color: "black" }}>✕</span>}
       >
-        <Input.Search
-          placeholder="Search"
-          style={{ marginBottom: "20px", width: "100%", color: "black" }}
-        />
-        <a href="/" rel="noopener noreferrer">
-          <div
-            style={{
-              color: "black",
-              fontSize: "16px",
-              fontWeight: 450,
-            }}
-          >
-            NEW COLLECTION
-          </div>
-        </a>
-        <a href="/" rel="noopener noreferrer">
-          <div
-            style={{
-              color: "black",
-              fontSize: "16px",
-              fontWeight: 450,
-            }}
-          >
-            PROMO
-          </div>
-        </a>
+        <Link to="/password" style={{ color: "red", fontSize: "18px" }}>
+          Logout
+        </Link>
+        {/* Uncomment if needed */}
+        {/* <Input.Search
+    placeholder="Search"
+    style={{ marginBottom: "20px", width: "100%", color: "black" }}
+  /> */}
+        {/* <a href="/" rel="noopener noreferrer">
+    <div
+      style={{
+        color: "black",
+        fontSize: "16px",
+        fontWeight: 450,
+      }}
+    >
+      NEW COLLECTION
+    </div>
+  </a> */}
       </Drawer>
 
       <style>

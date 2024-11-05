@@ -140,3 +140,29 @@ export const validatePassword = (req: Request, res: Response) => {
     return res.status(401).send({ message: "Incorrect password." });
   }
 };
+
+export const waitingList = async (req: Request, res: Response) => {
+  try {
+    const waitinglist = await PasswordModel.find();
+
+    res.status(200).json(waitinglist);
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch waiting lists", error: error.message });
+  }
+};
+
+export const deleteWaitingList = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const deletedWaitingList = await PasswordModel.findByIdAndDelete(id);
+    if (!deletedWaitingList) {
+      return res.status(404).json({ message: "Waiting List not found" });
+    }
+    res.status(200).json({ message: "Waiting List deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting waiting list", error });
+  }
+};
