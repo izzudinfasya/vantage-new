@@ -167,7 +167,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
           </div>
 
           <button className="signup-countdown" onClick={showModal}>
-            JOIN WAITING LIST
+            JOIN WAITLIST
           </button>
         </>
       )}
@@ -187,7 +187,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
             </button>
           </div>
           <button className="signup-button" onClick={showModal}>
-            <p className="underline-text">SIGN UP FOR PASSWORD</p>
+            <p className="underline-text">JOIN WAITLIST</p>
           </button>
           <div className="signup-desc">
             <p>**DROPS ARE ONLY ACCESSIBLE WITH PASSWORD**</p>
@@ -213,7 +213,7 @@ const PasswordPage: React.FC<PasswordPageProps> = ({ onLogin }) => {
                 color: "#000",
               }}
             >
-              SIGN UP FOR
+              JOIN WAITLIST FOR
             </span>
             <span
               style={{
