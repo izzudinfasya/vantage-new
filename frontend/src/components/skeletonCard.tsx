@@ -15,7 +15,7 @@ const SkeletonCard: React.FC = () => {
         className="skeleton-img"
         style={{
           width: "100%",
-          paddingBottom: "145%", // Aspect ratio for mobile
+          paddingBottom: "135%",
           backgroundColor: "#e0e0e0",
           borderRadius: "4px",
           marginBottom: "10px",

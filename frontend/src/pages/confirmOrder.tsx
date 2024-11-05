@@ -448,22 +448,22 @@ const ConfirmOrder = () => {
               style={{
                 width: "100%",
                 marginTop: "20px",
-                backgroundColor: "black",
-                borderColor: "black",
+                backgroundColor: "#00b27d",
+                borderColor: "#00b27d",
                 height: "50px",
                 borderRadius: "6px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "gray";
-                e.currentTarget.style.borderColor = "gray";
+                e.currentTarget.style.backgroundColor = "#32b89e";
+                e.currentTarget.style.borderColor = "#32b89e";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "black";
-                e.currentTarget.style.borderColor = "black";
+                e.currentTarget.style.backgroundColor = "#00b27d";
+                e.currentTarget.style.borderColor = "#00b27d";
               }}
               onClick={onFinish}
             >
-              Confirm Order
+              CONFIRM ORDER
             </Button>
           </Card>
         </Col>

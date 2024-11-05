@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         position: "relative",
         overflow: "hidden",
         width: "95%",
-        maxHeight: "520px",
+        maxHeight: "480px",
         aspectRatio: "9 / 16",
         transition: "background-image 0.2s ease-in-out",
         margin: "7px",

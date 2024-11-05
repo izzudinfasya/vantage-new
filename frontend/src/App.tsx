@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,25 +17,32 @@ import UploadPage from "./pages/adminuploadPage";
 import AdminPage from "./pages/adminPage";
 import ProductPage from "./pages/productPage";
 import ConfirmOrderPage from "./pages/confirmOrder";
-import Sidebar from "./components/sidebarAdmin"; // Import the Sidebar component
-import Navbar from "./components/navbarAdmin"; // Import the Navbar component
+import Sidebar from "./components/sidebarAdmin";
+import Navbar from "./components/navbarAdmin";
 import Marquee from "components/marquee";
+import { CartProvider } from "components/cartContext";
 import { Layout } from "antd";
 import WaitingListPage from "pages/waitingListPage";
 
-const { Content } = Layout; // Destructure Content from Layout
+const { Content } = Layout;
 
-// Protected Route component to guard pages
-const ProtectedRoute = ({
-  isLoggedIn,
-  adminPasswordRequired = false,
-  adminPassword = "",
-  children,
-}: {
+interface ProtectedRouteProps {
   isLoggedIn: boolean;
   adminPasswordRequired?: boolean;
   adminPassword?: string;
   children: React.ReactNode;
+}
+// Utility function to generate a random user ID
+const generateRandomUserId = () => {
+  return Math.random().toString(36).substr(2, 9);
+};
+
+// Protected Route component to guard pages
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  isLoggedIn,
+  adminPasswordRequired = false,
+  adminPassword = "",
+  children,
 }) => {
   const isAdminValid = adminPasswordRequired
     ? adminPassword === "adminvntg"
@@ -47,26 +55,85 @@ const ProtectedRoute = ({
   );
 };
 
-const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
-  const [collapsed, setCollapsed] = useState(false); // State for sidebar collapse
-  const [adminPassword, setAdminPassword] = useState(""); // State for admin password input
-  const location = useLocation(); // Get current route location
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    () => localStorage.getItem("isLoggedIn") === "true"
+  );
+  const [collapsed, setCollapsed] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [userId, setUserId] = useState(
+    () => localStorage.getItem("userId") || ""
+  );
+  const location = useLocation();
 
-  // Callback to log in user after entering correct password
-  const handleLogin = (password: string) => {
-    const userPassword = "FIRSTDROP"; // User password
-    const adminPassword = "adminvntg"; // Admin password
+  useEffect(() => {
+    const storedAdminPassword = localStorage.getItem("adminPassword");
+    if (storedAdminPassword) {
+      setAdminPassword(storedAdminPassword);
+    }
+  }, []);
+
+  const handleLogin = (password: any) => {
+    const userPassword = "FIRSTDROP";
+    const adminPassword = "adminvntg";
 
     if (password === userPassword) {
       setIsLoggedIn(true);
+      const newUserId = generateRandomUserId();
+      setUserId(newUserId);
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userId", newUserId);
     } else if (password === adminPassword) {
       setIsLoggedIn(true);
       setAdminPassword(password);
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("adminPassword", password);
     } else {
       alert("Incorrect password. Please try again.");
     }
   };
+
+  // Handle logout function
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("adminPassword");
+    setIsLoggedIn(false);
+    setUserId("");
+    setAdminPassword("");
+    window.location.href = "/password"; // Redirect to password page
+  };
+
+  // Session timeout logic
+  useEffect(() => {
+    const handleSessionTimeout = () => {
+      const lastActivity = localStorage.getItem("lastActivity");
+      if (lastActivity) {
+        const now = Date.now();
+        const thirtyMinutes = 30 * 60 * 1000; // 30 minutes
+        if (now - parseInt(lastActivity) > thirtyMinutes) {
+          handleLogout(); // Automatically logout if expired
+        }
+      }
+    };
+
+    const interval = setInterval(handleSessionTimeout, 1000 * 60); // Check every minute
+    return () => clearInterval(interval); // Cleanup
+  }, []);
+
+  useEffect(() => {
+    const updateLastActivity = () => {
+      localStorage.setItem("lastActivity", Date.now().toString());
+    };
+
+    window.addEventListener("click", updateLastActivity);
+    window.addEventListener("keydown", updateLastActivity);
+
+    return () => {
+      window.removeEventListener("click", updateLastActivity);
+      window.removeEventListener("keydown", updateLastActivity);
+    };
+  }, []);
 
   // Condition to determine when to hide header/footer
   const hideHeaderFooter =
@@ -112,22 +179,10 @@ const App: React.FC = () => {
   );
 
   const adminRoutes = [
-    {
-      path: "/admin",
-      element: <AdminPage />,
-    },
-    {
-      path: "/admin/product/settings",
-      element: <UploadPage />,
-    },
-    {
-      path: "/admin/product",
-      element: <ProductPage />,
-    },
-    {
-      path: "/admin/waiting-list",
-      element: <WaitingListPage />,
-    },
+    { path: "/admin", element: <AdminPage /> },
+    { path: "/admin/product/settings", element: <UploadPage /> },
+    { path: "/admin/product", element: <ProductPage /> },
+    { path: "/admin/waiting-list", element: <WaitingListPage /> },
     { path: "/admin/*", element: <h1>404 Not Found</h1> },
   ];
 
@@ -144,7 +199,7 @@ const App: React.FC = () => {
           <Routes>
             {adminRoutes.map(({ path, element }) => (
               <Route
-                key={path} // Ensure to provide a unique key for each route
+                key={path}
                 path={path}
                 element={
                   <ProtectedRoute
@@ -168,10 +223,9 @@ const App: React.FC = () => {
       {!hideHeaderFooter && (
         <>
           <Marquee />
-          <CustomHeader />
+          <CustomHeader onLogout={handleLogout} />
         </>
       )}
-      {/* Render either the admin layout or non-admin routes based on the path */}
       {location.pathname.startsWith("/admin")
         ? renderAdminRoutes()
         : renderNonAdminRoutes()}
@@ -181,10 +235,14 @@ const App: React.FC = () => {
 };
 
 // Wrapper component for Router
-const AppWrapper: React.FC = () => {
+const AppWrapper = () => {
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
+
   return (
     <Router>
-      <App />
+      <CartProvider userId={userId}>
+        <App />
+      </CartProvider>
     </Router>
   );
 };

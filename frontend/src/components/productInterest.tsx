@@ -139,7 +139,7 @@ const ProductInterest: React.FC = () => {
                 <ArrowLeftOutlined
                   style={{
                     position: "absolute",
-                    top: "50%",
+                    top: "40%",
                     left: "10px",
                     zIndex: 10,
                     fontSize: "18px",
@@ -287,7 +287,7 @@ const ProductInterest: React.FC = () => {
               <ArrowRightOutlined
                 style={{
                   position: "absolute",
-                  top: "50%",
+                  top: "40%",
                   right: "10px",
                   zIndex: 10,
                   fontSize: "18px",

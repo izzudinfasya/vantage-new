@@ -1,19 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Button, Drawer, Menu } from "antd";
+import {
+  Layout,
+  Button,
+  Drawer,
+  Row,
+  Col,
+  Typography,
+  Divider,
+  Badge,
+} from "antd";
 import { Link } from "react-router-dom";
 import {
   MenuOutlined,
   //   UserOutlined,
-  //   ShoppingCartOutlined,
+  ShoppingCartOutlined,
   LogoutOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  WarningOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
-import logo from "../assets/logo.png";
+// import logo from "../assets/logo.png";
+import emptyCart from "../assets/empty-cart.png";
+import { useCart } from "components/cartContext";
+import vantageLogo from "../assets/vantage-black.webm";
 
 const { Header } = Layout;
+const { Text } = Typography;
 
-const CustomHeader: React.FC = () => {
+interface CustomHeaderProps {
+  onLogout: () => void;
+}
+
+const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [cartDrawerVisible, setCartDrawerVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const showCartDrawer = () => setCartDrawerVisible(true);
+  const hideCartDrawer = () => setCartDrawerVisible(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +64,20 @@ const CustomHeader: React.FC = () => {
   const hideDrawer = () => {
     setDrawerVisible(false);
   };
+
+  const { cartItems, removeItem, editItem } = useCart();
+
+  const calculateSubtotal = () => {
+    return cartItems.reduce((acc, item) => {
+      return acc + item.discountPrice * item.quantity; // Calculate subtotal based on discount price and quantity
+    }, 0);
+  };
+
+  const calculateTotal = () => {
+    return calculateSubtotal(); // You can add additional charges here if needed
+  };
+
+  const totalPrice = calculateTotal();
 
   return (
     <Header
@@ -85,27 +125,48 @@ const CustomHeader: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <img
-            src={logo}
-            alt="Logo"
+          <video
             style={{
-              height: "120px",
-              objectFit: "contain",
-              maxWidth: "150px",
+              width: "180px",
+              height: "40px",
+              animationDelay: "0s",
+              objectFit: "cover",
             }}
-          />
+            autoPlay
+            loop
+            muted
+          >
+            <source src={vantageLogo} type="video/webm" />
+            Your browser does not support the video tag.
+          </video>
         </a>
         {/* Right: Login and Cart Icons */}
         <div style={{ display: "flex", alignItems: "center" }}>
-          {/* <Button type="link" style={{ color: "black" }}>
-            <ShoppingCartOutlined style={{ fontSize: "18px" }} />
-          </Button> */}
-          {/* <Button type="link" style={{ color: "black" }}>
-            <UserOutlined style={{ fontSize: "18px" }} />
-          </Button> */}
+          <Badge
+            count={
+              cartItems.length > 0
+                ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
+                : 0
+            }
+            style={{
+              backgroundColor: cartItems.length > 0 ? "red" : "transparent",
+              fontSize: "8px",
+              height: "15px",
+              minWidth: "15px",
+              lineHeight: "15px",
+            }}
+            offset={[-15, 10]}
+          >
+            <Button
+              onClick={showCartDrawer}
+              type="link"
+              style={{ color: "black" }}
+            >
+              <ShoppingCartOutlined style={{ fontSize: "18px" }} />
+            </Button>
+          </Badge>
         </div>
       </div>
-
       {/* Left: NEW COLLECTION for desktop view */}
       <div
         className="desktop-menu"
@@ -119,9 +180,6 @@ const CustomHeader: React.FC = () => {
       >
         {/* <a href="/" rel="noopener noreferrer" style={{ color: "black" }}>
           NEW COLLECTION
-        </a> */}
-        {/* <a href="/" rel="noopener noreferrer" style={{ color: "black" }}>
-          PROMO
         </a> */}
       </div>
       {/* Center: Logo for desktop view */}
@@ -145,18 +203,22 @@ const CustomHeader: React.FC = () => {
             height: "100%",
           }}
         >
-          <img
-            src={logo}
-            alt="Logo"
+          <video
             style={{
-              height: "150px",
-              objectFit: "contain",
-              maxWidth: "150px",
+              width: "180px",
+              height: "40px",
+              animationDelay: "0s",
+              objectFit: "cover", // Ensures video fills the Avatar-like shape
             }}
-          />
+            autoPlay
+            loop
+            muted
+          >
+            <source src={vantageLogo} type="video/webm" />
+            Your browser does not support the video tag.
+          </video>
         </a>
       </div>
-
       {/* Right: Search, Login, Cart for desktop view */}
       <div
         className="desktop-actions"
@@ -167,76 +229,437 @@ const CustomHeader: React.FC = () => {
           flex: 1,
         }}
       >
-        <Menu
-          mode="horizontal"
-          theme="light"
+        <Row
           style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "30px", // Adjust gap as needed
             lineHeight: "64px",
             background: "none",
-            border: "none",
-            flex: 1,
-            justifyContent: "flex-end",
           }}
         >
-          <Menu.Item
-            key="logout"
-            icon={<LogoutOutlined style={{ color: "red" }} />}
-          >
-            <Link to="/password" style={{ color: "red" }}>
+          <Col style={{ display: "flex", alignItems: "center" }}>
+            <Badge
+              count={
+                cartItems.length > 0
+                  ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
+                  : 0
+              }
+              style={{
+                backgroundColor: cartItems.length > 0 ? "red" : "transparent", // Changed to red for visibility
+                fontSize: "8px",
+                height: "15px",
+                minWidth: "15px",
+                lineHeight: "15px",
+              }}
+              offset={[-40, 0]}
+            >
+              <div
+                onClick={showCartDrawer}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: "black",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+              >
+                <ShoppingCartOutlined
+                  style={{
+                    color: "black",
+                    marginRight: "8px",
+                    fontSize: "18px",
+                  }}
+                />
+                Cart
+              </div>
+            </Badge>
+          </Col>
+
+          <Col style={{ display: "flex", alignItems: "center" }}>
+            <Link
+              to="#"
+              onClick={onLogout}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: "red",
+                fontSize: "16px",
+                textDecoration: "none",
+              }}
+            >
+              <LogoutOutlined style={{ color: "red", marginRight: "8px" }} />
               Logout
             </Link>
-          </Menu.Item>
-        </Menu>
-        {/* <Input.Search
-          placeholder="Search"
-          style={{
-            marginRight: "20px",
-            width: 170,
-            color: "black",
-          }}
-        /> */}
-        {/* <Button type="link" style={{ color: "black" }}>
-          <ShoppingCartOutlined style={{ fontSize: "24px" }} />
-          <p>CART</p>
-        </Button> */}
-        {/* <Button type="link" style={{ color: "black" }}>
-          <UserOutlined style={{ fontSize: "24px" }} />
-          <p>LOGIN</p>
-        </Button> */}
+          </Col>
+        </Row>
       </div>
+
+      <Drawer
+        closable={false}
+        placement="right"
+        onClose={hideCartDrawer}
+        open={cartDrawerVisible}
+        width={400}
+        title={
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ fontSize: "18px", fontWeight: "bold" }}>
+              Cart ({cartItems.length})
+            </span>
+            <Button
+              onClick={hideCartDrawer}
+              style={{ border: "none", background: "transparent" }}
+            >
+              ✕
+            </Button>
+          </div>
+        }
+        bodyStyle={{ display: "flex", flexDirection: "column", height: "100%" }}
+      >
+        <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
+          {cartItems.length === 0 ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "75vh",
+                padding: "20px",
+              }}
+            >
+              <img
+                src={emptyCart}
+                alt="empty cart"
+                style={{ height: "150px", marginBottom: "10px" }}
+              />
+              <Text strong style={{ fontSize: "18px" }}>
+                Empty Cart
+              </Text>
+              <p style={{ textAlign: "center", marginTop: "10px" }}>
+                Your cart is still empty. Explore the various interesting
+                products we have prepared for you.
+              </p>
+              <Link to="/home">
+                <Button
+                  type="primary"
+                  style={{
+                    backgroundColor: "black",
+                    borderColor: "black",
+                    color: "white",
+                    marginTop: "20px",
+                    transition: "background-color 0.3s, border-color 0.3s",
+                    height: "50px",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "gray";
+                    e.currentTarget.style.borderColor = "gray";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "black";
+                    e.currentTarget.style.borderColor = "black";
+                  }}
+                  onClick={() => {
+                    hideCartDrawer();
+                  }}
+                >
+                  <b>CONTINUE SHOPPING</b>
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Notification Section */}
+              <div
+                style={{
+                  padding: "10px",
+                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {totalPrice < 200000 ? (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <WarningOutlined
+                        style={{
+                          color: "#4a90f1",
+                          fontSize: "30px",
+                          marginRight: "20px", // Margin to the right of the icon
+                        }}
+                      />
+                      <div>
+                        <Text
+                          style={{
+                            fontSize: "13px",
+                            color: "black",
+                            display: "block",
+                            fontWeight: "400",
+                          }}
+                        >
+                          You need to spend more than IDR{" "}
+                          {(200000 - totalPrice).toLocaleString("id-ID")} to get
+                        </Text>
+                        <Text
+                          style={{
+                            color: "#4a90f1",
+                            fontWeight: "bold",
+                            display: "block",
+                            fontSize: "16px",
+                          }}
+                        >
+                          FREE STANDARD SHIPPING
+                        </Text>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <CheckCircleOutlined
+                        style={{
+                          color: "#00b27d",
+                          fontSize: "30px",
+                          marginRight: "20px",
+                        }}
+                      />
+                      <div>
+                        <Text
+                          style={{
+                            color: "#00b27d",
+                            fontWeight: "bold",
+                            display: "block",
+                          }}
+                        >
+                          FREE STANDARD SHIPPING!
+                        </Text>
+                        <Text
+                          style={{
+                            color: "black",
+                            fontWeight: "400",
+                            display: "block",
+                          }}
+                        >
+                          You get free standard shipping to your home.
+                        </Text>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <Divider style={{ marginBottom: 20, marginTop: 0 }} />
+              {cartItems.map((item: any, index: any) => (
+                <React.Fragment key={item.id}>
+                  <Row
+                    gutter={16}
+                    align="middle"
+                    style={{ padding: "10px", marginBottom: "10px" }}
+                  >
+                    <Col span={8}>
+                      <img
+                        src={
+                          item.images && item.images.length > 0
+                            ? item.images[3]
+                            : "fallback_image_url"
+                        }
+                        alt={item.title}
+                        style={{
+                          width: "100px",
+                          height: "120px",
+                          objectFit: "cover",
+                          borderRadius: "4px",
+                        }}
+                      />
+                    </Col>
+                    <Col span={10}>
+                      <Text strong style={{ fontSize: "16px" }}>
+                        {item.title}
+                      </Text>
+                      <div
+                        style={{
+                          marginTop: "5px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <Text style={{ fontSize: "14px", color: "#888" }}>
+                          {item.selectedSize}
+                        </Text>
+                        <Text style={{ fontSize: "14px", color: "#888" }}>
+                          {item.quantity}x
+                        </Text>
+                        <Text style={{ fontSize: "14px", color: "#888" }}>
+                          IDR {item.discountPrice}
+                        </Text>
+                      </div>
+                    </Col>
+                    <Col span={6} style={{ textAlign: "right" }}>
+                      <Row justify="end" align="middle">
+                        <Col>
+                          <Button
+                            icon={<EditOutlined />}
+                            size="small"
+                            onClick={() => editItem(item.id)}
+                            style={{
+                              border: "none",
+                              backgroundColor: "transparent",
+                            }}
+                          />
+                        </Col>
+                        <Divider
+                          type="vertical"
+                          style={{ backgroundColor: "#d9d9d9" }}
+                        />
+                        <Col>
+                          <Button
+                            icon={<DeleteOutlined />}
+                            size="small"
+                            onClick={() =>
+                              removeItem(item.id, item.selectedSize)
+                            }
+                            style={{
+                              border: "none",
+                              backgroundColor: "transparent",
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                  {index < cartItems.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+              <Divider />
+            </>
+          )}
+        </div>
+        {/* Section for Total only if below 200.000 */}
+        {cartItems.length > 0 && (
+          <>
+            {totalPrice < 200000 ? (
+              <Row style={{ padding: "5px" }}>
+                <Col span={12}>
+                  <Text strong style={{ fontSize: "18px" }}>
+                    Total:
+                  </Text>
+                </Col>
+                <Col span={12} style={{ textAlign: "right" }}>
+                  <Text strong style={{ fontSize: "18px" }}>
+                    IDR {totalPrice.toLocaleString("id-ID")}
+                  </Text>
+                </Col>
+              </Row>
+            ) : (
+              <>
+                <Row style={{ padding: "5px" }}>
+                  <Col span={12}>
+                    <Text>Subtotal:</Text>
+                  </Col>
+                  <Col
+                    span={12}
+                    style={{ textAlign: "right", fontWeight: "500" }}
+                  >
+                    <Text>IDR {totalPrice.toLocaleString("id-ID")}</Text>
+                  </Col>
+                </Row>
+                <Row style={{ padding: "5px" }}>
+                  <Col span={12}>
+                    <Text>Shipping Fee:</Text>
+                  </Col>
+                  <Col span={12} style={{ textAlign: "right" }}>
+                    <Text strong style={{ color: "#00b27d" }}>
+                      FREE
+                    </Text>
+                  </Col>
+                </Row>
+                <Divider style={{ margin: "5px 0" }} />
+                <Row style={{ padding: "5px" }}>
+                  <Col span={12}>
+                    <Text strong style={{ fontSize: "18px" }}>
+                      Total:
+                    </Text>
+                  </Col>
+                  <Col span={12} style={{ textAlign: "right" }}>
+                    <Text strong style={{ fontSize: "18px" }}>
+                      IDR {totalPrice.toLocaleString("id-ID")}
+                    </Text>
+                  </Col>
+                </Row>
+              </>
+            )}
+            <Button
+              type="primary"
+              style={{
+                width: "100%",
+                height: "50px",
+                backgroundColor: isHovered ? "#32b89e" : "#00b27d",
+                borderColor: isHovered ? "#32b89e" : "#00b27d",
+                borderRadius: "6px",
+                transition: "background-color 0.3s, border-color 0.3s",
+                marginTop: "5px", // Reduced margin to bring it closer
+              }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <b>PROCESS ORDER</b>
+            </Button>
+          </>
+        )}
+      </Drawer>
 
       {/* Drawer for mobile screens */}
       <Drawer
-        title={
-          <span style={{ fontSize: "24px", fontWeight: "bold" }}>VANTAGE</span>
-        } // Increase title size
+        closable={false}
         placement="left"
-        onClose={hideDrawer}
+        width={400}
         open={drawerVisible}
-        className="mobile-menu"
-        closeIcon={<span style={{ fontSize: "16px", color: "black" }}>✕</span>}
+        title={
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span
+              onClick={hideDrawer}
+              style={{
+                cursor: "pointer",
+                fontSize: "16px",
+                color: "black",
+                marginRight: "12px",
+              }}
+            >
+              ✕
+            </span>
+            <span style={{ fontSize: "16px", fontWeight: "bold" }}>
+              VANTAGE
+            </span>
+          </div>
+        }
       >
-        <Link to="/password" style={{ color: "red", fontSize: "18px" }}>
+        <Link
+          to="#"
+          onClick={onLogout}
+          style={{ color: "red", fontSize: "18px" }}
+        >
           Logout
         </Link>
-        {/* Uncomment if needed */}
-        {/* <Input.Search
-    placeholder="Search"
-    style={{ marginBottom: "20px", width: "100%", color: "black" }}
-  /> */}
-        {/* <a href="/" rel="noopener noreferrer">
-    <div
-      style={{
-        color: "black",
-        fontSize: "16px",
-        fontWeight: 450,
-      }}
-    >
-      NEW COLLECTION
-    </div>
-  </a> */}
       </Drawer>
-
       <style>
         {`
         .Header.scrolled {
@@ -259,20 +682,19 @@ const CustomHeader: React.FC = () => {
         }
 
         @media (min-width: 769px) {
-        .desktop-menu {
-            display: flex !important; 
+            .desktop-menu {
+                display: flex !important; 
+            }
+            .desktop-logo {
+                display: flex !important; 
+            }
+            .desktop-actions {
+                display: flex !important; 
+            }
+            .mobile-header {
+                display: none !important;
+            }
         }
-        .desktop-logo {
-            display: flex !important; 
-        }
-        .desktop-actions {
-            display: flex !important; 
-        }
-        .mobile-header {
-            display: none !important;
-        }
-        }
-
       `}
       </style>
     </Header>

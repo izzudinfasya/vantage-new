@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { TruckOutlined, ShopOutlined } from "@ant-design/icons";
+import {
+  TruckOutlined,
+  ShopOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -13,8 +17,10 @@ import {
   Drawer,
   Carousel,
   Skeleton,
+  Tooltip,
 } from "antd";
 
+import { useCart } from "components/cartContext";
 import SkeletonImage from "components/skeletonImage";
 import ProductCatalogue from "components/productCatalogue";
 
@@ -97,6 +103,23 @@ const DetailProductPage: React.FC = () => {
         selectedSize: selectedSize,
       },
     });
+  };
+
+  const { addItemToCart } = useCart();
+
+  const handleAddToCart = () => {
+    const itemToAdd = {
+      id: product._id,
+      title: product.title,
+      badgeType: product.badgeType,
+      images: product.images,
+      originalPrice: product.originalPrice,
+      discountPrice: product.discountedPrice,
+      discount: product.originalPrice - product.discountedPrice,
+      selectedSize: selectedSize,
+    };
+
+    addItemToCart(itemToAdd);
   };
 
   return (
@@ -365,24 +388,63 @@ const DetailProductPage: React.FC = () => {
                   ))}
                 </Drawer>
 
-                <div style={{ marginTop: "30px" }}>
+                <div
+                  style={{
+                    marginTop: "30px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Button
-                    onClick={handleBuyNow}
+                    onClick={() => {
+                      window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                      handleBuyNow();
+                    }}
                     type="primary"
                     size="large"
                     style={{
-                      backgroundColor: isHovered ? "#808080" : "#000", // Gray on hover
-                      borderColor: isHovered ? "#808080" : "#000", // Gray border on hover
-                      borderRadius: "6px",
-                      width: "100%",
+                      width: "80%",
                       height: "50px",
-                      transition: "background-color 0.3s, border-color 0.3s", // Smooth transition
+                      backgroundColor: isHovered ? "#32b89e" : "#00b27d",
+                      borderColor: isHovered ? "#32b89e" : "#00b27d",
+                      borderRadius: "6px",
+                      transition: "background-color 0.3s, border-color 0.3s",
+                      marginRight: "10px",
                     }}
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                   >
-                    Buy Now
+                    <b>BUY NOW</b>
                   </Button>
+                  <Tooltip title="Add to Cart">
+                    <Button
+                      onClick={handleAddToCart}
+                      type="default"
+                      style={{
+                        width: "20%",
+                        height: "50px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "6px",
+                        border: "1px solid black",
+                        transition: "border-color 0.3s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "gray";
+                        e.currentTarget.style.color = "gray";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "black";
+                        e.currentTarget.style.color = "black";
+                      }}
+                    >
+                      <ShoppingCartOutlined style={{ fontSize: "22px" }} />
+                    </Button>
+                  </Tooltip>
                 </div>
 
                 <Collapse
