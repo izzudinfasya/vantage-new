@@ -1,10 +1,10 @@
 import React from "react";
-import { Layout, Avatar, Row } from "antd";
+import { Layout, Row } from "antd";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import shopeeImage from "../assets/shopee.png";
 import webLogo from "../assets/weblogo.png";
 import gifAvatar from "../assets/v-black.webm";
-import skyVideo from "../assets/sky.mp4";
+// import skyVideo from "../assets/sky.mp4";
 
 const { Content, Footer } = Layout;
 
@@ -38,12 +38,11 @@ const LinktreePage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         fontFamily: "Helvetica, Arial, sans-serif",
-        background: "transparent",
       }}
     >
       <GlobalStyles />
 
-      <video
+      {/* <video
         autoPlay
         loop
         muted
@@ -58,7 +57,7 @@ const LinktreePage: React.FC = () => {
           objectFit: "cover",
           zIndex: -1,
         }}
-      />
+      /> */}
 
       <Content
         style={{
