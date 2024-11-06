@@ -17,6 +17,7 @@ import {
   Carousel,
   Skeleton,
   Tooltip,
+  message,
 } from "antd";
 
 import { useCart } from "components/cartContext";
@@ -31,7 +32,7 @@ const DetailProductPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState("M"); // Default size
+  const [selectedSize, setSelectedSize] = useState(""); // Default size
   const [product, setProduct] = useState<any>(null);
   const [expectedProductCount, setExpectedProductCount] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -83,6 +84,11 @@ const DetailProductPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleBuyNow = () => {
+    if (!selectedSize) {
+      message.error("Please select a size before proceeding.");
+      return; // Prevent the user from proceeding without selecting a size
+    }
+
     const productData = {
       product: {
         id: product._id,
@@ -416,7 +422,7 @@ const DetailProductPage: React.FC = () => {
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                   >
-                    <b>BUY NOW</b>
+                    <b>{selectedSize ? "BUY NOW" : "SELECT SIZE"}</b>
                   </Button>
                   <Tooltip title="Add to Cart">
                     <Button
