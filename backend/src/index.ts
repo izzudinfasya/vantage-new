@@ -112,6 +112,7 @@ app.get("/create-transaction", function (req, res) {
     serverKey: process.env.MIDTRANS_SERVER_KEY,
     clientKey: process.env.MIDTRANS_CLIENT_KEY,
   });
+
   let parameter = {
     transaction_details: {
       order_id: "order-id-node-" + Math.round(new Date().getTime() / 1000),
@@ -121,13 +122,21 @@ app.get("/create-transaction", function (req, res) {
       secure: true,
     },
   };
-  snap.createTransactionToken(parameter).then((transactionToken: any) => {
-    res.render("create-transaction", {
-      token: transactionToken,
-      clientKey: snap.apiConfig.clientKey,
+
+  snap
+    .createTransactionToken(parameter)
+    .then((transactionToken: any) => {
+      res.json({
+        token: transactionToken,
+        clientKey: snap.apiConfig.clientKey,
+      });
+    })
+    .catch((error: any) => {
+      console.error("Error creating transaction:", error);
+      res.status(500).json({ error: "Failed to create transaction" });
     });
-  });
 });
+
 // Jalankan server
 db.then(() => {
   app.listen(PORT, () => {

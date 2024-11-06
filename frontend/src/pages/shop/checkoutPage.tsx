@@ -16,7 +16,7 @@ import {
 const { Title, Text } = Typography;
 // const { Option } = Select;
 
-const ConfirmOrder = () => {
+const CheckoutPage = () => {
   const [hovered, setHovered] = useState(false);
   const location = useLocation();
   const product = location.state?.product; // This should be an array or a single object
@@ -473,4 +473,4 @@ const ConfirmOrder = () => {
   );
 };
 
-export default ConfirmOrder;
+export default CheckoutPage;
