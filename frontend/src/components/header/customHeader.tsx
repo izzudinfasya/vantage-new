@@ -21,9 +21,10 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 // import logo from "../assets/logo.png";
-import emptyCart from "../assets/empty-cart.png";
+import emptyCart from "../../assets/empty-cart.png";
 import { useCart } from "components/cartContext";
-import vantageLogo from "../assets/logo.png";
+import vantageLogo from "../../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -37,7 +38,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [cartDrawerVisible, setCartDrawerVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-
   const showCartDrawer = () => setCartDrawerVisible(true);
   const hideCartDrawer = () => setCartDrawerVisible(false);
 
@@ -90,6 +90,32 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
   };
 
   const totalPrice = calculateTotal();
+
+  const navigate = useNavigate();
+
+  const handleProcessOrder = () => {
+    if (cartItems && cartItems.length > 0) {
+      const orderData = cartItems.map((productData) => ({
+        id: productData.id,
+        title: productData.title,
+        images: [productData.images[productData.images.length - 1]], // Ambil gambar dengan indeks terbesar
+        qty: productData.quantity,
+        originalPrice: productData.originalPrice,
+        discountPrice: productData.discountPrice,
+        discount: productData.originalPrice - productData.discountPrice,
+        selectedSize: productData.selectedSize,
+      }));
+
+      navigate(`/product/confirm-order`, {
+        state: {
+          product: orderData, // Mengirimkan array orderData
+        },
+      });
+      hideCartDrawer();
+    } else {
+      console.error("Cart is empty or not initialized.");
+    }
+  };
 
   return (
     <Header
@@ -199,7 +225,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
         }}
       >
         <a
-          href="/"
+          href="/home"
           rel="noopener noreferrer"
           style={{
             display: "flex",
@@ -616,10 +642,11 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
                 borderColor: isHovered ? "#32b89e" : "#00b27d",
                 borderRadius: "6px",
                 transition: "background-color 0.3s, border-color 0.3s",
-                marginTop: "5px", // Reduced margin to bring it closer
+                marginTop: "5px",
               }}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
+              onClick={handleProcessOrder}
             >
               <b>PROCESS ORDER</b>
             </Button>

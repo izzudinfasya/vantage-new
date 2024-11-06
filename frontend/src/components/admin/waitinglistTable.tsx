@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, message, Spin, Button } from "antd";
 import axios from "axios";
-import { IPassword } from "../../../backend/src/models/Password"; // Adjust the import path accordingly
+import { IPassword } from "../../../../backend/src/models/Password"; // Adjust the import path accordingly
 import { ColumnType } from "antd/es/table"; // Adjust this import according to your library
 
 const WaitingListTable: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, message, Spin } from "antd";
 import axios from "axios";
-import { IProducts } from "../../../backend/src/models/Product";
+import { IProducts } from "../../../../backend/src/models/Product";
 import { useNavigate } from "react-router-dom";
 import { ColumnType } from "antd/es/table"; // Adjust this import according to your library
 

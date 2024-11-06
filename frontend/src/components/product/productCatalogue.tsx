@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Layout, Typography } from "antd";
 import axios from "axios";
 import ProductCard from "./productCard";
-import SkeletonCard from "./skeletonCard"; // Import your SkeletonCard component
+import SkeletonCard from "../skeleton/skeletonCard"; // Import your SkeletonCard component
 
 const { Content } = Layout;
 const { Text } = Typography;

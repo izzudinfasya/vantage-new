@@ -1,7 +1,7 @@
 import React from "react";
 import { Layout } from "antd";
-import ProductInterest from "components/productInterest";
-import ProductCatalogue from "components/productCatalogue";
+import ProductInterest from "components/product/productInterest";
+import ProductCatalogue from "components/product/productCatalogue";
 
 const { Content } = Layout;
 

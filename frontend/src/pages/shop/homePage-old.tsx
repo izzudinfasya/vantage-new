@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Layout } from "antd";
 // import ModalPromo from "../components/modalPromo";
-import EmailSubscriptionModal from "../components/email/emailSubs";
-import ProductCategories from "../components/product/productCategories";
-import CarouselCustom from "../components/carousel/carouselCustom";
-import BannerPromo from "../components/banner/bannerPromo";
+import EmailSubscriptionModal from "../../components/email/emailSubs";
+import ProductCategories from "../../components/product/productCategories";
+import CarouselCustom from "../../components/carousel/carouselCustom";
+import BannerPromo from "../../components/banner/bannerPromo";
 
-import newArrivalImage from "../../assets/noimage.jpg";
-import collectionImage from "../../assets/noimage.jpg";
-import bestsellerImage from "../../assets/noimage.jpg";
+import newArrivalImage from "../assets/noimage.jpg";
+import collectionImage from "../assets/noimage.jpg";
+import bestsellerImage from "../assets/noimage.jpg";
 import ProductInterest from "components/product/productInterest";
 
 const { Content } = Layout;

@@ -8,9 +8,9 @@ import {
   FileDoneOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
-import logoBig from "../assets/logo.png"; // Import your regular logo
-import logoSmall from "../assets/logo-email.png";
-import "../components/sidebarAdmin.css";
+import logoBig from "../../assets/logo.png";
+import logoSmall from "../../assets/logo-email.png";
+import "../admin/sidebarAdmin.css";
 
 const { Sider } = Layout;
 

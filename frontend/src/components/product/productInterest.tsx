@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
 
 import ProductCard from "./productCard";
-import SkeletonCard from "./skeletonCard"; // Make sure to import the SkeletonCard component
+import SkeletonCard from "../skeleton/skeletonCard"; // Make sure to import the SkeletonCard component
 
 const { Text } = Typography;
 

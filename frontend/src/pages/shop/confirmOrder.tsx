@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Button,
@@ -34,27 +34,35 @@ const ConfirmOrder = () => {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [paymentFormVisible, setPaymentFormVisible] = useState(false);
 
-  const discount = product[0].discount;
   const isProductArray = Array.isArray(product);
-  const deliveryCharge = 0;
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
   };
 
+  //   const totalDiscount = product.reduce((total: any, item: any) => {
+  //     return total + (item.originalPrice - item.discountPrice) * item.qty;
+  //   }, 0);
   const calculateTotal = () => {
-    if (isProductArray && product.length > 0) {
-      const subtotal = product.reduce(
-        (total, item) => total + item.originalPrice * Number(item.qty),
-        0
-      );
+    if (product && product.length > 0) {
+      const subtotal = product.reduce((total: any, item: any) => {
+        const itemTotal = item.discountPrice * item.qty;
+        return total + itemTotal;
+      }, 0);
 
-      const total = subtotal + deliveryCharge - discount;
+      const updatedDeliveryCharge = subtotal > 200000 ? 0 : 25000;
 
-      return total.toLocaleString("id-ID");
+      const total = subtotal + updatedDeliveryCharge;
+
+      return {
+        total: total.toLocaleString("id-ID"),
+        deliveryCharge: updatedDeliveryCharge,
+      };
     }
-    return "0"; // Jika tidak ada produk, kembalikan 0
+    return { total: "0", deliveryCharge: 0 };
   };
+
+  const { total, deliveryCharge } = calculateTotal();
 
   const showModal = () => {
     shippingForm.resetFields();
@@ -353,35 +361,28 @@ const ConfirmOrder = () => {
                                 }}
                               >
                                 <div style={{ display: "flex", gap: "2px" }}>
-                                  {item.images
-                                    .slice(0, 3)
-                                    .map((image: any, index: any) => (
-                                      <div
-                                        key={index}
+                                  {item.images.map((image: any, index: any) => (
+                                    <div
+                                      key={index}
+                                      style={{
+                                        width: "80px",
+                                        height: "100px",
+                                        overflow: "hidden",
+                                        borderRadius: "4px",
+                                        border: "1px solid #d9d9d9",
+                                      }}
+                                    >
+                                      <img
+                                        src={image}
+                                        alt={item.title}
                                         style={{
-                                          width: "80px",
-                                          height: "100px",
-                                          overflow: "hidden",
-                                          borderRadius: "4px",
-                                          border: "1px solid #d9d9d9",
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "cover",
                                         }}
-                                      >
-                                        <img
-                                          src={
-                                            image[3] ||
-                                            image[2] ||
-                                            image[1] ||
-                                            image[0]
-                                          }
-                                          alt={item.title}
-                                          style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                          }}
-                                        />
-                                      </div>
-                                    ))}
+                                      />
+                                    </div>
+                                  ))}
                                 </div>
                                 <div style={{ marginLeft: "8px" }}>
                                   {" "}
@@ -393,9 +394,56 @@ const ConfirmOrder = () => {
                                     <span>Size: </span>
                                     {item.selectedSize}
                                   </div>
-                                  <div style={{ marginTop: "4px" }}>
-                                    <span>Price: </span>
-                                    {item.originalPrice.toLocaleString("id-ID")}
+                                  <div
+                                    style={{
+                                      marginTop: "4px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <span>Price:&nbsp;</span>{" "}
+                                    {/* Menambahkan spasi setelah "Price:" */}
+                                    {item.discountPrice &&
+                                      item.discountPrice > 0 && (
+                                        <span
+                                          style={{
+                                            color: "red",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          IDR{" "}
+                                          {item.discountPrice.toLocaleString(
+                                            "id-ID"
+                                          )}
+                                        </span>
+                                      )}
+                                    {item.originalPrice && (
+                                      <span
+                                        style={{
+                                          textDecoration: "line-through",
+                                          fontSize: "12px",
+                                          color: "#999",
+                                          marginLeft: item.discountPrice
+                                            ? "6px"
+                                            : "0",
+                                        }}
+                                      >
+                                        IDR{" "}
+                                        {item.originalPrice.toLocaleString(
+                                          "id-ID"
+                                        )}
+                                      </span>
+                                    )}
+                                    <span
+                                      style={{
+                                        fontSize: "12px",
+                                        color: "#999",
+                                        marginLeft: "6px",
+                                      }}
+                                    >
+                                      {" "}
+                                      x{item.qty}pcs
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -423,24 +471,40 @@ const ConfirmOrder = () => {
                 : null}
 
               <Divider style={{ margin: "8px 0" }} />
-              <Col span={12}>
-                <Text>Delivery Charge</Text>
-              </Col>
-              <Col span={12} style={{ textAlign: "right" }}>
-                <Text>IDR {deliveryCharge.toLocaleString("id-ID")}</Text>
-              </Col>
-              <Col span={12}>
+              {deliveryCharge > 0 ? (
+                <>
+                  <Col span={12}>
+                    <Text>Shipping Fee</Text>
+                  </Col>
+                  <Col span={12} style={{ textAlign: "right" }}>
+                    <Text>IDR {deliveryCharge.toLocaleString("id-ID")}</Text>
+                  </Col>
+                </>
+              ) : (
+                <>
+                  <Col span={12}>
+                    <Text>Shipping Fee:</Text>
+                  </Col>
+                  <Col span={12} style={{ textAlign: "right" }}>
+                    <Text strong style={{ color: "#00b27d" }}>
+                      FREE
+                    </Text>
+                  </Col>
+                </>
+              )}
+
+              {/* <Col span={12}>
                 <Text>Discount</Text>
               </Col>
               <Col span={12} style={{ textAlign: "right" }}>
-                <Text>-IDR {discount.toLocaleString("id-ID")}</Text>
-              </Col>
+                <Text>-IDR {totalDiscount.toLocaleString("id-ID")}</Text>
+              </Col> */}
               <Divider style={{ margin: "8px 0" }} />
               <Col span={12}>
                 <Text strong>Total</Text>
               </Col>
               <Col span={12} style={{ textAlign: "right" }}>
-                <Text strong>IDR {calculateTotal()}</Text>
+                <Text strong>IDR {total}</Text>
               </Col>
             </Row>
             <Button

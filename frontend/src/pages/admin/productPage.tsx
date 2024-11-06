@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Col, Typography, Row, Button } from "antd";
-import ProductsTable from "../components/productsTable";
+import ProductsTable from "../../components/admin/productsTable";
 import { useNavigate } from "react-router-dom";
 
 const { Content } = Layout;

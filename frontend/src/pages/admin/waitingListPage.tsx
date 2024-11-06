@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Col, Typography, Row } from "antd";
-import WaitingListTable from "../components/waitinglistTable";
+import WaitingListTable from "../../components/admin/waitinglistTable";
 
 const { Content } = Layout;
 const { Title } = Typography;

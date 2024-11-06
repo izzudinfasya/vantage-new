@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import {
   TruckOutlined,
   ShopOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Typography,
   Button,
@@ -21,8 +20,8 @@ import {
 } from "antd";
 
 import { useCart } from "components/cartContext";
-import SkeletonImage from "components/skeletonImage";
-import ProductCatalogue from "components/productCatalogue";
+import SkeletonImage from "components/skeleton/skeletonImage";
+import ProductCatalogue from "components/product/productCatalogue";
 
 import axios from "axios";
 const { Title, Text } = Typography;
@@ -88,7 +87,7 @@ const DetailProductPage: React.FC = () => {
       product: {
         id: product._id,
         title: product.title,
-        images: [product.images],
+        images: [product.images[product.images.length - 1]],
         qty: "1",
         originalPrice: product.originalPrice,
         discountPrice: product.discountedPrice,
@@ -97,7 +96,7 @@ const DetailProductPage: React.FC = () => {
       },
     };
 
-    navigate(`/product/${productData.product.id}/confirm-order`, {
+    navigate(`/product/confirm-order`, {
       state: {
         product: [productData.product],
         selectedSize: selectedSize,
@@ -262,17 +261,6 @@ const DetailProductPage: React.FC = () => {
                   <Text
                     style={{
                       fontSize: "18px",
-                      color: "#333",
-                      fontWeight: "500",
-                      textDecoration: "line-through", // Original price strikethrough
-                      marginRight: "10px",
-                    }}
-                  >
-                    IDR {product.originalPrice.toLocaleString("id-ID")}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: "18px",
                       color: "#ff0000", // Color for the discounted price
                       fontWeight: "500",
                       marginRight: "10px",
@@ -281,6 +269,17 @@ const DetailProductPage: React.FC = () => {
                     IDR {product.discountedPrice.toLocaleString("id-ID")}
                   </Text>
                   <Text
+                    style={{
+                      fontSize: "16px",
+                      color: "#999",
+                      fontWeight: "500",
+                      textDecoration: "line-through", // Original price strikethrough
+                      marginRight: "10px",
+                    }}
+                  >
+                    IDR {product.originalPrice.toLocaleString("id-ID")}
+                  </Text>
+                  {/* <Text
                     style={{
                       fontSize: "14px",
                       color: "#ff0000", // Color for discount percentage
@@ -294,7 +293,7 @@ const DetailProductPage: React.FC = () => {
                         100
                     )}
                     % OFF
-                  </Text>
+                  </Text> */}
                 </div>
 
                 <Divider style={{ borderColor: "#ccc" }} />

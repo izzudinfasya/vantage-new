@@ -7,22 +7,22 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import HomePage from "./pages/homePage";
+import HomePage from "./pages/shop/homePage";
 import LinktreePage from "./pages/linktreePage";
 import PasswordPage from "./pages/passwordPage";
-import CustomHeader from "./components/customHeader";
-import CustomFooter from "./components/customFooter";
-import DetailProduct from "./pages/detailproductPage";
-import UploadPage from "./pages/adminuploadPage";
-import AdminPage from "./pages/adminPage";
-import ProductPage from "./pages/productPage";
-import ConfirmOrderPage from "./pages/confirmOrder";
-import Sidebar from "./components/sidebarAdmin";
-import Navbar from "./components/navbarAdmin";
-import Marquee from "components/marquee";
+import CustomHeader from "./components/header/customHeader";
+import CustomFooter from "./components/footer/customFooter";
+import DetailProduct from "./pages/shop/detailproductPage";
+import UploadPage from "./pages/admin/adminuploadPage";
+import AdminPage from "./pages/admin/adminPage";
+import ProductPage from "./pages/admin/productPage";
+import ConfirmOrderPage from "./pages/shop/confirmOrder";
+import Sidebar from "./components/admin/sidebarAdmin";
+import Navbar from "./components/admin/navbarAdmin";
+import Marquee from "components/marquee/marquee";
 import { CartProvider } from "components/cartContext";
 import { Layout } from "antd";
-import WaitingListPage from "pages/waitingListPage";
+import WaitingListPage from "pages/admin/waitingListPage";
 
 const { Content } = Layout;
 
@@ -166,7 +166,7 @@ const App = () => {
         }
       />
       <Route
-        path="/product/:id/confirm-order"
+        path="/product/confirm-order"
         element={
           <ProtectedRoute isLoggedIn={isLoggedIn}>
             <ConfirmOrderPage />
