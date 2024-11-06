@@ -16,7 +16,7 @@ import DetailProduct from "./pages/shop/detailproductPage";
 import UploadPage from "./pages/admin/adminuploadPage";
 import AdminPage from "./pages/admin/adminPage";
 import ProductPage from "./pages/admin/productPage";
-import ConfirmOrderPage from "./pages/shop/confirmOrder";
+import CheckoutPage from "./pages/shop/checkoutPage";
 import Sidebar from "./components/admin/sidebarAdmin";
 import Navbar from "./components/admin/navbarAdmin";
 import Marquee from "components/marquee/marquee";
@@ -166,10 +166,10 @@ const App = () => {
         }
       />
       <Route
-        path="/product/confirm-order"
+        path="/checkout"
         element={
           <ProtectedRoute isLoggedIn={isLoggedIn}>
-            <ConfirmOrderPage />
+            <CheckoutPage />
           </ProtectedRoute>
         }
       />

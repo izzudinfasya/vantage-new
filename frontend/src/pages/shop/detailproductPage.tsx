@@ -102,7 +102,7 @@ const DetailProductPage: React.FC = () => {
       },
     };
 
-    navigate(`/product/confirm-order`, {
+    navigate(`/checkout`, {
       state: {
         product: [productData.product],
         selectedSize: selectedSize,

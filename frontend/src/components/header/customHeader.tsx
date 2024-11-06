@@ -8,6 +8,7 @@ import {
   Typography,
   Divider,
   Badge,
+  Modal,
 } from "antd";
 import { Link } from "react-router-dom";
 import {
@@ -19,6 +20,7 @@ import {
   DeleteOutlined,
   WarningOutlined,
   CheckCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 // import logo from "../assets/logo.png";
 import emptyCart from "../../assets/empty-cart.png";
@@ -40,6 +42,99 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
   const [isHovered, setIsHovered] = useState(false);
   const showCartDrawer = () => setCartDrawerVisible(true);
   const hideCartDrawer = () => setCartDrawerVisible(false);
+
+  const showLogoutConfirm = () => {
+    Modal.confirm({
+      title: (
+        <div style={{ textAlign: "center" }}>
+          <ExclamationCircleOutlined
+            style={{
+              fontSize: "70px",
+              color: "#d32f2f",
+              marginBottom: "20px",
+            }}
+          />
+          <div style={{ fontSize: "18px", fontWeight: "bold" }}>
+            Are you sure you want to logout?
+          </div>
+        </div>
+      ),
+      content: (
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: "16px",
+            marginBottom: "20px",
+          }}
+        >
+          You will be logged out and need to login again.
+        </div>
+      ),
+      icon: null,
+      okText: "Yes, Logout",
+      cancelText: "Cancel",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#d32f2f",
+          borderColor: "#d32f2f",
+          color: "#ffffff",
+          margin: "0 10px", // Add space between buttons
+        },
+        onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+          e.currentTarget.style.backgroundColor = "#c62828";
+          e.currentTarget.style.borderColor = "#c62828";
+        },
+        onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+          e.currentTarget.style.backgroundColor = "#d32f2f";
+          e.currentTarget.style.borderColor = "#d32f2f";
+        },
+      },
+      cancelButtonProps: {
+        style: {
+          borderColor: "#808080",
+          color: "#808080",
+          margin: "0 10px", // Add space between buttons
+        },
+        onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+          e.currentTarget.style.borderColor = "#BDBDBD";
+          e.currentTarget.style.color = "#BDBDBD";
+        },
+        onClick: () => Modal.destroyAll(), // Close modal on cancel click
+      },
+      footer: (
+        <div
+          style={{ display: "flex", justifyContent: "center", width: "100%" }}
+        >
+          <Button
+            onClick={() => Modal.destroyAll()}
+            style={{
+              borderColor: "#808080",
+              color: "#808080",
+              marginRight: "10px",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onLogout}
+            style={{
+              backgroundColor: "#d32f2f",
+              borderColor: "#d32f2f",
+              color: "#ffffff",
+            }}
+          >
+            Yes, Logout
+          </Button>
+        </div>
+      ),
+      onOk() {
+        onLogout();
+      },
+      onCancel() {
+        Modal.destroyAll(); // Ensure modal closes on cancel
+      },
+    });
+  };
 
   useEffect(() => {
     if (cartDrawerVisible) {
@@ -106,7 +201,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
         selectedSize: productData.selectedSize,
       }));
 
-      navigate(`/product/confirm-order`, {
+      navigate(`/checkout`, {
         state: {
           product: orderData, // Mengirimkan array orderData
         },
@@ -306,7 +401,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
           <Col style={{ display: "flex", alignItems: "center" }}>
             <Link
               to="#"
-              onClick={onLogout}
+              onClick={showLogoutConfirm}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -681,7 +776,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
       >
         <Link
           to="#"
-          onClick={onLogout}
+          onClick={showLogoutConfirm}
           style={{ color: "red", fontSize: "18px" }}
         >
           Logout

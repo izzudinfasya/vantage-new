@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Button,
@@ -10,39 +10,27 @@ import {
   Form,
   Input,
   Modal,
-  Radio,
+  message,
 } from "antd";
-import { PayCircleOutlined, CreditCardOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
+// const { Option } = Select;
 
 const ConfirmOrder = () => {
   const [hovered, setHovered] = useState(false);
-  //   const [form] = Form.useForm();
   const location = useLocation();
   const product = location.state?.product; // This should be an array or a single object
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [shippingForm] = Form.useForm();
-
   // State for shipping information
   const [shippingInfo, setShippingInfo] = useState({
     name: null,
     phone: null,
     address: null,
+    shippingMethod: null,
   });
-
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [paymentFormVisible, setPaymentFormVisible] = useState(false);
-
   const isProductArray = Array.isArray(product);
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-  };
-
-  //   const totalDiscount = product.reduce((total: any, item: any) => {
-  //     return total + (item.originalPrice - item.discountPrice) * item.qty;
-  //   }, 0);
   const calculateTotal = () => {
     if (product && product.length > 0) {
       const subtotal = product.reduce((total: any, item: any) => {
@@ -64,8 +52,25 @@ const ConfirmOrder = () => {
 
   const { total, deliveryCharge } = calculateTotal();
 
+  useEffect(() => {
+    const savedShippingInfo = sessionStorage.getItem("shippingInfo");
+
+    if (savedShippingInfo) {
+      setShippingInfo(JSON.parse(savedShippingInfo));
+    }
+  }, []);
+
   const showModal = () => {
-    shippingForm.resetFields();
+    if (shippingInfo.name && shippingInfo.phone && shippingInfo.address) {
+      shippingForm.setFieldsValue({
+        name: shippingInfo.name,
+        phone: shippingInfo.phone,
+        address: shippingInfo.address,
+      });
+    } else {
+      shippingForm.resetFields();
+    }
+
     setIsModalVisible(true);
   };
 
@@ -73,7 +78,8 @@ const ConfirmOrder = () => {
     shippingForm
       .validateFields()
       .then((values) => {
-        setShippingInfo(values); // Set the shipping information
+        setShippingInfo(values);
+        sessionStorage.setItem("shippingInfo", JSON.stringify(values));
         setIsModalVisible(false);
       })
       .catch((errorInfo) => {
@@ -85,17 +91,12 @@ const ConfirmOrder = () => {
     setIsModalVisible(false);
   };
 
-  const handlePaymentMethodChange = (e: any) => {
-    setPaymentMethod(e.target.value);
-    setPaymentFormVisible(true);
-  };
-
   return (
     <div style={{ padding: "30px 0" }}>
       <Row justify="center" gutter={[16, 16]} style={{ padding: 0, margin: 0 }}>
         <Col xs={20} sm={20} md={20} lg={20} xl={20}>
           <Title level={3} style={{ marginBottom: "30px" }}>
-            <b>Confirm Order</b>
+            <b>Checkout</b>
           </Title>
         </Col>
       </Row>
@@ -117,11 +118,17 @@ const ConfirmOrder = () => {
               <Col span={12}>
                 {shippingInfo.name ? (
                   <>
-                    <Text>{shippingInfo.name}</Text>
-                    <br />
+                    <Text strong>{shippingInfo.name}</Text>{" "}
+                    <Divider
+                      type="vertical"
+                      style={{ backgroundColor: "#d9d9d9" }}
+                    />
                     <Text>{shippingInfo.phone}</Text>
                     <br />
-                    <Text>{shippingInfo.address}</Text>
+                    <Text style={{ fontSize: "12px" }}>
+                      {shippingInfo.address}
+                    </Text>
+                    <br />
                   </>
                 ) : (
                   <Text>No Shipping Information</Text>
@@ -151,22 +158,16 @@ const ConfirmOrder = () => {
             visible={isModalVisible}
             onOk={handleOk}
             onCancel={handleCancel}
+            okText="Save"
+            cancelText="Cancel"
             okButtonProps={{
               style: {
-                backgroundColor: "#000000",
+                backgroundColor: hovered ? "#808080" : "#000000",
                 color: "#FFFFFF",
-                borderColor: "#000000",
+                border: "2px solid #FFFFFF",
               },
-              onMouseEnter: (e) => {
-                const target = e.target as HTMLElement;
-                target.style.backgroundColor = "#808080";
-                target.style.borderColor = "#808080";
-              },
-              onMouseLeave: (e) => {
-                const target = e.target as HTMLElement;
-                target.style.backgroundColor = "#000000";
-                target.style.borderColor = "#000000";
-              },
+              onMouseEnter: () => setHovered(true),
+              onMouseLeave: () => setHovered(false),
             }}
             cancelButtonProps={{
               style: {
@@ -227,7 +228,7 @@ const ConfirmOrder = () => {
                 />
               </Form.Item>
               <Form.Item
-                label="Address"
+                label="Full Address (Subdistrict, District, City, Province, Zip Postal)"
                 name="address"
                 rules={[
                   { required: true, message: "Please input your address!" },
@@ -246,93 +247,7 @@ const ConfirmOrder = () => {
               </Form.Item>
             </Form>
           </Modal>
-
-          {/* Payment Method Selection */}
-          <Card
-            title={<Title level={4}>Payment Method</Title>}
-            bordered
-            style={{ marginTop: "20px" }}
-          >
-            <Form layout="vertical">
-              <Form.Item>
-                <Radio.Group
-                  onChange={handlePaymentMethodChange}
-                  value={paymentMethod}
-                >
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <Radio value="creditCard" style={{ marginBottom: "8px" }}>
-                      <CreditCardOutlined />
-                      <span style={{ marginLeft: "8px" }}>
-                        Debit / Credit Card
-                      </span>
-                    </Radio>
-                    <Radio value="payPal">
-                      <PayCircleOutlined />
-                      <span style={{ marginLeft: "8px" }}>PayPal</span>
-                    </Radio>
-                  </div>
-                </Radio.Group>
-              </Form.Item>
-
-              {/* Render the form fields directly after the Radio for Debit / Credit Card */}
-              {paymentMethod === "creditCard" && (
-                <div style={{ marginTop: "20px" }}>
-                  <Form.Item
-                    label="Card Number"
-                    name="cardNumber"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your card number!",
-                      },
-                    ]}
-                  >
-                    <Input style={{ height: "50px" }} />
-                  </Form.Item>
-                  <Form.Item
-                    label="Expiration Date"
-                    name="expirationDate"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input expiration date!",
-                      },
-                    ]}
-                  >
-                    <Input style={{ height: "50px" }} />
-                  </Form.Item>
-                  <Form.Item
-                    label="CVV"
-                    name="cvv"
-                    rules={[
-                      { required: true, message: "Please input your CVV!" },
-                    ]}
-                  >
-                    <Input style={{ height: "50px" }} />
-                  </Form.Item>
-                </div>
-              )}
-
-              {paymentMethod === "payPal" && paymentFormVisible && (
-                <div style={{ marginTop: "20px" }}>
-                  <Form.Item
-                    label="PayPal Email"
-                    name="paypalEmail"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your PayPal email!",
-                      },
-                    ]}
-                  >
-                    <Input style={{ height: "50px" }} />
-                  </Form.Item>
-                </div>
-              )}
-            </Form>
-          </Card>
         </Col>
-
         <Col
           xs={20}
           sm={20}
@@ -525,9 +440,21 @@ const ConfirmOrder = () => {
                 e.currentTarget.style.backgroundColor = "#00b27d";
                 e.currentTarget.style.borderColor = "#00b27d";
               }}
-              onClick={onFinish}
+              onClick={() => {
+                if (!shippingInfo.address) {
+                  message.error(
+                    "Please fill in your address before confirming the order."
+                  );
+                } else {
+                }
+              }}
             >
-              CONFIRM ORDER
+              <b>
+                {" "}
+                {shippingInfo.address
+                  ? "CONFIRM ORDER"
+                  : "PLEASE FILL IN YOUR ADDRESS"}
+              </b>
             </Button>
           </Card>
         </Col>
