@@ -42,6 +42,18 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
   const hideCartDrawer = () => setCartDrawerVisible(false);
 
   useEffect(() => {
+    if (cartDrawerVisible) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [cartDrawerVisible]);
+
+  useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 200) {
         setHasScrolled(true);
