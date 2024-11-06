@@ -101,6 +101,7 @@ const LinktreePage: React.FC = () => {
           muted
         >
           <source src={gifAvatar} type="video/webm" />
+          <source src={gifAvatar.replace(".webm", ".mp4")} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 

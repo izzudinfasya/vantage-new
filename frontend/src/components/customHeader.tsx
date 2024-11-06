@@ -137,6 +137,10 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
             muted
           >
             <source src={vantageLogo} type="video/webm" />
+            <source
+              src={vantageLogo.replace(".webm", ".mp4")}
+              type="video/mp4"
+            />
             Your browser does not support the video tag.
           </video>
         </a>
@@ -215,6 +219,10 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
             muted
           >
             <source src={vantageLogo} type="video/webm" />
+            <source
+              src={vantageLogo.replace(".webm", ".mp4")}
+              type="video/mp4"
+            />
             Your browser does not support the video tag.
           </video>
         </a>
