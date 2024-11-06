@@ -23,7 +23,7 @@ import {
 // import logo from "../assets/logo.png";
 import emptyCart from "../assets/empty-cart.png";
 import { useCart } from "components/cartContext";
-import vantageLogo from "../assets/vantage-black.webm";
+import vantageLogo from "../assets/logo.png";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -125,24 +125,14 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
             alignItems: "center",
           }}
         >
-          <video
+          <img
+            src={vantageLogo}
+            alt="Avatar"
             style={{
-              width: "180px",
-              height: "40px",
-              animationDelay: "0s",
-              objectFit: "cover",
+              width: "120px",
+              height: "30px",
             }}
-            autoPlay
-            loop
-            muted
-          >
-            <source src={vantageLogo} type="video/webm" />
-            <source
-              src={vantageLogo.replace(".webm", ".mp4")}
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+          />
         </a>
         {/* Right: Login and Cart Icons */}
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -207,24 +197,14 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
             height: "100%",
           }}
         >
-          <video
+          <img
+            src={vantageLogo}
+            alt="Avatar"
             style={{
-              width: "180px",
+              width: "150px",
               height: "40px",
-              animationDelay: "0s",
-              objectFit: "cover", // Ensures video fills the Avatar-like shape
             }}
-            autoPlay
-            loop
-            muted
-          >
-            <source src={vantageLogo} type="video/webm" />
-            <source
-              src={vantageLogo.replace(".webm", ".mp4")}
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+          />
         </a>
       </div>
       {/* Right: Search, Login, Cart for desktop view */}

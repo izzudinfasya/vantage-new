@@ -3,7 +3,7 @@ import { Layout, Row } from "antd";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import shopeeImage from "../assets/shopee.png";
 import webLogo from "../assets/weblogo.png";
-import gifAvatar from "../assets/v-black.webm";
+import vantageLogo from "../assets/v-black.gif";
 // import skyVideo from "../assets/sky.mp4";
 
 const { Content, Footer } = Layout;
@@ -87,7 +87,9 @@ const LinktreePage: React.FC = () => {
           }}
         /> */}
 
-        <video
+        <img
+          src={vantageLogo}
+          alt="Avatar"
           className="fade-in"
           style={{
             marginBottom: "20px",
@@ -96,14 +98,7 @@ const LinktreePage: React.FC = () => {
             animationDelay: "0s",
             objectFit: "cover", // Ensures video fills the Avatar-like shape
           }}
-          autoPlay
-          loop
-          muted
-        >
-          <source src={gifAvatar} type="video/webm" />
-          <source src={gifAvatar.replace(".webm", ".mp4")} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        />
 
         {/* Brand Name */}
         <h1
