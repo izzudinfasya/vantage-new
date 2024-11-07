@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import axios from "axios";
+import session from "express-session";
 import voucherRoutes from "./routes/voucherRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
 import passwordRoutes from "./routes/passwordRoutes";
@@ -19,9 +20,6 @@ const PORT = process.env.PORT ? process.env.PORT : "5000";
 // Use express.json() before routes
 app.use(cors());
 app.use(express.json());
-
-const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
-const RAJAONGKIR_BASE_URL = "https://api.rajaongkir.com/starter";
 
 // Endpoint Raja Ongkir untuk mendapatkan daftar provinsi
 app.get("/api/provinces", async (req, res) => {
@@ -107,16 +105,7 @@ app.use("/api/password", passwordRoutes);
 app.use("/api/products", productRoutes);
 
 app.post("/api/create-transaction", function (req, res) {
-  const {
-    name,
-    phone,
-    address,
-    city,
-    postal_code,
-    items,
-    deliveryCharge,
-    totalAmount,
-  } = req.body;
+  const { name, phone, address, items, deliveryCharge, totalAmount } = req.body;
 
   let totalAmountInRupiah = totalAmount;
 

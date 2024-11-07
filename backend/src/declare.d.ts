@@ -17,3 +17,13 @@ declare module "midtrans-client" {
     }
   }
 }
+
+import session from "express-session";
+
+declare module "express-session" {
+  export interface SessionData {
+    isLoggedIn?: boolean;
+    userRole?: string;
+    adminPassword?: string;
+  }
+}

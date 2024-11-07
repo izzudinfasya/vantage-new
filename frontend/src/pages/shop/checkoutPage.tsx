@@ -88,8 +88,23 @@ const CheckoutPage = () => {
     shippingForm
       .validateFields()
       .then((values) => {
-        setShippingInfo(values);
-        sessionStorage.setItem("shippingInfo", JSON.stringify(values));
+        const uppercasedValues = Object.keys(values).reduce((acc, key) => {
+          const value = values[key as keyof typeof values];
+
+          if (typeof value === "string") {
+            acc[key as keyof typeof values] = value.toUpperCase();
+          } else {
+            acc[key as keyof typeof values] = value;
+          }
+
+          return acc;
+        }, {} as typeof values);
+
+        setShippingInfo(uppercasedValues);
+        sessionStorage.setItem(
+          "shippingInfo",
+          JSON.stringify(uppercasedValues)
+        );
         setIsModalVisible(false);
       })
       .catch((errorInfo) => {
@@ -156,8 +171,6 @@ const CheckoutPage = () => {
       name: shippingInfo.name,
       phone: shippingInfo.phone,
       address: fullAddress,
-      city: shippingInfo.city,
-      postal_code: shippingInfo.zipPostal,
       items: orderItems,
       deliveryCharge: deliveryCharge,
       totalAmount: totalAmount,

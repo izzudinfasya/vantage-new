@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const axios_1 = __importDefault(require("axios"));
+const express_session_1 = __importDefault(require("express-session"));
 const voucherRoutes_1 = __importDefault(require("./routes/voucherRoutes"));
 const subscriptionRoutes_1 = __importDefault(require("./routes/subscriptionRoutes"));
 const passwordRoutes_1 = __importDefault(require("./routes/passwordRoutes"));
@@ -26,9 +27,44 @@ dotenv_1.default.config();
 const path = require("path");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT ? process.env.PORT : "5000";
+// Dapatkan secret key dari file .env atau buat sendiri
+const SECRET_KEY = process.env.SESSION_SECRET || "VANTAGENIBOS";
 // Use express.json() before routes
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Konfigurasi express-session
+app.use((0, express_session_1.default)({
+    secret: SECRET_KEY, // Secret key untuk signing session ID
+    resave: false, // Jangan menyimpan sesi jika tidak ada perubahan
+    saveUninitialized: true, // Menyimpan sesi walaupun belum ada perubahan
+    cookie: {
+        maxAge: 30 * 60 * 1000, // Set waktu kedaluwarsa cookie menjadi 30 menit
+        httpOnly: true, // Mencegah akses cookie melalui JavaScript
+        secure: process.env.NODE_ENV === "production", // Mengaktifkan secure cookies di production
+    },
+}));
+const generateRandomUserId = () => {
+    return Math.random().toString(36).substr(2, 9);
+};
+app.post("/login", (req, res) => {
+    // Add login logic, set session variables here
+    req.session.isLoggedIn = true;
+    req.session.userId = generateRandomUserId();
+    res.json({ success: true });
+});
+app.post("/logout", (req, res) => {
+    req.session.destroy(() => {
+        res.json({ success: true });
+    });
+});
+app.get("/check-session", (req, res) => {
+    if (req.session.isLoggedIn) {
+        res.json({ isLoggedIn: true });
+    }
+    else {
+        res.json({ isLoggedIn: false });
+    }
+});
 const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
 const RAJAONGKIR_BASE_URL = "https://api.rajaongkir.com/starter";
 // Endpoint Raja Ongkir untuk mendapatkan daftar provinsi
