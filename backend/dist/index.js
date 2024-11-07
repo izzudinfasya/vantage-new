@@ -109,7 +109,7 @@ app.use("/api/subscribe", subscriptionRoutes_1.default);
 app.use("/api/password", passwordRoutes_1.default);
 app.use("/api/products", productRoutes_1.default);
 app.post("/api/create-transaction", function (req, res) {
-    const { address, city, postal_code, items, deliveryCharge, totalAmount } = req.body;
+    const { name, phone, address, city, postal_code, items, deliveryCharge, totalAmount, } = req.body;
     let totalAmountInRupiah = totalAmount;
     // Menghapus pengalihan lagi jika sudah di frontend
     if (typeof totalAmountInRupiah === "string") {
@@ -159,11 +159,16 @@ app.post("/api/create-transaction", function (req, res) {
                 name: "Fee Shipping",
             },
         ],
-        shipping_address: {
+        customer_details: {
+            first_name: name,
+            phone: phone,
             address: address,
-            city: city,
-            postal_code: postal_code,
-            country_code: "ID",
+            shipping_address: {
+                first_name: name,
+                address: address,
+                phone: phone,
+                country_code: "IDN",
+            },
         },
         credit_card: {
             secure: true,

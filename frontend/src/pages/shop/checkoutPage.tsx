@@ -153,6 +153,8 @@ const CheckoutPage = () => {
     const deliveryCharge = 25000;
 
     const orderData = {
+      name: shippingInfo.name,
+      phone: shippingInfo.phone,
       address: fullAddress,
       city: shippingInfo.city,
       postal_code: shippingInfo.zipPostal,
