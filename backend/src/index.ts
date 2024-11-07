@@ -106,23 +106,75 @@ app.use("/api/subscribe", subscriptionRoutes);
 app.use("/api/password", passwordRoutes);
 app.use("/api/products", productRoutes);
 
-app.get("/create-transaction", function (req, res) {
-  let snap = new midtransClient.Snap({
-    isProduction: false,
-    serverKey: process.env.MIDTRANS_SERVER_KEY,
-    clientKey: process.env.MIDTRANS_CLIENT_KEY,
-  });
+app.post("/api/create-transaction", function (req, res) {
+  const { address, items, deliveryCharge, totalAmount } = req.body;
+
+  let totalAmountInRupiah = totalAmount;
+
+  // Menghapus pengalihan lagi jika sudah di frontend
+  if (typeof totalAmountInRupiah === "string") {
+    totalAmountInRupiah = Number(totalAmountInRupiah.replace(/[^\d]/g, ""));
+  }
+
+  if (
+    !address ||
+    !items ||
+    items.length === 0 ||
+    totalAmountInRupiah === undefined
+  ) {
+    return res.status(400).json({ error: "Missing required data" });
+  }
+
+  let snap;
+  if (process.env.NODE_ENV === "production") {
+    snap = new midtransClient.Snap({
+      isProduction: true,
+      serverKey: process.env.MIDTRANS_SERVER_KEY_PRODUCTION,
+      clientKey: process.env.MIDTRANS_CLIENT_KEY_PRODUCTION,
+    });
+  } else {
+    snap = new midtransClient.Snap({
+      isProduction: false,
+      serverKey: process.env.MIDTRANS_SERVER_KEY_SANDBOX,
+      clientKey: process.env.MIDTRANS_CLIENT_KEY_SANDBOX,
+    });
+  }
+
+  const itemTotalAmount = items.reduce((sum: any, item: any) => {
+    const price = item.price;
+    return sum + price * Number(item.qty);
+  }, 0);
 
   let parameter = {
     transaction_details: {
       order_id: "order-id-node-" + Math.round(new Date().getTime() / 1000),
-      gross_amount: 200000,
+      gross_amount: itemTotalAmount + deliveryCharge,
+    },
+    item_details: [
+      ...items.map((item: any) => ({
+        id: item.id,
+        price: item.price,
+        quantity: Number(item.qty),
+        name: item.title,
+      })),
+      {
+        id: "Fee Shipping",
+        price: deliveryCharge,
+        quantity: 1,
+        name: "Fee Shipping",
+      },
+    ],
+    shipping_address: {
+      address: address,
+      city: "Surabaya",
+      country_code: "ID",
     },
     credit_card: {
       secure: true,
     },
   };
 
+  // Membuat transaksi token
   snap
     .createTransactionToken(parameter)
     .then((transactionToken: any) => {
@@ -132,7 +184,6 @@ app.get("/create-transaction", function (req, res) {
       });
     })
     .catch((error: any) => {
-      console.error("Error creating transaction:", error);
       res.status(500).json({ error: "Failed to create transaction" });
     });
 });

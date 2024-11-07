@@ -12,19 +12,27 @@ interface ProductCardProps {
   };
   hoveredProductId: number | null;
   setHoveredProductId: (id: number | null) => void;
+  columns?: number; // Adding columns as an optional prop to control layout
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   hoveredProductId,
   setHoveredProductId,
+  columns = 3, // Default columns to 3
 }) => {
   const navigate = useNavigate(); // Inisialisasi useNavigate
 
+  // Handle click only if the title is not "Coming Soon"
   const handleClick = () => {
+    if (product.title === "Coming Soon") return;
     window.scrollTo({ top: 0, behavior: "smooth" });
     navigate(`/product/${product.id}`, { state: { product } });
   };
+
+  // Check if the card should be disabled (title is "Coming Soon")
+  const isDisabled = product.title === "Coming Soon";
+
   return (
     <div
       style={{
@@ -35,7 +43,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         aspectRatio: "9 / 16",
         transition: "background-image 0.2s ease-in-out",
         margin: "7px",
-        cursor: "pointer",
+        cursor: isDisabled ? "not-allowed" : "pointer",
+        opacity: isDisabled ? 0.5 : 1,
+        pointerEvents: isDisabled ? "none" : "auto",
       }}
       onMouseEnter={() => setHoveredProductId(product.id)}
       onMouseLeave={() => setHoveredProductId(null)}

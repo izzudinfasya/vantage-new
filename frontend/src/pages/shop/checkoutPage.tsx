@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import {
   Button,
   Card,
@@ -27,7 +28,11 @@ const CheckoutPage = () => {
     name: null,
     phone: null,
     address: null,
-    shippingMethod: null,
+    province: null,
+    city: null,
+    district: null,
+    subDistrict: null,
+    zipPostal: null,
   });
   const isProductArray = Array.isArray(product);
 
@@ -66,6 +71,11 @@ const CheckoutPage = () => {
         name: shippingInfo.name,
         phone: shippingInfo.phone,
         address: shippingInfo.address,
+        province: shippingInfo.province,
+        city: shippingInfo.city,
+        district: shippingInfo.district,
+        subDistrict: shippingInfo.subDistrict,
+        zipPostal: shippingInfo.zipPostal,
       });
     } else {
       shippingForm.resetFields();
@@ -89,6 +99,110 @@ const CheckoutPage = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    const script = document.createElement("script");
+
+    // Tentukan URL dan client key sesuai environment
+    const isProduction = process.env.REACT_APP_ENV === "production";
+
+    const clientKey = isProduction
+      ? process.env.REACT_APP_CLIENT_KEY
+      : process.env.REACT_APP_CLIENT_KEY;
+
+    if (clientKey) {
+      script.src = isProduction
+        ? "https://app.midtrans.com/snap/snap.js"
+        : "https://app.sandbox.midtrans.com/snap/snap.js";
+      script.type = "text/javascript";
+      script.async = true;
+      script.setAttribute("data-client-key", clientKey);
+      document.body.appendChild(script);
+    } else {
+      console.error(
+        "Client Key is missing. Please set the key in your environment variables."
+      );
+    }
+
+    // Hapus script saat komponen unmount
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  const handleConfirmOrder = async () => {
+    if (!shippingInfo.address) {
+      message.error("Please fill in your address before confirming the order.");
+      return;
+    }
+
+    const orderItems = product.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      selectedSize: item.selectedSize,
+      price: item.discountPrice,
+      qty: Number(item.qty),
+    }));
+
+    const totalAmount = Number(total.replace(/[^\d]/g, ""));
+    const deliveryCharge = 25000;
+
+    const orderData = {
+      address: shippingInfo.address,
+      items: orderItems,
+      deliveryCharge: deliveryCharge,
+      totalAmount: totalAmount,
+    };
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}/create-transaction`,
+        orderData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
+
+      if (data.token) {
+        // Pastikan snap sudah tersedia di window object
+        if (window.snap) {
+          window.snap.pay(data.token, {
+            onSuccess: function (result: any) {
+              console.log("Success:", result);
+              message.success("Payment Successful!");
+            },
+            onPending: function (result: any) {
+              console.log("Pending:", result);
+              message.warning("Payment Pending.");
+            },
+            onError: function (result: any) {
+              console.log("Error:", result);
+              message.error("Payment Failed.");
+            },
+            onClose: function () {
+              console.log("Payment Modal Closed");
+              message.info("Payment process closed.");
+            },
+          });
+        } else {
+          message.error("Snap.js is not loaded properly.");
+        }
+      } else {
+        message.error(
+          "There was an issue creating the order. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Error creating Midtrans transaction:", error);
+      message.error("An error occurred while confirming the order.");
+    }
   };
 
   return (
@@ -126,7 +240,9 @@ const CheckoutPage = () => {
                     <Text>{shippingInfo.phone}</Text>
                     <br />
                     <Text style={{ fontSize: "12px" }}>
-                      {shippingInfo.address}
+                      {shippingInfo.address}, {shippingInfo.subDistrict},{" "}
+                      {shippingInfo.district}, {shippingInfo.city},{" "}
+                      {shippingInfo.province}, ({shippingInfo.zipPostal})
                     </Text>
                     <br />
                   </>
@@ -184,6 +300,7 @@ const CheckoutPage = () => {
               },
             }}
             style={{ maxWidth: "80%" }}
+            bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }} // Add scrolling to modal body
           >
             <Form
               form={shippingForm}
@@ -207,6 +324,7 @@ const CheckoutPage = () => {
                   }}
                 />
               </Form.Item>
+
               <Form.Item
                 label="Phone"
                 name="phone"
@@ -227,8 +345,100 @@ const CheckoutPage = () => {
                   }}
                 />
               </Form.Item>
+
               <Form.Item
-                label="Full Address (Subdistrict, District, City, Province, Zip Postal)"
+                label="Province"
+                name="province"
+                rules={[
+                  { required: true, message: "Please input your province!" },
+                ]}
+              >
+                <Input
+                  style={{ height: "45px", fontSize: "16px", padding: "10px" }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#808080";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d9d9d9";
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="City"
+                name="city"
+                rules={[{ required: true, message: "Please input your city!" }]}
+              >
+                <Input
+                  style={{ height: "45px", fontSize: "16px", padding: "10px" }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#808080";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d9d9d9";
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="District"
+                name="district"
+                rules={[
+                  { required: true, message: "Please input your district!" },
+                ]}
+              >
+                <Input
+                  style={{ height: "45px", fontSize: "16px", padding: "10px" }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#808080";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d9d9d9";
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Sub District"
+                name="subDistrict"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your sub district!",
+                  },
+                ]}
+              >
+                <Input
+                  style={{ height: "45px", fontSize: "16px", padding: "10px" }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#808080";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d9d9d9";
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Zip Postal"
+                name="zipPostal"
+                rules={[
+                  { required: true, message: "Please input your zip postal!" },
+                ]}
+              >
+                <Input
+                  style={{ height: "45px", fontSize: "16px", padding: "10px" }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#808080";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d9d9d9";
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Street name, building, house number"
                 name="address"
                 rules={[
                   { required: true, message: "Please input your address!" },
@@ -446,6 +656,7 @@ const CheckoutPage = () => {
                     "Please fill in your address before confirming the order."
                   );
                 } else {
+                  handleConfirmOrder();
                 }
               }}
             >
