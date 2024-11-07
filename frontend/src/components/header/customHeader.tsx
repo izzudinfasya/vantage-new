@@ -106,6 +106,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
         selectedSize: productData.selectedSize,
       }));
 
+      window.scrollTo({ top: 0, behavior: "smooth" });
       navigate(`/checkout`, {
         state: {
           product: orderData, // Mengirimkan array orderData
