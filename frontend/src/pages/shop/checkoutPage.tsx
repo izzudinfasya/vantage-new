@@ -277,7 +277,7 @@ const CheckoutPage = () => {
 
           <Modal
             title="Shipping Information"
-            visible={isModalVisible}
+            open={isModalVisible}
             onOk={handleOk}
             onCancel={handleCancel}
             okText="Save"
@@ -306,7 +306,13 @@ const CheckoutPage = () => {
               },
             }}
             style={{ maxWidth: "80%" }}
-            bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }}
+            styles={{
+              body: {
+                maxHeight: "60vh",
+                overflow: "auto",
+                WebkitOverflowScrolling: "touch",
+              },
+            }}
           >
             <Form
               form={shippingForm}

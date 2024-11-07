@@ -65,6 +65,10 @@ const ProductInterest: React.FC = () => {
         const response = await axios.get(`${apiUrl}/products/get-products`);
         setProductsData(response.data);
         setExpectedProductCount(response.data.length);
+        // Reset the slider to the first slide once the products are loaded
+        if (sliderRef.current) {
+          sliderRef.current.slickGoTo(0);
+        }
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -96,15 +100,16 @@ const ProductInterest: React.FC = () => {
     const handleResize = () => {
       const mobileView = window.innerWidth <= 768;
       setIsMobileView(mobileView);
-      if (sliderRef.current && mobileView) {
-        sliderRef.current.slickGoTo(0); // Reset to first slide on mobile view
+
+      // Always go to the first slide on resize, regardless of view
+      if (sliderRef.current) {
+        sliderRef.current.slickGoTo(0);
       }
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check
+    handleResize(); // Call it initially to set the state and go to the first slide
 
-    // Cleanup listener on component unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 

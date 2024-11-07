@@ -24,7 +24,6 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 const { Title, Text } = Typography;
-const { Panel } = Collapse;
 
 const DetailProductPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -57,7 +56,7 @@ const DetailProductPage: React.FC = () => {
         const response = await axios.get(
           `${apiUrl}/products/get-product/${id}`
         );
-        setProduct(response.data); // Store fetched data in state
+        setProduct(response.data);
         setExpectedProductCount(response.data.images.length);
       } catch (error: any) {
         console.error(
@@ -105,6 +104,7 @@ const DetailProductPage: React.FC = () => {
       },
     };
 
+    window.scrollTo({ top: 0, behavior: "smooth" });
     navigate(`/checkout`, {
       state: {
         product: [productData.product],
@@ -129,6 +129,73 @@ const DetailProductPage: React.FC = () => {
 
     addItemToCart(itemToAdd);
   };
+
+  const details = product?.details || [];
+  const washingInstructions = product?.washingInstructions || [];
+
+  const items = [
+    {
+      key: "1",
+      label: <span style={{ fontWeight: "600" }}>Detail Product</span>,
+      children: (
+        <ul style={{ paddingLeft: "20px" }}>
+          {details.length > 0 ? (
+            details.map((detail: any, index: any) => (
+              <li key={index}>{detail}</li>
+            ))
+          ) : (
+            <li>No details available</li>
+          )}
+        </ul>
+      ),
+    },
+    {
+      key: "2",
+      label: <span style={{ fontWeight: "600" }}>Washing Instructions</span>,
+      children: (
+        <ul style={{ paddingLeft: "20px" }}>
+          {washingInstructions.length > 0 ? (
+            washingInstructions.map((instruction: any, index: any) => (
+              <li key={index}>{instruction}</li>
+            ))
+          ) : (
+            <li>No washing instructions available</li>
+          )}
+        </ul>
+      ),
+    },
+    {
+      key: "3",
+      label: <span style={{ fontWeight: "600" }}>Shipping and Returns</span>,
+      children: (
+        <div>
+          <h4 style={{ margin: "10px 0", fontWeight: "600" }}>Shipping</h4>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>Orders are processed 1-2 days after the order is confirmed.</li>
+            <li>
+              Shipping is done from Surabaya. The duration of delivery to the
+              destination is adjusted to the distance policy and the punctuality
+              of the delivery service.
+            </li>
+            <li>
+              Order cancellation cannot be done after the package has been
+              processed or sent to the expedition.
+            </li>
+          </ul>
+          <h4 style={{ margin: "10px 0", fontWeight: "600" }}>Returns</h4>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>
+              You have 30 days from the date of delivery to return the item.
+            </li>
+            <li>Shipping costs for returns are borne by the buyer.</li>
+            <li>
+              Must provide <b>UNBOXING VIDEO</b> if you want a return.
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div
@@ -502,83 +569,9 @@ const DetailProductPage: React.FC = () => {
                     padding: "10px 15px",
                   }}
                   bordered={false}
-                  expandIconPosition="right"
-                >
-                  <Panel
-                    header={
-                      <span style={{ fontWeight: "600" }}>Detail Product</span>
-                    }
-                    key="1"
-                  >
-                    <ul style={{ paddingLeft: "20px" }}>
-                      {product.details.map((detail: string, index: number) => (
-                        <li key={index}>{detail}</li>
-                      ))}
-                    </ul>
-                  </Panel>
-                  <Panel
-                    header={
-                      <span style={{ fontWeight: "600" }}>
-                        Washing Instructions
-                      </span>
-                    }
-                    key="2"
-                  >
-                    <ul style={{ paddingLeft: "20px" }}>
-                      {product.washingInstructions.map(
-                        (instruction: string, index: number) => (
-                          <li key={index}>{instruction}</li>
-                        )
-                      )}
-                    </ul>
-                  </Panel>
-                  <Panel
-                    header={
-                      <span style={{ fontWeight: "600" }}>
-                        Shipping and Returns
-                      </span>
-                    }
-                    key="3"
-                  >
-                    <div>
-                      <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
-                        Shipping
-                      </h4>
-                      <ul style={{ paddingLeft: "20px" }}>
-                        <li>
-                          Orders are processed 1-2 days after the order is
-                          confirmed (excluding Sundays and national holidays)
-                        </li>
-                        <li>
-                          Shipping is done from Surabaya. The duration of
-                          delivery to the destination is adjusted to the
-                          distance policy and the punctuality of the delivery
-                          service.
-                        </li>
-                        <li>
-                          Order cancellation cannot be done after the package
-                          has been processed or sent to the expedition.
-                        </li>
-                      </ul>
-                      <h4 style={{ margin: "10px 0", fontWeight: "600" }}>
-                        Returns
-                      </h4>
-                      <ul style={{ paddingLeft: "20px" }}>
-                        <li>
-                          You have 30 days from the date of delivery to return
-                          the item.
-                        </li>
-                        <li>
-                          Shipping costs for returns are borne by the buyer.
-                        </li>
-                        <li>
-                          Must provide <b>UNBOXING VIDEO</b> if you want a
-                          return
-                        </li>
-                      </ul>
-                    </div>
-                  </Panel>
-                </Collapse>
+                  expandIconPosition="end"
+                  items={items} // menggunakan properti items
+                />
                 <div style={{ marginTop: "20px" }}>
                   {/* Standard Home Delivery */}
                   <a

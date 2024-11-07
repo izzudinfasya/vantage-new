@@ -347,7 +347,13 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ onLogout }) => {
             </Button>
           </div>
         }
-        bodyStyle={{ display: "flex", flexDirection: "column", height: "100%" }}
+        styles={{
+          body: {
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          },
+        }}
       >
         <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
           {cartItems.length === 0 ? (

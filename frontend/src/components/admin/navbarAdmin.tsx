@@ -87,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ collapsed, toggleSidebar }) => {
         title="Menu"
         placement="left"
         onClose={closeDrawer}
-        visible={drawerVisible}
+        open={drawerVisible}
         width="90%"
       >
         <Menu
