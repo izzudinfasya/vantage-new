@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import {
   HomeOutlined,
@@ -15,12 +15,13 @@ import "../admin/sidebarAdmin.css";
 const { Sider } = Layout;
 
 interface SidebarProps {
-  collapsed: boolean; // Prop definition
+  collapsed: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
   const logo = collapsed ? logoSmall : logoBig;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const location = useLocation(); // Get current location
 
   useEffect(() => {
     const handleResize = () => {
@@ -36,9 +37,18 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
   // Render sidebar only if not in mobile view
   if (isMobile) return null;
 
+  // Dynamically set the selected key based on the current path
+  const getSelectedKey = () => {
+    if (location.pathname.includes("/admin/product")) return "2";
+    if (location.pathname.includes("/admin/waiting-list")) return "3";
+    if (location.pathname.includes("/admin/none")) return "4";
+    if (location.pathname.includes("/admin/*")) return "5";
+    return "1"; // Default to Dashboard
+  };
+
   return (
     <Sider
-      width={collapsed ? 80 : 200} // Width changes based on collapsed state
+      width={collapsed ? 80 : 200}
       collapsed={collapsed}
       style={{
         background: "#fff",
@@ -47,16 +57,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
     >
       <div style={{ textAlign: "center", padding: "20px" }}>
         <img
-          src={logo} // Update with your logo path
+          src={logo}
           alt="Logo"
           style={{
-            width: collapsed ? "40px" : "100%", // Logo size changes based on collapsed state
+            width: collapsed ? "40px" : "100%",
           }}
         />
       </div>
       <Menu
         mode="inline"
-        defaultSelectedKeys={["1"]}
+        selectedKeys={[getSelectedKey()]} // Set selected key dynamically
         style={{ height: "100vh", borderRight: 0, padding: "10px" }}
       >
         <Menu.Item key="1" icon={<HomeOutlined />}>
@@ -72,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
           <Link to="/admin/none">Orders</Link>
         </Menu.Item>
         <Menu.Item key="5" icon={<FileDoneOutlined />}>
-          <Link to="/admin/none">Reports</Link>
+          <Link to="/admin/*">Reports</Link>{" "}
         </Menu.Item>
       </Menu>
     </Sider>

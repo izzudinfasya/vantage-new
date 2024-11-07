@@ -212,34 +212,61 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     // Ensure files are provided and mapped correctly
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Cast req.files to the expected type
-    const images = files.images || []; // Get images safely
-    const sizeChart = files.sizeChart || []; // Get sizeChart safely
+    const images = files.images
+      ? Array.isArray(files.images)
+        ? files.images
+        : [files.images]
+      : []; // Ensure images is an array
+    const sizeChart = files.sizeChart
+      ? Array.isArray(files.sizeChart)
+        ? files.sizeChart
+        : [files.sizeChart]
+      : []; // Ensure sizeChart is an array
 
-    // Upload images to Cloudinary and get URLs
-    const imagePaths = await Promise.all(
-      images.map(async (file) => {
-        try {
-          const uploadResponse = await cloudinary.uploader.upload(file.path);
-          return uploadResponse.secure_url;
-        } catch (uploadError) {
-          console.error("Image upload error:", uploadError);
-          throw new Error("Failed to upload image to Cloudinary");
-        }
-      })
-    );
+    // Retrieve the existing product from the database
+    const existingProduct = await Products.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found." });
+    }
 
-    // Upload size charts to Cloudinary and get URLs
-    const sizechartPaths = await Promise.all(
-      sizeChart.map(async (file) => {
-        try {
-          const uploadResponse = await cloudinary.uploader.upload(file.path);
-          return uploadResponse.secure_url; // Return the URL of the uploaded image
-        } catch (uploadError) {
-          console.error("Image upload error:", uploadError);
-          throw new Error("Failed to upload image to Cloudinary");
-        }
-      })
-    );
+    // Combine existing images (URLs) with new images uploaded (if any)
+    const imagePaths = [
+      ...existingProduct.images, // Existing images from the database
+      ...(await Promise.all(
+        images.map(async (file) => {
+          try {
+            const uploadResponse = await cloudinary.uploader.upload(file.path);
+            return uploadResponse.secure_url;
+          } catch (uploadError) {
+            console.error("Image upload error:", uploadError);
+            throw new Error("Failed to upload image to Cloudinary");
+          }
+        })
+      )),
+    ];
+
+    // Combine existing size charts (URLs) with new size charts uploaded (if any)
+    const sizechartPaths = [
+      ...existingProduct.sizeChart, // Existing size charts from the database
+      ...(await Promise.all(
+        sizeChart.map(async (file) => {
+          try {
+            const uploadResponse = await cloudinary.uploader.upload(file.path);
+            return uploadResponse.secure_url;
+          } catch (uploadError) {
+            console.error("Size chart upload error:", uploadError);
+            throw new Error("Failed to upload size chart to Cloudinary");
+          }
+        })
+      )),
+    ];
+
+    // If there are no new images or size charts, just keep the existing ones
+    const finalImagePaths =
+      images.length > 0 ? imagePaths : existingProduct.images;
+    const finalSizeChartPaths =
+      sizeChart.length > 0 ? sizechartPaths : existingProduct.sizeChart;
+
     // Create an object with only fields that need to be updated
     const updateFields: any = {
       title,
@@ -253,17 +280,9 @@ export const updateProduct = async (req: Request, res: Response) => {
       heightModel,
       washingInstructions: parsedWashingInstructions,
       linkProduct,
-      images: imagePaths,
-      sizeChart: sizechartPaths,
+      images: finalImagePaths, // Combine new images with existing ones
+      sizeChart: finalSizeChartPaths, // Combine new size charts with existing ones
     };
-
-    // Handle file uploads
-    if (req.files) {
-      const images = (req.files as Express.Multer.File[]).map(
-        (file) => file.path
-      );
-      updateFields.images = images;
-    }
 
     // Filter out undefined fields to avoid overwriting with `undefined`
     Object.keys(updateFields).forEach((key) => {
@@ -276,8 +295,8 @@ export const updateProduct = async (req: Request, res: Response) => {
     const updatedProduct = await Products.findByIdAndUpdate(
       productId,
       updateFields,
-      { new: true } // Option to return the updated document
-    );
+      { new: true }
+    ); // Option to return the updated document
 
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found." });

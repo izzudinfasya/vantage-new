@@ -123,11 +123,17 @@ app.get("/create-transaction", function (req, res) {
             secure: true,
         },
     };
-    snap.createTransactionToken(parameter).then((transactionToken) => {
-        res.render("create-transaction", {
+    snap
+        .createTransactionToken(parameter)
+        .then((transactionToken) => {
+        res.json({
             token: transactionToken,
             clientKey: snap.apiConfig.clientKey,
         });
+    })
+        .catch((error) => {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ error: "Failed to create transaction" });
     });
 });
 // Jalankan server

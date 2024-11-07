@@ -60,10 +60,10 @@ const App = () => {
     () => localStorage.getItem("isLoggedIn") === "true"
   );
   const [collapsed, setCollapsed] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
-  const [userId, setUserId] = useState(
-    () => localStorage.getItem("userId") || ""
+  const [adminPassword, setAdminPassword] = useState(
+    () => localStorage.getItem("adminPassword") || ""
   );
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
   const location = useLocation();
 
   useEffect(() => {

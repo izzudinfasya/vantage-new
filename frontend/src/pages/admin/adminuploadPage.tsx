@@ -15,12 +15,14 @@ import {
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { UploadChangeParam, UploadFile } from "antd/es/upload/interface";
 
 const { Title } = Typography;
 const { Content } = Layout;
 
 const AdminUpload: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const product = location.state?.product;
   const [form] = Form.useForm();
@@ -51,8 +53,25 @@ const AdminUpload: React.FC = () => {
       setSizes(product.sizes || [""]);
       setWashingInstructions(product.washingInstructions || [""]);
 
-      setFileList(product.images || []);
-      setFileList2(product.sizeChart || []);
+      // Convert image URLs to file objects with necessary fields
+      const formattedFileList =
+        product.images?.map((url: any, index: any) => ({
+          uid: index.toString(), // Unique identifier
+          name: `image${index}.webp`, // You can extract or customize the name
+          status: "done", // Image has been successfully uploaded
+          url: url,
+        })) || [];
+      setFileList(formattedFileList);
+
+      // Convert size chart URLs to file objects with necessary fields
+      const formattedFileList2 =
+        product.sizeChart?.map((url: any, index: any) => ({
+          uid: index.toString(), // Unique identifier
+          name: `size-chart${index}.jpg`, // Customize the name if needed
+          status: "done", // Image has been successfully uploaded
+          url: url,
+        })) || [];
+      setFileList2(formattedFileList2);
     }
   }, [form, product]);
 
@@ -142,6 +161,7 @@ const AdminUpload: React.FC = () => {
             : "Product uploaded successfully!"
         );
         resetForm();
+        navigate("/admin/product");
       } else {
         message.error("Failed to upload product.");
       }

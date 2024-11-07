@@ -35,25 +35,21 @@ export const CartProvider: React.FC<{
 
   const addItemToCart = (item: Omit<CartItem, "quantity">) => {
     setCartItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
-        (i) => i.id === item.id && i.selectedSize === item.selectedSize
-      );
+      const existingItemIndex = prevItems.findIndex((i) => i.id === item.id);
 
       if (item.badgeType === "EXCLUSIVE") {
         if (existingItemIndex === -1) {
-          // If EXCLUSIVE and item not in cart, add it
+          // If EXCLUSIVE item is not already in the cart, add it with quantity 1
           const newItems = [...prevItems, { ...item, quantity: 1 }];
           message.success("Item successfully added to cart!");
           return newItems;
         } else {
-          // If it's already in the cart, show an error message
-          message.error(
-            "Item already in cart. EXCLUSIVE items can only have 1 quantity."
-          );
+          // If EXCLUSIVE item is already in the cart, show an error
+          message.error("EXCLUSIVE items can only be purchased once per user.");
           return prevItems;
         }
       } else {
-        // For non-exclusive items
+        // For non-EXCLUSIVE items, proceed as normal
         if (existingItemIndex !== -1) {
           const updatedItems = [...prevItems];
           updatedItems[existingItemIndex].quantity += 1; // Increment the quantity

@@ -22,6 +22,7 @@ const ProductsTable: React.FC = () => {
     try {
       const response = await axios.get(`${apiUrl}/products/get-products`);
       setProducts(response.data);
+      console.log(response.data);
     } catch (error) {
       message.error("Error fetching products. Please try again.");
       console.error("Error fetching products:", error);
@@ -42,6 +43,23 @@ const ProductsTable: React.FC = () => {
       title: "Nama Produk",
       dataIndex: "title",
       key: "title",
+      align: "center",
+    },
+    {
+      title: "Images",
+      key: "images",
+      render: (value: any, record: IProducts, index: number) => {
+        const lastImage = record.images?.[record.images.length - 1]; // Get the last image in the array
+        return lastImage ? (
+          <img
+            src={lastImage}
+            alt={`Product ${index + 1}`} // Use the correct index here
+            style={{ width: "50px", height: "50px", objectFit: "cover" }}
+          />
+        ) : (
+          <span>No Image</span>
+        );
+      },
       align: "center",
     },
     {

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  TruckOutlined,
-  ShopOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
+import { TruckOutlined, ShopOutlined } from "@ant-design/icons";
+import { FaCartPlus } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Typography,
@@ -23,8 +20,9 @@ import {
 import { useCart } from "components/cartContext";
 import SkeletonImage from "components/skeleton/skeletonImage";
 import ProductCatalogue from "components/product/productCatalogue";
-
+import { useLocation } from "react-router-dom";
 import axios from "axios";
+
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
@@ -32,10 +30,15 @@ const DetailProductPage: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState(""); // Default size
+  const [selectedSize, setSelectedSize] = useState("");
   const [product, setProduct] = useState<any>(null);
   const [expectedProductCount, setExpectedProductCount] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setSelectedSize("");
+  }, [location.pathname]);
 
   const showDrawer = () => {
     setVisible(true);
@@ -110,7 +113,7 @@ const DetailProductPage: React.FC = () => {
     });
   };
 
-  const { addItemToCart } = useCart();
+  const { addItemToCart, cartItems } = useCart();
 
   const handleAddToCart = () => {
     const itemToAdd = {
@@ -317,15 +320,15 @@ const DetailProductPage: React.FC = () => {
                       (size: { name: string; qty: number; _id: string }) => (
                         <Button
                           key={size._id}
-                          onClick={() => setSelectedSize(size.name)} // Update selected size
+                          onClick={() => setSelectedSize(size.name)}
                           style={{
-                            margin: "0 5px", // Small horizontal margin between buttons
+                            margin: "0 5px",
                             color: selectedSize === size.name ? "#fff" : "#000",
                             borderColor: "#000",
                             backgroundColor:
                               selectedSize === size.name
                                 ? "#000"
-                                : "transparent", // Highlight selected size
+                                : "transparent",
                           }}
                           shape="round"
                         >
@@ -336,17 +339,18 @@ const DetailProductPage: React.FC = () => {
                   </div>
                   <span
                     style={{
-                      marginLeft: "20px", // Space between size buttons and quantity display
+                      marginLeft: "20px",
                       color: "#000",
                     }}
                   >
-                    {selectedSize &&
-                      (product.sizes.find(
-                        (s: { name: string; qty: number; _id: string }) =>
-                          s.name === selectedSize
-                      )?.qty ||
-                        0)}{" "}
-                    available
+                    {selectedSize
+                      ? `${
+                          product.sizes.find(
+                            (s: { name: string; qty: number; _id: string }) =>
+                              s.name === selectedSize
+                          )?.qty || 0
+                        } available`
+                      : "*select size first"}
                   </span>
                 </div>
 
@@ -402,11 +406,23 @@ const DetailProductPage: React.FC = () => {
                 >
                   <Button
                     onClick={() => {
-                      window.scrollTo({
-                        top: 0,
-                        behavior: "smooth",
-                      });
-                      handleBuyNow();
+                      const isExclusiveInCart = cartItems.some(
+                        (item) => item.badgeType === "EXCLUSIVE"
+                      );
+
+                      if (product.badgeType === "EXCLUSIVE" && selectedSize) {
+                        if (isExclusiveInCart) {
+                          message.error(
+                            "You can only purchase one EXCLUSIVE item, check your cart."
+                          );
+                        } else {
+                          handleBuyNow();
+                        }
+                      } else if (!selectedSize) {
+                        message.error("Please select a size first.");
+                      } else {
+                        handleBuyNow();
+                      }
                     }}
                     type="primary"
                     size="large"
@@ -424,9 +440,33 @@ const DetailProductPage: React.FC = () => {
                   >
                     <b>{selectedSize ? "BUY NOW" : "SELECT SIZE"}</b>
                   </Button>
+
                   <Tooltip title="Add to Cart">
                     <Button
-                      onClick={handleAddToCart}
+                      onClick={() => {
+                        if (!selectedSize) {
+                          message.error("Please select a size first.");
+                          return;
+                        }
+
+                        if (product.badgeType === "EXCLUSIVE") {
+                          const isItemInCart = cartItems.some(
+                            (item: any) =>
+                              item.id === product._id &&
+                              item.selectedSize === selectedSize
+                          );
+
+                          if (isItemInCart) {
+                            message.error(
+                              "This product is EXCLUSIVE. You can only add one item per size to the cart."
+                            );
+                          } else {
+                            handleAddToCart();
+                          }
+                        } else {
+                          handleAddToCart();
+                        }
+                      }}
                       type="default"
                       style={{
                         width: "20%",
@@ -446,8 +486,9 @@ const DetailProductPage: React.FC = () => {
                         e.currentTarget.style.borderColor = "black";
                         e.currentTarget.style.color = "black";
                       }}
+                      disabled={!selectedSize}
                     >
-                      <ShoppingCartOutlined style={{ fontSize: "22px" }} />
+                      <FaCartPlus style={{ fontSize: "22px" }} />
                     </Button>
                   </Tooltip>
                 </div>
