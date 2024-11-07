@@ -134,7 +134,9 @@ const CheckoutPage = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleConfirmOrder = async () => {
-    if (!shippingInfo.address) {
+    const fullAddress = `${shippingInfo.address}, ${shippingInfo.subDistrict}, ${shippingInfo.district}, ${shippingInfo.city}, ${shippingInfo.province} (${shippingInfo.zipPostal})`;
+
+    if (!fullAddress) {
       message.error("Please fill in your address before confirming the order.");
       return;
     }
@@ -151,7 +153,9 @@ const CheckoutPage = () => {
     const deliveryCharge = 25000;
 
     const orderData = {
-      address: shippingInfo.address,
+      address: fullAddress,
+      city: shippingInfo.city,
+      postal_code: shippingInfo.zipPostal,
       items: orderItems,
       deliveryCharge: deliveryCharge,
       totalAmount: totalAmount,
@@ -300,7 +304,7 @@ const CheckoutPage = () => {
               },
             }}
             style={{ maxWidth: "80%" }}
-            bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }} // Add scrolling to modal body
+            bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }}
           >
             <Form
               form={shippingForm}

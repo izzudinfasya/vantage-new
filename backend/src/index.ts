@@ -107,7 +107,8 @@ app.use("/api/password", passwordRoutes);
 app.use("/api/products", productRoutes);
 
 app.post("/api/create-transaction", function (req, res) {
-  const { address, items, deliveryCharge, totalAmount } = req.body;
+  const { address, city, postal_code, items, deliveryCharge, totalAmount } =
+    req.body;
 
   let totalAmountInRupiah = totalAmount;
 
@@ -166,7 +167,8 @@ app.post("/api/create-transaction", function (req, res) {
     ],
     shipping_address: {
       address: address,
-      city: "Surabaya",
+      city: city,
+      postal_code: postal_code,
       country_code: "ID",
     },
     credit_card: {

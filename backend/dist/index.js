@@ -109,7 +109,7 @@ app.use("/api/subscribe", subscriptionRoutes_1.default);
 app.use("/api/password", passwordRoutes_1.default);
 app.use("/api/products", productRoutes_1.default);
 app.post("/api/create-transaction", function (req, res) {
-    const { address, items, deliveryCharge, totalAmount } = req.body;
+    const { address, city, postal_code, items, deliveryCharge, totalAmount } = req.body;
     let totalAmountInRupiah = totalAmount;
     // Menghapus pengalihan lagi jika sudah di frontend
     if (typeof totalAmountInRupiah === "string") {
@@ -161,7 +161,8 @@ app.post("/api/create-transaction", function (req, res) {
         ],
         shipping_address: {
             address: address,
-            city: "Surabaya",
+            city: city,
+            postal_code: postal_code,
             country_code: "ID",
         },
         credit_card: {
